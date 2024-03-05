@@ -1,2 +1,1 @@
-# dallas
-Dallas (Digital Administration Learning Space)
+Repository buat Rancang Bangun Pengelolaan Pembelajaran berbasis Web untuk Program Studi Sarjana Terapan Administrasi Perkantoran Digital
