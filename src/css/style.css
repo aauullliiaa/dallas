@@ -1,0 +1,327 @@
+* {
+  font-family: "Poppins";
+}
+section {
+  padding-top: 7rem;
+  margin-bottom: 3rem;
+}
+body {
+  background-color: #eae0d5;
+}
+.bg-navbar {
+  background-color: #c6ac8f;
+}
+
+/* Index */
+.alamat th,
+.kontak th {
+  vertical-align: text-top;
+  width: 10rem;
+}
+.jumbotron {
+  background-image: url("../images/thought-catalog-505eectW54k-unsplash.jpg");
+  background-position: center;
+  background-size: cover;
+  min-height: 100vh;
+  color: #fffffe;
+  text-shadow: 3px 3px 4px black;
+}
+.jumbotron::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 50%;
+  bottom: 0;
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+}
+/* End of Index */
+
+/* Login */
+.login {
+  background-image: url("../images/inaki-del-olmo-NIJuEQw0RKg-unsplash.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  background-position: center;
+  color: #0a0908;
+}
+.login-box {
+  width: 460px;
+  border-radius: 15px;
+}
+.login-box span a {
+  text-decoration: none;
+  color: #0a0908;
+}
+.login-box span a:hover {
+  text-decoration: underline;
+  color: blue;
+}
+.login-box .btn {
+  background-color: #cfae8f;
+  transition: 0.2s;
+}
+.login-box .btn:hover {
+  background-color: #8f704a;
+  color: #fffffe;
+  font-weight: 600;
+}
+/* End of Login */
+
+/* Register */
+.register {
+  height: 100vh;
+  background-image: url("../images/debby-hudson-asviIGR3CPE-unsplash.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  color: #fffffe;
+}
+/* End of Register */
+
+/* Mata Kuliah */
+.hero-matkul {
+  background-image: url("../images/patrick-tomasso-Oaqk7qqNh_c-unsplash.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 30vh;
+  background-position: center;
+  color: #fffffe;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+.hero-matkul::after {
+  display: block;
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  content: "";
+  width: 100%;
+  min-height: 19%;
+  position: absolute;
+}
+.daftar-matkul ul li {
+  list-style-type: none;
+  padding: 1rem 0;
+  border-bottom: 1px solid #000;
+}
+.daftar-matkul ul li a {
+  color: #0a0908;
+  font-weight: 600;
+  text-decoration: none;
+}
+/* End of Mata Kuliah */
+
+/* Detail Mata Kuliah */
+.list-materi ul li {
+  border-bottom: 1px solid #000;
+  padding: 10px 0;
+  list-style: none;
+}
+.detail-matkul button:hover {
+  background-color: #8f704a;
+  border: none;
+  font-weight: 600;
+  color: white;
+}
+/* End of Detail Mata Kuliah */
+
+/* Jadwal Perkuliahan */
+.roster th,
+.roster td {
+  border: 1px solid black;
+  padding: 5px;
+  text-align: center;
+  font-size: 0.5rem;
+}
+.istirahat {
+  background-color: #c6ac8f;
+  font-weight: bold;
+}
+.hero-jadwal {
+  background-image: url("../images/eric-rothermel-FoKO4DpXamQ-unsplash.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 30vh;
+  background-position: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  color: #fffffe;
+}
+.hero-jadwal::after {
+  display: block;
+  content: "";
+  position: absolute;
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  width: 100%;
+  height: 19%;
+}
+/* End of Jadwal Perkuliahan */
+
+/* Daftar Dosen */
+.dosen-hero {
+  background-image: url("../images/education-concept-student-studying-brainstorming-campus-concept-close-up-students-discussing-their-subject-books-textbooks-selective-focus_1418-627.avif");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 30vh;
+  background-position: center;
+  color: #fffffe;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+.dosen-hero::after {
+  content: "";
+  position: absolute;
+  min-height: 19%;
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  width: 100%;
+}
+.dosen-content ul li {
+  list-style-type: none;
+}
+.daftar-dosen {
+  border: 1px solid #000;
+}
+.card-body a {
+  text-decoration: none;
+  color: #0a0908;
+}
+.card-body a:hover {
+  color: blue;
+}
+/* End of Daftar Dosen  */
+/* Edit Materi Perkuliahan */
+.edit-hero {
+  background-image: url("../images/patrick-tomasso-Oaqk7qqNh_c-unsplash.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 30vh;
+  background-position: center;
+  color: #fffffe;
+  text-shadow: 4px 6px 6px rgba(0, 0, 0, 0.5);
+}
+.edit-hero::after {
+  content: "";
+  position: absolute;
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  width: 100%;
+  height: 19%;
+}
+.submit-button .btn,
+.edit-btn {
+  background-color: #c6ac8f;
+  border: none;
+}
+.submit-button .btn:hover,
+.edit-btn:hover {
+  background-color: #8f704a;
+  color: #fffffe;
+  font-weight: 600;
+}
+/* End of Edit Materi Perkuliahan */
+
+/* Edit Jadwal Perkuliahan */
+.card-body table th {
+  width: 180px;
+  padding-bottom: 10px;
+}
+.card-body table td {
+  padding-bottom: 10px;
+}
+/* End of Jadwal Perkuliahan */
+
+/* Data Mahasiswa */
+.mhs-hero {
+  background-image: url("../images/hero-mah.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 30vh;
+  background-position: center;
+  color: #fffffe;
+  text-shadow: 4px 6px 6px rgba(0, 0, 0, 0.5);
+}
+.mhs-hero::after {
+  content: "";
+  position: absolute;
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  width: 100%;
+  height: 19%;
+}
+.data-mhs table td,
+.data-mhs table th {
+  border: 1px solid #000;
+  padding: 5px;
+  font-size: 0.8rem;
+  text-align: center;
+}
+/* End of Data Mahasiswa */
+
+/* Edit Data Mahasiswa */
+#edit-data-mhs .container {
+  max-width: 50rem;
+}
+/* End of Edit Data Mahasiswa */
+/* Edit Profile */
+.edit-profile {
+  max-width: 50rem;
+}
+
+/* Tugas Kuliah */
+.tugas-jumbotron {
+  background-image: url("../images/tugas-jumbotron.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 30vh;
+  background-position: center;
+  color: #fffffe;
+  text-shadow: 4px 6px 6px rgba(0, 0, 0, 0.7);
+}
+.tugas-jumbotron::after {
+  content: "";
+  position: absolute;
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  width: 100%;
+  height: 19%;
+}
+.list-tugas ul li {
+  list-style-type: none;
+}
+
+/* Media Query */
+@media (max-width: 767.98px) {
+  html {
+    font-size: 85%;
+  }
+  /* Index */
+  iframe {
+    height: 250px;
+  }
+  /* Mata Kuliah */
+  .hero-matkul {
+    min-height: 25vh;
+  }
+  /* Jadwal Perkuliahan */
+  .hero-jadwal {
+    min-height: 25vh;
+  }
+  /* Dosen */
+  .dosen-hero {
+    min-height: 25vh;
+  }
+  /* Edit Materi */
+  .edit-hero {
+    min-height: 25vh;
+  }
+  /* Data Mahasiswa */
+  .mhs-hero {
+    min-height: 25vh;
+  }
+  /* Data Dosen */
+  .list-group .list-group-item li {
+    font-size: 20px;
+  }
+}
+@media (max-width: 575.98px) {
+  html {
+    font-size: 70%;
+  }
+  .container .data-mhs {
+    padding: 1rem 7% 0;
+  }
+}
