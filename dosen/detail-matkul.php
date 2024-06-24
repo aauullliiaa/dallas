@@ -110,7 +110,7 @@ $dosen = retrieve("SELECT nama FROM dosen_profiles WHERE user_id = ?", [$dosen_i
     </div>
     <div class="row list-materi pt-4">
       <h3>Materi</h3>
-      <?php if (empty($mater)): ?>
+      <?php if (empty($materi)): ?>
         <p>Belum ada materi yang diberkan.</p>
       <?php else: ?>
         <?php foreach ($materi as $row): ?>
