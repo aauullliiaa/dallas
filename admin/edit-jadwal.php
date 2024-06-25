@@ -7,42 +7,42 @@ $time_slots = get_time_slots_for_adding();
 $courses = get_all_courses($db);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  if (isset($_POST['delete_schedule'])) {
-    $schedule_id = $_POST['schedule_id'];
-    if (delete_schedule($db, $schedule_id)) {
-      $message = "Jadwal berhasil dihapus.";
-      $alert_class = "alert-success";
+    if (isset($_POST['delete_schedule'])) {
+        $schedule_id = $_POST['schedule_id'];
+        if (delete_schedule($db, $schedule_id)) {
+            $message = "Jadwal berhasil dihapus.";
+            $alert_class = "alert-success";
+        } else {
+            $message = "Error: Gagal menghapus jadwal.";
+            $alert_class = "alert-danger";
+        }
     } else {
-      $message = "Error: Gagal menghapus jadwal.";
-      $alert_class = "alert-danger";
-    }
-  } else {
-    $hari = $_POST['hari'];
-    $matkul = $_POST['matkul'];
-    $dosen_id = $_POST['dosen_id'];
-    $classroom = htmlspecialchars($_POST['classroom']);
-    $kelas = $_POST['kelas'];
-    $jam_mulai = $_POST['jam_mulai'];
-    $jam_selesai = $_POST['jam_selesai'];
-    $old_hari = $_POST['old_hari'] ?? null;
-    $old_jam_mulai = $_POST['old_jam_mulai'] ?? null;
-    $old_jam_selesai = $_POST['old_jam_selesai'] ?? null;
+        $hari = $_POST['hari'];
+        $matkul = $_POST['matkul'];
+        $dosen_id = $_POST['dosen_id'];
+        $classroom = htmlspecialchars($_POST['classroom']);
+        $kelas = $_POST['kelas'];
+        $jam_mulai = $_POST['jam_mulai'];
+        $jam_selesai = $_POST['jam_selesai'];
+        $old_hari = $_POST['old_hari'] ?? null;
+        $old_jam_mulai = $_POST['old_jam_mulai'] ?? null;
+        $old_jam_selesai = $_POST['old_jam_selesai'] ?? null;
 
-    list($message, $alert_class) = update_or_insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $jam_mulai, $jam_selesai, $time_slots, 0, NULL, $old_hari, $old_jam_mulai, $old_jam_selesai);
-  }
+        list($message, $alert_class) = update_or_insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $jam_mulai, $jam_selesai, $time_slots, 0, NULL, $old_hari, $old_jam_mulai, $old_jam_selesai);
+    }
 } elseif (isset($_GET['id'])) {
-  $schedule_id = $_GET['id'];
-  $schedule = fetch_schedule_by_id($db, $schedule_id);
-  $hari = $schedule['hari'];
-  $matkul = $schedule['matkul'];
-  $dosen_id = $schedule['dosen_id'];
-  $classroom = $schedule['classroom'];
-  $kelas = $schedule['kelas'];
-  $jam_mulai = $schedule['jam'];
-  $jam_selesai = end(fetch_schedules_by_details($db, $hari, $matkul, $kelas))['jam'];
-  $dosen_name = getDosenName($dosen_id);  // Get the name of the lecturer
+    $schedule_id = $_GET['id'];
+    $schedule = fetch_schedule_by_id($db, $schedule_id);
+    $hari = $schedule['hari'];
+    $matkul = $schedule['matkul'];
+    $dosen_id = $schedule['dosen_id'];
+    $classroom = $schedule['classroom'];
+    $kelas = $schedule['kelas'];
+    $jam_mulai = $schedule['jam'];
+    $jam_selesai = end(fetch_schedules_by_details($db, $hari, $matkul, $kelas))['jam'];
+    $dosen_name = getDosenName($dosen_id);  // Get the name of the lecturer
 } else {
-  die("ID jadwal tidak ditemukan.");
+    die("ID jadwal tidak ditemukan.");
 }
 ?>
 <!DOCTYPE html>
@@ -56,7 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- CSS -->
@@ -137,11 +138,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="mb-3">
                         <label for="hari" class="form-label">Hari:</label>
                         <select id="hari" name="hari" class="form-select" required>
-                            <option value="Senin" <?php if (isset($hari) && $hari == 'Senin') echo 'selected'; ?>>Senin</option>
-                            <option value="Selasa" <?php if (isset($hari) && $hari == 'Selasa') echo 'selected'; ?>>Selasa</option>
-                            <option value="Rabu" <?php if (isset($hari) && $hari == 'Rabu') echo 'selected'; ?>>Rabu</option>
-                            <option value="Kamis" <?php if (isset($hari) && $hari == 'Kamis') echo 'selected'; ?>>Kamis</option>
-                            <option value="Jumat" <?php if (isset($hari) && $hari == 'Jumat') echo 'selected'; ?>>Jumat</option>
+                            <option value="Senin" <?php if (isset($hari) && $hari == 'Senin')
+                                echo 'selected'; ?>>Senin
+                            </option>
+                            <option value="Selasa" <?php if (isset($hari) && $hari == 'Selasa')
+                                echo 'selected'; ?>>Selasa
+                            </option>
+                            <option value="Rabu" <?php if (isset($hari) && $hari == 'Rabu')
+                                echo 'selected'; ?>>Rabu
+                            </option>
+                            <option value="Kamis" <?php if (isset($hari) && $hari == 'Kamis')
+                                echo 'selected'; ?>>Kamis
+                            </option>
+                            <option value="Jumat" <?php if (isset($hari) && $hari == 'Jumat')
+                                echo 'selected'; ?>>Jumat
+                            </option>
                         </select>
                     </div>
                     <input type="hidden" name="old_hari" value="<?= htmlspecialchars($hari); ?>">
@@ -150,7 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label for="matkul" class="form-label">Mata Kuliah:</label>
                         <select id="matkul" name="matkul" class="form-select" required>
                             <?php foreach ($courses as $course): ?>
-                                <option value="<?= htmlspecialchars($course['nama']); ?>" data-dosen-id="<?= htmlspecialchars($course['id']); ?>" <?= ($course['nama'] == $matkul) ? 'selected' : ''; ?>>
+                                <option value="<?= htmlspecialchars($course['nama']); ?>"
+                                    data-dosen-id="<?= htmlspecialchars($course['id']); ?>" <?= ($course['nama'] == $matkul) ? 'selected' : ''; ?>>
                                     <?= htmlspecialchars($course['nama']); ?>
                                 </option>
                             <?php endforeach; ?>
@@ -159,18 +171,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="mb-3">
                         <label for="dosen_name" class="form-label">Nama Dosen:</label>
-                        <input type="text" id="dosen_name" name="dosen_name" class="form-control" value="<?= htmlspecialchars($dosen_name); ?>" readonly>
-                        <input type="hidden" id="dosen_id" name="dosen_id" class="form-control" value="<?= htmlspecialchars($dosen_id); ?>" readonly>
+                        <input type="text" id="dosen_name" name="dosen_name" class="form-control"
+                            value="<?= htmlspecialchars($dosen_name); ?>" readonly>
+                        <input type="hidden" id="dosen_id" name="dosen_id" class="form-control"
+                            value="<?= htmlspecialchars($dosen_id); ?>" readonly>
                     </div>
 
                     <div class="mb-3">
                         <label for="classroom" class="form-label">Ruang Kelas:</label>
-                        <input type="text" id="classroom" name="classroom" class="form-control" value="<?= htmlspecialchars($classroom); ?>" required>
+                        <input type="text" id="classroom" name="classroom" class="form-control"
+                            value="<?= htmlspecialchars($classroom); ?>" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="kelas" class="form-label">Kelas:</label>
-                        <input type="text" id="kelas" name="kelas" class="form-control" value="<?= htmlspecialchars($kelas); ?>" readonly>
+                        <input type="text" id="kelas" name="kelas" class="form-control"
+                            value="<?= htmlspecialchars($kelas); ?>" readonly>
                     </div>
 
                     <div class="mb-3">
@@ -201,13 +217,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="row">
                         <div class="col submit-button">
                             <button type="submit" class="btn btn-primary">Perbarui Jadwal</button>
-                            <button type="submit" name="delete_schedule" value="1" class="btn btn-danger">Hapus Jadwal</button>
                         </div>
                     </div>
                 </form>
                 <div class="row mt-2">
                     <div class="col submit-button">
-                        <a href="jadwal-kuliah.php?kelas=<?= htmlspecialchars($kelas) ?>"><button class="btn btn-secondary">Kembali</button></a>
+                        <a href="jadwal-kuliah.php?kelas=<?= htmlspecialchars($kelas) ?>"><button
+                                class="btn btn-secondary">Kembali</button></a>
                     </div>
                 </div>
             </div>
