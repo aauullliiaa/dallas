@@ -138,20 +138,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="mb-3">
                         <label for="hari" class="form-label">Hari:</label>
                         <select id="hari" name="hari" class="form-select" required>
-                            <option value="Senin" <?php if (isset($hari) && $hari == 'Senin')
-                                echo 'selected'; ?>>Senin
+                            <option value="Senin" <?= (isset($hari) && $hari == 'Senin') ? 'selected' : ''; ?>>Senin
                             </option>
-                            <option value="Selasa" <?php if (isset($hari) && $hari == 'Selasa')
-                                echo 'selected'; ?>>Selasa
+                            <option value="Selasa" <?= (isset($hari) && $hari == 'Selasa') ? 'selected' : ''; ?>>Selasa
                             </option>
-                            <option value="Rabu" <?php if (isset($hari) && $hari == 'Rabu')
-                                echo 'selected'; ?>>Rabu
+                            <option value="Rabu" <?= (isset($hari) && $hari == 'Rabu') ? 'selected' : ''; ?>>Rabu</option>
+                            <option value="Kamis" <?= (isset($hari) && $hari == 'Kamis') ? 'selected' : ''; ?>>Kamis
                             </option>
-                            <option value="Kamis" <?php if (isset($hari) && $hari == 'Kamis')
-                                echo 'selected'; ?>>Kamis
-                            </option>
-                            <option value="Jumat" <?php if (isset($hari) && $hari == 'Jumat')
-                                echo 'selected'; ?>>Jumat
+                            <option value="Jumat" <?= (isset($hari) && $hari == 'Jumat') ? 'selected' : ''; ?>>Jumat
                             </option>
                         </select>
                     </div>
@@ -162,7 +156,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select id="matkul" name="matkul" class="form-select" required>
                             <?php foreach ($courses as $course): ?>
                                 <option value="<?= htmlspecialchars($course['nama']); ?>"
-                                    data-dosen-id="<?= htmlspecialchars($course['id']); ?>" <?= ($course['nama'] == $matkul) ? 'selected' : ''; ?>>
+                                    data-dosen-id="<?= htmlspecialchars($course['dosen_id']); ?>"
+                                    data-dosen-name="<?= htmlspecialchars(getDosenName($course['dosen_id'])); ?>"
+                                    <?= ($course['nama'] == $matkul) ? 'selected' : ''; ?>>
                                     <?= htmlspecialchars($course['nama']); ?>
                                 </option>
                             <?php endforeach; ?>
@@ -233,16 +229,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.getElementById('matkul').addEventListener('change', function () {
             var selectedOption = this.options[this.selectedIndex];
             var dosenId = selectedOption.getAttribute('data-dosen-id');
+            var dosenName = selectedOption.getAttribute('data-dosen-name');
             document.getElementById('dosen_id').value = dosenId;
-
-            // Mengambil nama dosen dari PHP tanpa AJAX
-            <?php
-            if (isset($_POST['dosen_id'])) {
-                $dosen_id = $_POST['dosen_id'];
-                $dosen_name = getDosenName($dosen_id);
-                echo "document.getElementById('dosen_name').value = '{$dosen_name}';";
-            }
-            ?>
+            document.getElementById('dosen_name').value = dosenName;
         });
     </script>
 </body>
