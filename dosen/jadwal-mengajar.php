@@ -3,7 +3,7 @@ session_start();
 require '../src/db/functions.php';
 checkRole('dosen');
 
-$dosen_id = $_SESSION['dosen_id']; // assuming you have a session variable for the lecturer's ID
+$dosen_id = $_SESSION['user_id']; // assuming you have a session variable for the lecturer's ID
 
 list($time_slots, $days, $schedule) = fetch_schedule_by_dosen_id($db, $dosen_id);
 ?>
@@ -88,6 +88,7 @@ list($time_slots, $days, $schedule) = fetch_schedule_by_dosen_id($db, $dosen_id)
                 <div class="row mb-2">
                     <div class="col submit-button">
                         <a href="jadwal-pergantian.php"><button class="btn">Buat Jadwal Pergantian</button></a>
+                        <a href="jadwal-kuliah.php"><button class="btn">Kembali</button></a>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -111,7 +112,10 @@ list($time_slots, $days, $schedule) = fetch_schedule_by_dosen_id($db, $dosen_id)
                                             <?php elseif (isset($schedule[$day][$slot])): ?>
                                                 <?= htmlspecialchars($schedule[$day][$slot]['matkul']); ?><br>
                                                 <small><?= htmlspecialchars($schedule[$day][$slot]['classroom']); ?> -
-                                                    <?= htmlspecialchars($schedule[$day][$slot]['kelas']); ?></small>
+                                                    <?= htmlspecialchars($schedule[$day][$slot]['kelas']); ?></small><br>
+                                                <?php if ($schedule[$day][$slot]['is_temporary']): ?>
+                                                    <span class="badge bg-warning">Pergantian</span>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </td>
                                     <?php endforeach; ?>
