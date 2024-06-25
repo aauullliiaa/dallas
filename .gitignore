@@ -1,0 +1,26 @@
+src/files/.DS_Store
+src/files/Kontrak Kuliah Matbis.docx
+src/files/materi/Kontrak Kuliah Matbis.docx
+src/files/materi/LEMBAR PERSETUJUAN MENJADI INFORMAN _ NARASUMBER _ RESPONDEN_.docx
+src/files/materi/tabel indikator.docx
+src/files/materi/Untitled document.docx
+src/files/tugas/Kontrak Kuliah Matbis (3).docx
+demo/detail-matkul.php
+demo/edit-jadwal.php
+demo/jadwal-mengajar.php
+demo/jadwal-pengganti.php
+demo/jadwal-perkuliahan.php
+demo/lihat-jadwal.php
+demo/lihat-tugas.php
+demo/mata-kuliah.php
+demo/mata-kuliah1.php
+demo/proses_tambah_matkul.php
+demo/register.php
+demo/save-jadwal.php
+demo/tambah-jadwal.php
+demo/tambah-materi.php
+demo/tambah-tugas.php
+demo/tugas-matkul.php
+demo/admin/approve-action.php
+demo/admin/approve.php
+src/db/functions.php
