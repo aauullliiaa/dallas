@@ -1,0 +1,234 @@
+<?php
+session_start();
+require '../src/db/functions.php';
+checkRole('admin');
+
+// Handle approval
+if (isset($_GET['approve'])) {
+  $id = $_GET['approve'];
+  if (approveMataKuliah($db, $id)) {
+    $_SESSION['message'] = "Mata kuliah berhasil disetujui.";
+    $_SESSION['alert_type'] = "success";
+  } else {
+    $_SESSION['message'] = "Gagal menyetujui mata kuliah. Silakan coba lagi.";
+    $_SESSION['alert_type'] = "danger";
+  }
+  header('Location: mata-kuliah.php');
+  exit;
+}
+
+// Handle rejection
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_id'])) {
+  $id = $_POST['reject_id'];
+  $reason = htmlspecialchars($_POST['reason']);
+  if (rejectMataKuliah($db, $id, $reason)) {
+    $_SESSION['message'] = "Mata kuliah berhasil ditolak.";
+    $_SESSION['alert_type'] = "success";
+  } else {
+    $_SESSION['message'] = "Gagal menolak mata kuliah. Silakan coba lagi.";
+    $_SESSION['alert_type'] = "danger";
+  }
+  header('Location: mata-kuliah.php');
+  exit;
+}
+
+// Handle deletion
+if (isset($_GET['delete'])) {
+  $id = $_GET['delete'];
+  if (deleteMataKuliah($db, $id)) {
+    $_SESSION['message'] = "Mata kuliah berhasil dihapus.";
+    $_SESSION['alert_type'] = "success";
+  } else {
+    $_SESSION['message'] = "Gagal menghapus mata kuliah. Silakan coba lagi.";
+    $_SESSION['alert_type'] = "danger";
+  }
+  header('Location: mata-kuliah.php');
+  exit;
+}
+
+$mata_kuliah = getAllMataKuliah($db);
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APD Learning Space - Mata Kuliah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
+    rel="stylesheet" />
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="../src/css/style.css" />
+  <script>
+    function confirmApproval(event, url) {
+      event.preventDefault();
+      if (confirm("Apakah anda yakin ingin menyetujui mata kuliah ini?")) {
+        window.location.href = url;
+      }
+    }
+
+    function showRejectModal(id) {
+      if (confirm("Apakah anda yakin ingin menolak mata kuliah ini?")) {
+        document.getElementById('reject-form').reject_id.value = id;
+        var rejectModal = new bootstrap.Modal(document.getElementById('rejectModal'));
+        rejectModal.show();
+      }
+    }
+
+    function confirmDeletion(event, url) {
+      event.preventDefault();
+      if (confirm("Apakah anda yakin ingin menghapus mata kuliah ini?")) {
+        window.location.href = url;
+      }
+    }
+  </script>
+</head>
+<header>
+  <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
+    <div class="container">
+      <a class="navbar-brand" href="index.php#home">
+        <img src="../src/images/logo kampus.png" alt="Logo" width="40px" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Home
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="index.php#about">About</a></li>
+              <li>
+                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Data Pengguna
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="data-dosen.php">Data Dosen</a></li>
+              <li><a class="dropdown-item" href="data-mahasiswa.php">Data Mahasiswa</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Perkuliahan
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a></li>
+              <li><a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a></li>
+              <li><a class="dropdown-item" href="tambah-matkul.php">Tambah Mata Kuliah</a></li>
+              <li><a class="dropdown-item" href="jadwal-pergantian.php">Pergantian</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../logout.php">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <section class="hero-matkul d-flex align-items-center justify-content-center">
+    <h1>Daftar Mata Kuliah</h1>
+  </section>
+</header>
+
+<body>
+  <div class="container mt-5">
+    <?php if (isset($_SESSION['message'])): ?>
+      <div class="alert alert-<?= $_SESSION['alert_type']; ?>" role="alert">
+        <?= $_SESSION['message']; ?>
+        <?php unset($_SESSION['message']); ?>
+      </div>
+    <?php endif; ?>
+    <div class="card p-3">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead style="vertical-align: middle; text-align: center;">
+            <tr>
+              <th scope="col">Kode</th>
+              <th scope="col">Nama Mata Kuliah</th>
+              <th scope="col">Deskripsi</th>
+              <th scope="col">Dosen Pengampu</th>
+              <th scope="col">Status</th>
+              <th scope="col">Alasan Penolakan</th>
+              <th scope="col">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($mata_kuliah as $mata_kuliah_item): ?>
+              <tr>
+                <td><?= $mata_kuliah_item['kode']; ?></td>
+                <td><?= $mata_kuliah_item['nama']; ?></td>
+                <td><?= $mata_kuliah_item['deskripsi']; ?></td>
+                <td><?= $mata_kuliah_item['dosen']; ?></td>
+                <td><?= $mata_kuliah_item['status']; ?></td>
+                <td><?= $mata_kuliah_item['status'] == 'Rejected' ? $mata_kuliah_item['reason'] : '-'; ?></td>
+                <td>
+                  <?php if ($mata_kuliah_item['status'] == 'Pending'): ?>
+                    <a href="mata-kuliah.php?approve=<?= $mata_kuliah_item['id']; ?>" class="btn btn-success btn-sm mb-1"
+                      onclick="confirmApproval(event, this.href)">Approve</a>
+                    <button class="btn btn-danger btn-sm mb-1"
+                      onclick="showRejectModal(<?= $mata_kuliah_item['id']; ?>)">Tolak</button><br>
+                  <?php endif; ?>
+                  <?php if ($mata_kuliah_item['status'] != 'Approved'): ?>
+                    <a href="mata-kuliah.php?delete=<?= $mata_kuliah_item['id']; ?>" class="btn btn-danger btn-sm"
+                      onclick="confirmDeletion(event, this.href)">Hapus</a>
+                  <?php endif; ?>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for rejection -->
+  <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="rejectModalLabel">Tolak Mata Kuliah</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="reject-form" method="post" action="">
+            <input type="hidden" name="reject_id" value="">
+            <div class="mb-3">
+              <label for="reason" class="form-label">Alasan Penolakan</label>
+              <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger">Tolak</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
