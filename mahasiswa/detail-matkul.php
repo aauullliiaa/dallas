@@ -127,13 +127,6 @@ if (isset($_POST['delete_materi_id'])) {
                 </div>
                 <div class="col-md-2 button">
                   <a href="<?= $row["file_path"] ?>"><button class="btn btn-light mb-1">Download</button></a>
-                  <!-- Tombol Hapus Materi -->
-                  <!-- Tombol Hapus Materi -->
-                  <form method="post" style="display:inline;">
-                    <input type="hidden" name="delete_materi_id" value="<?= $row['id'] ?>">
-                    <button type="submit" class="btn btn-danger mb-1"
-                      onclick="return confirm('Apakah Anda yakin ingin menghapus materi ini?')">Hapus</button>
-                  </form>
                 </div>
               </div>
             </li>
