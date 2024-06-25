@@ -5,7 +5,7 @@ checkRole('admin');
 
 $time_slots = get_time_slots_for_adding();
 $occupied_slots = [];
-$kelas = $_GET['kelas'];
+$kelas = $_GET['kelas'] ?? '';
 
 if (isset($_GET['hari']) && isset($_GET['kelas'])) {
     $hari = $_GET['hari'];
@@ -15,19 +15,25 @@ if (isset($_GET['hari']) && isset($_GET['kelas'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
     $hari = $_POST['hari'];
-    $matkul_id = $_POST['matkul'];
-    $dosen = $_POST['dosen'];
-    $classroom = $_POST['classroom'];
-    $kelas = $_POST['kelas'];
     $jam_mulai = $_POST['jam_mulai'];
     $jam_selesai = $_POST['jam_selesai'];
+    $matkul_id = $_POST['matkul'];
+    $dosen_id = $_POST['dosen_id'];
+    $classroom = htmlspecialchars($_POST['classroom']);
+    $kelas = $_POST['kelas'];
 
     $course = get_course_name($db, $matkul_id);
 
     $start_index = array_search($jam_mulai, $time_slots);
     $end_index = array_search($jam_selesai, $time_slots);
 
-    list($message, $alert_class) = insert_schedule($db, $hari, $course, $dosen, $classroom, $kelas, $time_slots, $start_index, $end_index);
+    list($message, $alert_class) = insert_schedule($db, $hari, $course, $dosen_id, $classroom, $kelas, $time_slots, $start_index, $end_index);
+}
+
+$dosen_name = '';
+if (isset($_POST['matkul'])) {
+    $dosen_id = $_POST['dosen_id'];
+    $dosen_name = getDosenName($db, $dosen_id);
 }
 ?>
 
@@ -158,12 +164,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
                         <select id="matkul" name="matkul" class="form-select" required>
                             <option value="">--Pilih Mata Kuliah--</option>
                             <?php
-                            $sql = "SELECT id, nama, dosen FROM mata_kuliah WHERE status = 'Approved'";
+                            $sql = "SELECT id, nama, dosen_id FROM mata_kuliah WHERE status = 'Approved'";
                             $result = $db->query($sql);
 
                             if ($result->num_rows > 0) {
                                 while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='" . $row['id'] . "' data-dosen='" . $row['dosen'] . "'>" . $row['nama'] . "</option>";
+                                    echo "<option value='" . $row['id'] . "' data-dosen-id='" . $row['dosen_id'] . "'>" . $row['nama'] . "</option>";
                                 }
                             } else {
                                 echo "<option value=''>Tidak ada mata kuliah tersedia</option>";
@@ -173,7 +179,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
                     </div>
                     <div class="mb-3">
                         <label for="dosen" class="form-label">Dosen Pengampu:</label>
-                        <input type="text" id="dosen" name="dosen" class="form-control" readonly required>
+                        <input type="text" id="dosen" name="dosen" class="form-control"
+                            value="<?= htmlspecialchars($dosen_name); ?>" readonly required>
+                        <input type="hidden" id="dosen_id" name="dosen_id">
                     </div>
                     <div class="mb-3">
                         <label for="classroom" class="form-label">Ruang Kelas:</label>
@@ -214,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
                 </form>
                 <div class="row">
                     <div class="col submit-button">
-                        <a href="jadwal-kuliah.php?kelas=<?= $kelas; ?>"><button
+                        <a href="jadwal-kuliah.php?kelas=<?= htmlspecialchars($kelas); ?>"><button
                                 class="btn btn-light">Kembali</button></a>
                     </div>
                 </div>
@@ -225,8 +233,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
     <script>
         document.getElementById('matkul').addEventListener('change', function () {
             var selectedOption = this.options[this.selectedIndex];
-            var dosen = selectedOption.getAttribute('data-dosen');
-            document.getElementById('dosen').value = dosen;
+            var dosenId = selectedOption.getAttribute('data-dosen-id');
+            document.getElementById('dosen_id').value = dosenId;
+
+            // Find the selected dosen name from the options
+            var dosenName = '';
+            <?php
+            $sql = "SELECT user_id, nama FROM dosen_profiles";
+            $result = $db->query($sql);
+            $dosen_list = [];
+            while ($row = $result->fetch_assoc()) {
+                $dosen_list[$row['user_id']] = $row['nama'];
+            }
+            ?>
+            var dosenList = <?= json_encode($dosen_list); ?>;
+            if (dosenId in dosenList) {
+                dosenName = dosenList[dosenId];
+            }
+            document.getElementById('dosen').value = dosenName;
         });
     </script>
 </body>
