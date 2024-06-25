@@ -10,6 +10,16 @@ $materi = retrieve("SELECT * FROM materi WHERE mata_kuliah_id = ? ORDER BY perte
 // Ambil nama dosen berdasarkan dosen_id
 $dosen_id = $matkul['dosen_id'];
 $dosen = retrieve("SELECT nama FROM dosen_profiles WHERE user_id = ?", [$dosen_id])[0]['nama'];
+
+if (isset($_POST['delete_materi_id'])) {
+  $delete_id = $_POST['delete_materi_id'];
+  if (deleteMateri($delete_id)) {
+    header("Location: detail-matkul.php?id=$id");
+    exit();
+  } else {
+    echo "Error deleting record: " . $db->error;
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -128,7 +138,7 @@ $dosen = retrieve("SELECT nama FROM dosen_profiles WHERE user_id = ?", [$dosen_i
                   <!-- Tombol Hapus Materi -->
                   <form method="post" style="display:inline;">
                     <input type="hidden" name="delete_materi_id" value="<?= $row['id'] ?>">
-                    <button type="submit" class="btn btn-danger mb-1"
+                    <button type="submit" class="btn btn-light mb-1"
                       onclick="return confirm('Apakah Anda yakin ingin menghapus materi ini?')">Hapus</button>
                   </form>
                 </div>

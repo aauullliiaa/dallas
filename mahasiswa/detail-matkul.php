@@ -6,17 +6,6 @@ checkRole('mahasiswa');
 $id = $_GET["id"];
 $matkul = retrieve("SELECT * FROM mata_kuliah WHERE id = $id")[0];
 $materi = retrieve("SELECT * FROM materi WHERE mata_kuliah_id = $id ORDER BY pertemuan");
-
-// Handle delete request
-if (isset($_POST['delete_materi_id'])) {
-  $delete_id = $_POST['delete_materi_id'];
-  if (deleteMateri($delete_id)) {
-    header("Location: detail-matkul.php?id=$id");
-    exit();
-  } else {
-    echo "Error deleting record: " . $db->error;
-  }
-}
 ?>
 
 <!DOCTYPE html>
