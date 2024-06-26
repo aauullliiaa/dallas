@@ -11,7 +11,8 @@ if (!$tugas_id || !$matkul_id || !$pertemuan_id) {
     die("ID tugas, mata kuliah, atau pertemuan tidak ditemukan.");
 }
 
-$tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_kuliah, mp.nama as mahasiswa, mp.nim FROM tugas_kumpul tp 
+$tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_kuliah, mp.nama as mahasiswa, mp.nim, mp.kelas 
+                         FROM tugas_kumpul tp 
                          JOIN tugas_pertemuan t ON tp.tugas_id = t.id 
                          JOIN pertemuan p ON t.pertemuan_id = p.id 
                          JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id 
@@ -19,6 +20,7 @@ $tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_ku
                          WHERE tp.tugas_id = ? AND p.mata_kuliah_id = ? AND p.id = ?",
     [$tugas_id, $matkul_id, $pertemuan_id]
 )[0];
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,12 +116,14 @@ $tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_ku
                         <tr>
                             <th>Nama</th>
                             <th>NIM</th>
+                            <th>Kelas</th>
                             <th>Tanggal diserahkan</th>
                             <th>File</th>
                         </tr>
                         <tr>
                             <td><?= htmlspecialchars($tugasDetail['mahasiswa']); ?></td>
                             <td><?= htmlspecialchars($tugasDetail['nim']); ?></td>
+                            <td><?= htmlspecialchars($tugasDetail['kelas']); ?></td>
                             <td><?= htmlspecialchars($tugasDetail['tanggal_kumpul']); ?></td>
                             <td><a href="<?= htmlspecialchars($tugasDetail['file_path']); ?>" target="_blank">Lihat File</a>
                             </td>
