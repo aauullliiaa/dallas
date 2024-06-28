@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $judul = $_POST['judul'];
     $deskripsi = $_POST['deskripsi'];
     $tanggal_deadline = $_POST['tanggal_deadline'];
+    $jam_deadline = $_POST['jam_deadline'];
 
     // Insert pertemuan
     $pertemuan_data = [
@@ -31,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'pertemuan_id' => $pertemuan_id,
             'judul' => $judul,
             'deskripsi' => $deskripsi,
-            'tanggal_deadline' => $tanggal_deadline
+            'tanggal_deadline' => $tanggal_deadline,
+            'jam_deadline' => $jam_deadline
         ];
 
         if (insertTugasPertemuan($tugas_data)) {
@@ -156,6 +158,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="mb-3">
                         <label for="tanggal_deadline" class="form-label">Tanggal Deadline</label>
                         <input type="date" class="form-control" id="tanggal_deadline" name="tanggal_deadline" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="jam_deadline" class="form-label">Jam Deadline</label>
+                        <input type="time" class="form-control" id="jam_deadline" name="jam_deadline" required>
                     </div>
                     <div class="mb-3">
                         <div class="col submit-button">

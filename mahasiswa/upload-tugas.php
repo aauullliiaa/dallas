@@ -3,7 +3,6 @@ session_start();
 require '../src/db/functions.php';
 checkRole('mahasiswa');
 
-
 $matkul_id = $_GET['matkul_id'] ?? null;
 $pertemuan_id = $_GET['pertemuan_id'] ?? null;
 $tugas_id = $_GET['tugas_id'] ?? null;
@@ -54,7 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'tugas_id' => $tugas_id,
                 'mahasiswa_id' => $user_id,
                 'file_path' => $target_file,
-                'tanggal_kumpul' => date('Y-m-d H:i:s')
+                'tanggal_kumpul' => date('Y-m-d'),
+                'jam_kumpul' => $_POST['jam_kumpul'] // Get time from the form input
             ];
 
             if (insertTugasKumpul($data)) {
@@ -88,6 +88,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <!-- CSS -->
     <link rel="stylesheet" href="../src/css/style.css" />
+    <script>
+        function setDeviceTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const time = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('jam_kumpul').value = time;
+        }
+    </script>
 </head>
 <header>
     <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
@@ -156,11 +166,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="card-title mb-4">
                     <h5>Silahkan upload tugas anda disini.</h5>
                 </div>
-                <form action="" method="post" enctype="multipart/form-data">
+                <form action="" method="post" enctype="multipart/form-data" onsubmit="setDeviceTime()">
                     <div class="mb-3">
                         <label for="file" class="form-label">Pilih File Tugas (PDF, DOC, DOCX):</label>
                         <input type="file" class="form-control" id="file" name="file" required>
                     </div>
+                    <input type="hidden" id="jam_kumpul" name="jam_kumpul">
                     <div class="row">
                         <div class="col submit-button">
                             <button type="submit" class="btn btn-light">Unggah Tugas</button>
@@ -180,6 +191,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 
 </html>
-
-<?php
-?>

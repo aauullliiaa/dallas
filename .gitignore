@@ -23,4 +23,20 @@ demo/tambah-tugas.php
 demo/tugas-matkul.php
 demo/admin/approve-action.php
 demo/admin/approve.php
-src/db/functions.php
+demo/admin/data-dosen.php
+demo/admin/data-mahasiswa.php
+demo/admin/detail-dosen.php
+demo/admin/detail-mahasiswa.php
+demo/admin/edit-data-dosen.php
+demo/admin/edit-data-mhs.php
+demo/admin/edit-jadwal.php
+demo/admin/index.php
+demo/admin/jadwal-kuliah.php
+demo/admin/jadwal-pergantian.php
+demo/admin/mata-kuliah.php
+demo/admin/tambah-jadwal.php
+demo/admin/tambah-matkul.php
+src/files/materi/Doc1.docx
+src/files/tugas/0_Format Kwitansi.docx
+src/files/tugas/Doc1.docx
+src/files/tugas/Kontrak Kuliah Matbis.docx

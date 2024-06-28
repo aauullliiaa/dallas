@@ -111,12 +111,18 @@ $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND t
                             <div class="row">
                                 <h6><?= htmlspecialchars($tugas['judul']); ?></h6>
                                 <p><?= nl2br(htmlspecialchars($tugas['deskripsi'])); ?></p>
-                                <small>Tenggat: <?= htmlspecialchars($tugas['tanggal_deadline']) ?></small>
+                                <small>Tenggat: <?= htmlspecialchars($tugas['tanggal_deadline']) ?>,
+                                    <?= htmlspecialchars(date('H:i', strtotime($tugas['jam_deadline']))) ?></small>
                                 <div class="col">
-                                    <?php if (strtotime($tugas['tanggal_deadline']) < time()): ?>
+                                    <?php
+                                    $deadline = strtotime($tugas['tanggal_deadline'] . ' ' . $tugas['jam_deadline']);
+                                    $current_time = time();
+                                    if ($deadline < $current_time): ?>
                                         <span class="badge rounded-pill text-bg-danger">Tenggat telah lewat</span>
-                                    <?php elseif (strtotime($tugas['tanggal_deadline']) - time() < 259200): // 3 days in seconds ?>
+                                    <?php elseif ($deadline - $current_time < 259200): // 3 days in seconds ?>
                                         <span class="badge rounded-pill text-bg-warning">Tenggat akan segera berakhir</span>
+                                    <?php elseif (date('Y-m-d', $deadline) == date('Y-m-d', $current_time)): ?>
+                                        <span class="badge rounded-pill text-bg-warning">Tenggat hari ini</span>
                                     <?php endif; ?>
                                     <?php foreach ($tugas_kumpul as $kumpul): ?>
                                         <?php if ($kumpul['tugas_id'] == $tugas['id']): ?>

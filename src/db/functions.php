@@ -870,9 +870,9 @@ function insertPertemuan($data)
 function insertTugasPertemuan($data)
 {
     global $db;
-    $sql = "INSERT INTO tugas_pertemuan (pertemuan_id, judul, deskripsi, tanggal_deadline) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO tugas_pertemuan (pertemuan_id, judul, deskripsi, tanggal_deadline, jam_deadline) VALUES (?, ?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
-    $stmt->bind_param("isss", $data['pertemuan_id'], $data['judul'], $data['deskripsi'], $data['tanggal_deadline']);
+    $stmt->bind_param("issss", $data['pertemuan_id'], $data['judul'], $data['deskripsi'], $data['tanggal_deadline'], $data['jam_deadline']);
     if ($stmt->execute()) {
         $stmt->close();
         return true;
@@ -885,9 +885,16 @@ function insertTugasPertemuan($data)
 function insertTugasKumpul($data)
 {
     global $db;
-    $sql = "INSERT INTO tugas_kumpul (tugas_id, mahasiswa_id, file_path, tanggal_kumpul) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO tugas_kumpul (tugas_id, mahasiswa_id, file_path, tanggal_kumpul, jam_kumpul) VALUES (?, ?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
-    $stmt->bind_param("iiss", $data['tugas_id'], $data['mahasiswa_id'], $data['file_path'], $data['tanggal_kumpul']);
+    $stmt->bind_param(
+        "iisss",
+        $data['tugas_id'],
+        $data['mahasiswa_id'],
+        $data['file_path'],
+        date('Y-m-d', strtotime($data['tanggal_kumpul'])),
+        date('H:i', strtotime($data['jam_kumpul']))
+    );
     if ($stmt->execute()) {
         $stmt->close();
         return true;
@@ -896,6 +903,7 @@ function insertTugasKumpul($data)
         return false;
     }
 }
+
 function deleteTugasKumpulByPertemuan($pertemuan_id)
 {
     global $db;
