@@ -125,92 +125,82 @@ function loginUser($email, $password)
 // end of halaman login functions
 
 // halaman edit profil mahasiswa functions
-function updateProfile()
+function updateProfile($user_id, $role, $data)
 {
     $message = "";
     $alert_type = "";
 
-    $user_id = $_SESSION['user_id'];
-    $email = $_SESSION['email'];
-
     // Fetch user profile to use existing photo if no new photo is uploaded
-    $profile = getUserProfile($user_id, $_SESSION['role']);
+    $profile = getUserProfile($user_id, $role);
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $data['nama'] = $_POST['nama'];
-        $data['nim'] = $_POST['nim'];
-        $data['telepon'] = $_POST['telepon'];
-        $data['tempatlahir'] = $_POST['tempatlahir'];
-        $data['tanggallahir'] = $_POST['tanggallahir'];
-        $data['kelas'] = $_POST['kelas'];
-        $data['alamat'] = $_POST['alamat'];
+    // Handle file upload
+    if (!empty($_FILES['foto']['name'])) {
+        $target_dir = "../src/images/";
+        $imageFileType = strtolower(pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION));
+        $newFileName = uniqid() . '.' . $imageFileType;
+        $target_file = $target_dir . $newFileName;
+        $uploadOk = 1;
 
-        // Default to existing photo
-        $data['foto'] = $profile['foto'];
-
-        // Handle file upload
-        if (!empty($_FILES['foto']['name'])) {
-            $target_dir = "../src/images/";
-            $target_file = $target_dir . basename($_FILES["foto"]["name"]);
+        // Check if image file is an actual image or fake image
+        $check = getimagesize($_FILES["foto"]["tmp_name"]);
+        if ($check !== false) {
             $uploadOk = 1;
-            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-            // Check if image file is an actual image or fake image
-            $check = getimagesize($_FILES["foto"]["tmp_name"]);
-            if ($check !== false) {
-                $uploadOk = 1;
-            } else {
-                $message = "File yang diunggah bukan gambar.";
-                $alert_type = "danger";
-                $uploadOk = 0;
-            }
-
-            // Check file size
-            if ($_FILES["foto"]["size"] > 500000) {
-                $message = "Maaf, ukuran file terlalu besar.";
-                $alert_type = "danger";
-                $uploadOk = 0;
-            }
-
-            // Allow certain file formats
-            if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
-                $message = "Maaf, hanya file JPG, JPEG, & PNG yang diizinkan.";
-                $alert_type = "danger";
-                $uploadOk = 0;
-            }
-
-            // Check if $uploadOk is set to 0 by an error
-            if ($uploadOk == 0) {
-                $message = "Maaf, foto Anda tidak diunggah.";
-                $alert_type = "danger";
-            } else {
-                if (move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
-                    $message = "Foto berhasil diunggah.";
-                    $alert_type = "success";
-                    $data['foto'] = $_FILES['foto']['name'];
-                } else {
-                    $message = "Maaf, terjadi kesalahan saat mengunggah foto Anda.";
-                    $alert_type = "danger";
-                }
-            }
-        }
-
-        if (updateUserProfile($user_id, $_SESSION['role'], $data)) {
-            $message = "Profil berhasil diperbarui.";
-            $alert_type = "success";
-            // Fetch updated profile
-            $profile = getUserProfile($user_id, $_SESSION['role']);
         } else {
-            $message = "Terjadi kesalahan saat memperbarui profil.";
+            $message = "File yang diunggah bukan gambar.";
             $alert_type = "danger";
+            $uploadOk = 0;
         }
+
+        // Check file size
+        if ($_FILES["foto"]["size"] > 500000) {
+            $message = "Maaf, ukuran file terlalu besar.";
+            $alert_type = "danger";
+            $uploadOk = 0;
+        }
+
+        // Allow certain file formats
+        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
+            $message = "Maaf, hanya file JPG, JPEG, & PNG yang diizinkan.";
+            $alert_type = "danger";
+            $uploadOk = 0;
+        }
+
+        // Check if $uploadOk is set to 0 by an error
+        if ($uploadOk == 0) {
+            $message = "Maaf, foto Anda tidak diunggah.";
+            $alert_type = "danger";
+        } else {
+            // Remove old photo if it exists
+            if (!empty($profile['foto']) && file_exists($target_dir . $profile['foto'])) {
+                unlink($target_dir . $profile['foto']);
+            }
+
+            if (move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
+                $message = "Foto berhasil diunggah.";
+                $alert_type = "success";
+                $data['foto'] = $newFileName;
+                error_log("New file name set: " . $newFileName); // Logging the new file name
+            } else {
+                $message = "Maaf, terjadi kesalahan saat mengunggah foto Anda.";
+                $alert_type = "danger";
+            }
+        }
+    }
+
+    if (updateUserProfile($user_id, $role, $data)) {
+        $message = "Profil berhasil diperbarui.";
+        $alert_type = "success";
+        // Fetch updated profile
+        $profile = getUserProfile($user_id, $role);
+    } else {
+        $message = "Terjadi kesalahan saat memperbarui profil.";
+        $alert_type = "danger";
     }
 
     return [
         'profile' => $profile,
         'message' => $message,
-        'alert_type' => $alert_type,
-        'email' => $email
+        'alert_type' => $alert_type
     ];
 }
 // fungsi untuk mendapatkan data user untuk di halaman profil masing-masing profil

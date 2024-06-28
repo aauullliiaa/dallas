@@ -28,31 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $data['alamat'] = $_POST['alamat'];
   $data['foto'] = '';
 
-  // Handle file upload
-  if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-    $target_dir = "../src/images/";
-    $target_file = $target_dir . basename($_FILES["foto"]["name"]);
-    if (move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
-      $data['foto'] = $_FILES['foto']['name'];
-    } else {
-      $message = "Maaf, terjadi kesalahan saat mengunggah foto Anda.";
-      $alert_type = "danger";
-    }
-  } else {
-    $data['foto'] = $profile['foto'];
-  }
-
-  if (empty($message)) {
-    if (updateUserProfile($user_id, $_SESSION['role'], $data)) {
-      $message = "Profil berhasil diperbarui";
-      $alert_type = 'success';
-      // Refresh profile data
-      $profile = getUserProfile($user_id, $_SESSION['role']);
-    } else {
-      $message = "Terjadi kesalahan saat memperbarui profil.";
-      $alert_type = 'danger';
-    }
-  }
+  $result = updateProfile($user_id, $_SESSION['role'], $data);
+  $message = $result['message'];
+  $alert_type = $result['alert_type'];
+  $profile = $result['profile'];
 }
 ?>
 

@@ -3,11 +3,36 @@ session_start();
 require '../src/db/functions.php';
 checkRole('mahasiswa');
 
-$result = updateProfile();
-$profile = $result['profile'];
-$message = $result['message'];
-$alert_type = $result['alert_type'];
-$email = $result['email'];
+$user_id = $_SESSION['user_id'];
+$role = $_SESSION['role'];
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // Data profil yang diambil dari input pengguna
+  $data = [
+    'nama' => $_POST['nama'],
+    'nim' => $_POST['nim'],
+    'telepon' => $_POST['telepon'],
+    'tempatlahir' => $_POST['tempatlahir'],
+    'tanggallahir' => $_POST['tanggallahir'],
+    'kelas' => $_POST['kelas'],
+    'alamat' => $_POST['alamat'],
+  ];
+
+  // Panggil fungsi updateProfile
+  $result = updateProfile($user_id, $role, $data);
+
+  // Ambil hasil dari fungsi updateProfile
+  $profile = $result['profile'];
+  $message = $result['message'];
+  $alert_type = $result['alert_type'];
+} else {
+  // Jika bukan POST, maka ambil data profil pengguna dari database
+  $profile = getUserProfile($user_id, $role);
+  $message = '';
+  $alert_type = '';
+}
+
+$email = $_SESSION['email'];
 ?>
 
 <!DOCTYPE html>
