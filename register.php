@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                     <div class="row text-center">
-                        <small>Sudah memiliki akun? Silahkan <a href="login.php">login</a> disini </small>
+                        <small>Sudah memiliki akun? Silahkan <a href="index.php">login</a> disini </small>
                     </div>
                 </form>
             </div>
