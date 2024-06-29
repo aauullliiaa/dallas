@@ -108,7 +108,7 @@ $db->close();
                     </div>
                     <div class="mb-3">
                         <label for="deskripsi" class="form-label">Deskripsi Mata Kuliah:</label>
-                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" required></textarea>
+                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="dosen" class="form-label">Dosen Pengampu:</label>

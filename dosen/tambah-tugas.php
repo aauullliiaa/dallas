@@ -17,35 +17,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tanggal_deadline = $_POST['tanggal_deadline'];
     $jam_deadline = $_POST['jam_deadline'];
 
-    // Insert pertemuan
-    $pertemuan_data = [
-        'mata_kuliah_id' => $matkul_id,
-        'pertemuan' => $pertemuan,
-        'deskripsi' => $deskripsi,
-        'tanggal' => $tanggal_deadline
-    ];
-    $pertemuan_id = insertPertemuan($pertemuan_data);
-
-    // Insert tugas
-    if ($pertemuan_id) {
-        $tugas_data = [
-            'pertemuan_id' => $pertemuan_id,
-            'judul' => $judul,
-            'deskripsi' => $deskripsi,
-            'tanggal_deadline' => $tanggal_deadline,
-            'jam_deadline' => $jam_deadline
-        ];
-
-        if (insertTugasPertemuan($tugas_data)) {
-            $message = "Tugas berhasil diberikan.";
-            $alert_type = "success";
+    // Upload file
+    $file_tugas = '';
+    if (isset($_FILES['file_tugas'])) {
+        $upload_result = uploadFileTugas($_FILES['file_tugas']);
+        if (is_array($upload_result) && isset($upload_result['error'])) {
+            $message = $upload_result['error'];
+            $alert_type = "danger";
         } else {
-            $message = "Gagal memberikan tugas, silakan coba lagi.";
+            $file_tugas = $upload_result;
+        }
+    }
+
+    if ($alert_type !== "danger") {
+        // Insert pertemuan
+        $pertemuan_data = [
+            'mata_kuliah_id' => $matkul_id,
+            'pertemuan' => $pertemuan,
+            'deskripsi' => $deskripsi,
+            'tanggal' => $tanggal_deadline
+        ];
+        $pertemuan_id = insertPertemuan($pertemuan_data);
+
+        // Insert tugas
+        if ($pertemuan_id) {
+            $tugas_data = [
+                'pertemuan_id' => $pertemuan_id,
+                'judul' => $judul,
+                'deskripsi' => $deskripsi,
+                'tanggal_deadline' => $tanggal_deadline,
+                'jam_deadline' => $jam_deadline,
+                'file_tugas' => $file_tugas
+            ];
+
+            if (insertTugasPertemuan($tugas_data)) {
+                $message = "Tugas berhasil diberikan.";
+                $alert_type = "success";
+            } else {
+                $message = "Gagal memberikan tugas, silakan coba lagi.";
+                $alert_type = "danger";
+            }
+        } else {
+            $message = "Gagal menyimpan pertemuan, silakan coba lagi.";
             $alert_type = "danger";
         }
-    } else {
-        $message = "Gagal menyimpan pertemuan, silakan coba lagi.";
-        $alert_type = "danger";
     }
 }
 ?>
@@ -131,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?= $message; ?>
                     </div>
                 <?php endif; ?>
-                <form action="" method="post">
+                <form action="" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="nama_mata_kuliah" class="form-label">Nama Mata Kuliah</label>
                         <input type="text" class="form-control" id="nama_mata_kuliah"
@@ -153,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="mb-3">
                         <label for="deskripsi" class="form-label">Deskripsi Tugas</label>
-                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="5" required></textarea>
+                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="5"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="tanggal_deadline" class="form-label">Tanggal Deadline</label>
@@ -162,6 +177,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="mb-3">
                         <label for="jam_deadline" class="form-label">Jam Deadline</label>
                         <input type="time" class="form-control" id="jam_deadline" name="jam_deadline" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="file_tugas" class="form-label">Upload File (DOC, DOCX, PPTX, XLS, PDF)</label>
+                        <input type="file" class="form-control" id="file_tugas" name="file_tugas">
                     </div>
                     <div class="mb-3">
                         <div class="col submit-button">
@@ -177,6 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

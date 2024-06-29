@@ -115,7 +115,7 @@ $db->close();
                     </div>
                     <div class="mb-3">
                         <label for="deskripsi" class="form-label">Deskripsi Materi:</label>
-                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" required></textarea>
+                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="materi_file" class="form-label">File Materi Perkuliahan:</label>

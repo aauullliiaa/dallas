@@ -135,8 +135,8 @@ if (isset($_POST["submit"])) {
           </div>
           <div class="row mb-3">
             <label for="deskripsi" class="form-label">Deskripsi Mata Kuliah</label>
-            <textarea name="deskripsi" id="deskripsi" class="form-control" rows="5"
-              required><?= htmlspecialchars($matkul["deskripsi"]) ?></textarea>
+            <textarea name="deskripsi" id="deskripsi" class="form-control"
+              rows="5"><?= htmlspecialchars($matkul["deskripsi"]) ?></textarea>
           </div>
           <div class="row">
             <div class="col submit-button">
