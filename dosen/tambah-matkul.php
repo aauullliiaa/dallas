@@ -9,9 +9,17 @@ $nama_dosen = getDosenNameById($db, $user_id);
 // Proses form mata kuliah
 list($message, $alert_type) = processCourseFormByDosen($db);
 
+if ($alert_type === 'success') {
+    $_SESSION['message'] = $message;
+    $_SESSION['alert_type'] = $alert_type;
+    header("Location: mata-kuliah.php");
+    exit;
+}
+
 // Menutup koneksi
 $db->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

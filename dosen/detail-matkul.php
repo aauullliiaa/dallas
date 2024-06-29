@@ -11,6 +11,12 @@ $materi = retrieve("SELECT * FROM materi WHERE mata_kuliah_id = ? ORDER BY perte
 $dosen_id = $matkul['dosen_id'];
 $dosen = retrieve("SELECT nama FROM dosen_profiles WHERE user_id = ?", [$dosen_id])[0]['nama'];
 
+$message = $_SESSION['message'] ?? '';
+$alert_type = $_SESSION['alert_type'] ?? '';
+
+unset($_SESSION['message']);
+unset($_SESSION['alert_type']);
+
 if (isset($_POST['delete_materi_id'])) {
   $delete_id = $_POST['delete_materi_id'];
   if (deleteMateri($delete_id)) {
@@ -99,22 +105,30 @@ if (isset($_POST['delete_materi_id'])) {
 
 <body>
   <div class="container detail-matkul">
+    <?php if ($message != ''): ?>
+      <div class="alert alert-<?= htmlspecialchars($alert_type); ?>" role="alert">
+        <?= htmlspecialchars($message); ?>
+      </div>
+    <?php endif; ?>
     <div class="row desc-matkul">
-      <h1 class="pb-2"><?= $matkul["nama"] ?></h1>
+      <h1 class="pb-2"><?= htmlspecialchars($matkul["nama"]) ?></h1>
       <h4>Kode Mata Kuliah</h4>
-      <p><?= $matkul["kode"] ?></p>
+      <p><?= htmlspecialchars($matkul["kode"]) ?></p>
       <h4>Deskripsi</h4>
       <p>
-        <?= $matkul["deskripsi"] ?>
+        <?= nl2br(htmlspecialchars($matkul["deskripsi"])) ?>
       </p>
       <h4>Dosen Pengampu</h4>
       <p><?= htmlspecialchars($dosen); ?></p>
     </div>
     <div class="row">
       <div class="col submit-button">
-        <a href="edit-matkul.php?id=<?= $matkul["id"]; ?>"><button class="btn btn-light">Edit</button></a>
-        <a href="upload-materi.php?id=<?= $matkul["id"]; ?>"><button class="btn btn-light">Upload Materi</button></a>
-        <a href="tugas-matkul.php?id=<?= $matkul["id"]; ?>"><button class="btn btn-light">Tugas</button></a>
+        <a href="edit-matkul.php?id=<?= htmlspecialchars($matkul["id"]); ?>"><button
+            class="btn btn-light">Edit</button></a>
+        <a href="upload-materi.php?id=<?= htmlspecialchars($matkul["id"]); ?>"><button class="btn btn-light">Upload
+            Materi</button></a>
+        <a href="tugas-matkul.php?id=<?= htmlspecialchars($matkul["id"]); ?>"><button
+            class="btn btn-light">Tugas</button></a>
         <a href="mata-kuliah.php"><button class="btn btn-light">Kembali</button></a>
       </div>
     </div>
@@ -128,16 +142,17 @@ if (isset($_POST['delete_materi_id'])) {
             <li>
               <div class="row justify-content-between">
                 <div class="col-md-7">
-                  <h5>Pertemuan Ke-<?= $row["pertemuan"] ?></h5>
+                  <h5>Pertemuan Ke-<?= htmlspecialchars($row["pertemuan"]) ?></h5>
                   <p>
-                    <?= $row["deskripsi"]; ?>
+                    <?= nl2br(htmlspecialchars($row["deskripsi"])); ?>
                   </p>
                 </div>
                 <div class="col-md-2 submit-button">
-                  <a href="<?= $row["file_path"] ?>"><button class="btn btn-light mb-1">Download</button></a>
+                  <a href="<?= htmlspecialchars($row["file_path"]) ?>"><button
+                      class="btn btn-light mb-1">Download</button></a>
                   <!-- Tombol Hapus Materi -->
                   <form method="post" style="display:inline;">
-                    <input type="hidden" name="delete_materi_id" value="<?= $row['id'] ?>">
+                    <input type="hidden" name="delete_materi_id" value="<?= htmlspecialchars($row['id']) ?>">
                     <button type="submit" class="btn btn-light mb-1"
                       onclick="return confirm('Apakah Anda yakin ingin menghapus materi ini?')">Hapus</button>
                   </form>

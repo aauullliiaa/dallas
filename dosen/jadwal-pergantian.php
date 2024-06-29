@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $message = "Error: Gagal menghapus jadwal.";
       $alert_class = "alert-danger";
     }
+    header("Location: jadwal-pergantian.php");
   } elseif (isset($_POST['hari'], $_POST['jam_mulai'], $_POST['jam_selesai'], $_POST['matkul'], $_POST['dosen_id'], $_POST['classroom'], $_POST['kelas'])) {
     $hari = $_POST['hari'];
     $jam_mulai = $_POST['jam_mulai'];
@@ -39,8 +40,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $end_index = array_search($jam_selesai, $time_slots_adding);
 
     list($message, $alert_class) = insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $time_slots_adding, $start_index, $end_index, $is_temporary, $end_date);
+
+    $_SESSION['message'] = $message;
+    $_SESSION['alert_class'] = $alert_class;
+    header("Location: jadwal-pergantian.php");
+    exit;
+
   }
 }
+
+$message = $_SESSION['message'] ?? '';
+$alert_class = $_SESSION['alert_class'] ?? '';
+
+unset($_SESSION['message']);
+unset($_SESSION['alert_class']);
 ?>
 
 <!DOCTYPE html>
@@ -81,22 +94,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               Home
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="index.php#about">About</a></li>
-              <li><a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a></li>
-              <li><a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a></li>
+              <li>
+                <a class="dropdown-item" href="index.php#about">About</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="data-dosen.php">Data Dosen</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="data-mahasiswa.php">Data Mahasiswa</a>
+            <a class="nav-link" href="dosen.php">Dosen</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="edit-profile.php">Profil</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../logout.php">Logout</a>
@@ -167,6 +186,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endforeach; ?>
           </tbody>
         </table>
+        <div class="row text-center">
+          <div class="col submit-button">
+            <a href="jadwal-mengajar.php"><button class="btn btn-light">Kembali</button></a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -236,8 +260,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="is_temporary" name="is_temporary">
-                <label class="form-check-label" for="is_temporary">Jadwal Sementara (Sampai Minggu Ini)</label>
+                <input class="form-check-input" type="checkbox" id="is_temporary" name="is_temporary" required>
+                <label class="form-check-label" for="is_temporary">Jadwal Sementara (Hanya Pekan Ini)</label>
               </div>
             </div>
             <div class="modal-footer">

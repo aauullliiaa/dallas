@@ -1,11 +1,20 @@
 <?php
+session_start();
 require '../src/db/functions.php';
+checkRole('dosen');
 
 $message = '';
 $alert_type = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     list($message, $alert_type) = processMaterialUpload($db);
+    if ($alert_type === 'success') {
+        $mata_kuliah_id = $_POST['mata_kuliah_id'];
+        $_SESSION['message'] = $message;
+        $_SESSION['alert_type'] = $alert_type;
+        header("Location: detail-matkul.php?id=$mata_kuliah_id");
+        exit;
+    }
 }
 
 $mata_kuliah_id = $_GET["id"];
@@ -29,7 +38,7 @@ $db->close();
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
         rel="stylesheet" />
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -101,15 +110,18 @@ $db->close();
                 <form action="" method="post" enctype="multipart/form-data">
                     <?php if ($message != ''): ?>
                         <div class="alert alert-<?= $alert_type; ?>" role="alert">
-                            <?= $message; ?>
+                            <?= htmlspecialchars($message); ?>
                         </div>
                     <?php endif; ?>
-                    <input type="hidden" id="mata_kuliah_id" name="mata_kuliah_id" value="<?= $mata_kuliah_id ?>">
+                    <input type="hidden" id="mata_kuliah_id" name="mata_kuliah_id"
+                        value="<?= htmlspecialchars($mata_kuliah_id) ?>">
                     <div class="mb-3">
                         <label for="pertemuan" class="form-label">Pertemuan:</label>
                         <select class="form-control" id="pertemuan" name="pertemuan" required>
                             <?php foreach ($available_meetings as $meeting): ?>
-                                <option value="<?= $meeting ?>"><?= "Pertemuan $meeting" ?></option>
+                                <option value="<?= htmlspecialchars($meeting) ?>">
+                                    <?= "Pertemuan " . htmlspecialchars($meeting) ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -130,7 +142,8 @@ $db->close();
                 </form>
                 <div class="row">
                     <div class="col submit-button">
-                        <a href="detail-matkul.php?id=<?= $mata_kuliah_id ?>"><button class="btn">Kembali</button></a>
+                        <a href="detail-matkul.php?id=<?= htmlspecialchars($mata_kuliah_id) ?>"><button
+                                class="btn">Kembali</button></a>
                     </div>
                 </div>
             </div>
