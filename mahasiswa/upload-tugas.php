@@ -37,8 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Allow certain file formats
-    if ($fileType != "pdf" && $fileType != "doc" && $fileType != "docx") {
-        $message = "Sorry, only PDF, DOC & DOCX files are allowed.";
+    if ($fileType != "pdf" && $fileType != "doc" && $fileType != "docx" && $fileType != "xls" && $fileType != "jpg" && $fileType != "jpeg" && $fileType != "png" && $fileType != "pptx") {
+        $message = "Sorry, only PDF, DOC, DOCX, PPTX, XLS, JPEG, JPG, and PNG files are allowed.";
         $alert_type = "danger";
         $uploadOk = 0;
     }
@@ -168,7 +168,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <form action="" method="post" enctype="multipart/form-data" onsubmit="setDeviceTime()">
                     <div class="mb-3">
-                        <label for="file" class="form-label">Pilih File Tugas (PDF, DOC, DOCX):</label>
+                        <label for="file" class="form-label">Pilih File Tugas (PDF, DOC, DOCX, PPTX, XLS, JPG, JPEG,
+                            PNG):</label>
                         <input type="file" class="form-control" id="file" name="file" required>
                     </div>
                     <input type="hidden" id="jam_kumpul" name="jam_kumpul">

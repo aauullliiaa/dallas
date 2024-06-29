@@ -104,6 +104,7 @@ $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND t
             <?php if (empty($tugasList)): ?>
                 <p>Belum ada tugas yang diberikan oleh dosen.</p>
             <?php else: ?>
+                <hr>
                 <ul>
                     <?php foreach ($tugasList as $tugas): ?>
                         <li>
@@ -111,8 +112,10 @@ $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND t
                             <div class="row">
                                 <h6><?= htmlspecialchars($tugas['judul']); ?></h6>
                                 <p><?= nl2br(htmlspecialchars($tugas['deskripsi'])); ?></p>
-                                <small>Tenggat: <?= htmlspecialchars($tugas['tanggal_deadline']) ?>,
-                                    <?= htmlspecialchars(date('H:i', strtotime($tugas['jam_deadline']))) ?></small>
+                                <p><a href="../src/files/assignment/<?= htmlspecialchars($tugas['file_tugas']); ?>">Lihat
+                                        Tugas</a><br>
+                                    <small>Tenggat: <?= htmlspecialchars($tugas['tanggal_deadline']) ?>,
+                                        <?= htmlspecialchars(date('H:i', strtotime($tugas['jam_deadline']))) ?></small>
                                 <div class="col">
                                     <?php
                                     $deadline = strtotime($tugas['tanggal_deadline'] . ' ' . $tugas['jam_deadline']);
