@@ -860,9 +860,9 @@ function insertPertemuan($data)
 function insertTugasPertemuan($data)
 {
     global $db;
-    $sql = "INSERT INTO tugas_pertemuan (pertemuan_id, judul, deskripsi, tanggal_deadline, jam_deadline) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO tugas_pertemuan (pertemuan_id, judul, deskripsi, tanggal_deadline, jam_deadline, file_tugas) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
-    $stmt->bind_param("issss", $data['pertemuan_id'], $data['judul'], $data['deskripsi'], $data['tanggal_deadline'], $data['jam_deadline']);
+    $stmt->bind_param("isssss", $data['pertemuan_id'], $data['judul'], $data['deskripsi'], $data['tanggal_deadline'], $data['jam_deadline'], $data['file_tugas']);
     if ($stmt->execute()) {
         $stmt->close();
         return true;
@@ -871,6 +871,25 @@ function insertTugasPertemuan($data)
         return false;
     }
 }
+
+function uploadFileTugas($file, $target_dir = "../src/files/assignment/", $allowed_types = ['doc', 'docx', 'pdf', 'xls', 'pptx'])
+{
+    if ($file['error'] == 0) {
+        $file_extension = pathinfo($file["name"], PATHINFO_EXTENSION);
+        if (in_array($file_extension, $allowed_types)) {
+            $file_path = $target_dir . basename($file["name"]);
+            if (move_uploaded_file($file["tmp_name"], $file_path)) {
+                return basename($file["name"]); // only save the file name in the database
+            } else {
+                return ['error' => "Gagal mengupload file tugas."];
+            }
+        } else {
+            return ['error' => "Format file tidak didukung. Hanya file dengan format doc, docx, pdf, xls, pptx yang diizinkan."];
+        }
+    }
+    return '';
+}
+
 
 function insertTugasKumpul($data)
 {
