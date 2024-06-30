@@ -3,6 +3,12 @@ session_start();
 require '../src/db/functions.php';
 checkRole('dosen');
 
+$message = $_SESSION['message'] ?? '';
+$alert_type = $_SESSION['alert_type'] ?? '';
+
+unset($_SESSION['message']);
+unset($_SESSION['alert_type']);
+
 $dosen_id = retrieve("SELECT user_id FROM dosen_profiles WHERE email =?", [$_SESSION['email']])[0]['user_id'];
 
 $approved_courses = retrieve(
@@ -97,6 +103,12 @@ $rejected_courses = retrieve(
 
 <body>
   <div class="container">
+    <?php if ($message != ''): ?>
+      <div class="alert alert-<?= htmlspecialchars($alert_type); ?>" role="alert">
+        <?= htmlspecialchars($message); ?>
+      </div>
+    <?php endif; ?>
+
     <div class="card p-2">
       <div class="card-body">
         <p>Silakan tambahkan mata kuliah jika mata kuliah anda belum tersedia disini atau jika anda sudah menambahkan
@@ -109,10 +121,10 @@ $rejected_courses = retrieve(
       </div>
     </div>
     <div class="row daftar-matkul mt-4">
-      <h5>Mata Kuliah yang telah disetujui</h5>
+      <h5>Mata Kuliah yang terdaftar</h5>
       <ul>
         <?php if (empty($approved_courses)): ?>
-          <li>Belum ada mata kuliah yang disetujui.</li>
+          <li>Belum ada mata kuliah yang terdaftar.</li>
         <?php else: ?>
           <?php foreach ($approved_courses as $course): ?>
             <li>
@@ -124,7 +136,7 @@ $rejected_courses = retrieve(
       </ul>
     </div>
     <div class="row daftar-matkul mt-4">
-      <h5>Mata kuliah yang belum disetujui</h5>
+      <h5>Mata kuliah yang belum terdaftar</h5>
       <ul>
         <?php if (empty($pending_courses)): ?>
           <li>Belum ada mata kuliah yang ditambahkan</li>
@@ -132,21 +144,6 @@ $rejected_courses = retrieve(
           <?php foreach ($pending_courses as $course): ?>
             <li>
               <?= $course['nama']; ?> - <?= $course['kode'] ?>
-            </li>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </ul>
-    </div>
-    <div class="row daftar-matkul mt-4">
-      <h5>Mata kuliah yang ditolak</h5>
-      <ul>
-        <?php if (empty($rejected_courses)): ?>
-          <li>Belum ada mata kuliah yang ditolak</li>
-        <?php else: ?>
-          <?php foreach ($rejected_courses as $course): ?>
-            <li>
-              <?= $course['nama']; ?> - <?= $course['kode'] ?> <br>
-              <small>Alasan ditolak: <?= $course['reason']; ?></small>
             </li>
           <?php endforeach; ?>
         <?php endif; ?>
