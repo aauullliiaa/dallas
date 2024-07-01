@@ -11,7 +11,6 @@ $alert_type = '';
 
 // Fetch user ID and email from the session
 $user_id = $_SESSION['user_id'];
-$email = $_SESSION['email'];
 
 // Fetch user profile data based on the user role
 $profile = getUserProfile($user_id, $_SESSION['role']);
@@ -19,21 +18,22 @@ $profile = getUserProfile($user_id, $_SESSION['role']);
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Gather form data
   $data['nama'] = $_POST['nama'];
-  $data['nip'] = $_POST['nip'];
+  $data['email'] = $_POST['email'];
   $data['telepon'] = $_POST['telepon'];
   $data['tempatlahir'] = $_POST['tempatlahir'];
   $data['tanggallahir'] = $_POST['tanggallahir'];
   $data['penghargaan'] = $_POST['penghargaan'];
   $data['pengabdian'] = $_POST['pengabdian'];
   $data['alamat'] = $_POST['alamat'];
-  $data['foto'] = '';
 
+  // Handle file upload within updateProfile function
   $result = updateProfile($user_id, $_SESSION['role'], $data);
   $message = $result['message'];
   $alert_type = $result['alert_type'];
   $profile = $result['profile'];
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <div class="form-group mb-3">
             <label for="email" class="form-label">Email:</label>
             <input type="email" name="email" class="form-control"
-              value="<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" disabled>
+              value="<?= htmlspecialchars($profile['email'], ENT_QUOTES, 'UTF-8'); ?>">
           </div>
           <div class="form-group mb-3">
             <label for="nama">Nama:</label>
@@ -131,12 +131,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <div class="form-group mb-3">
             <label for="nip" class="form-label">NIP:</label>
             <input type="text" name="nip" class="form-control"
-              value="<?= htmlspecialchars($profile['nip'], ENT_QUOTES, 'UTF-8'); ?>" required>
+              value="<?= htmlspecialchars($profile['nip'], ENT_QUOTES, 'UTF-8'); ?>" required disabled>
           </div>
           <div class="form-group mb-3">
             <label for="telepon">Telepon:</label>
             <input type="text" name="telepon" class="form-control"
-              value="<?= htmlspecialchars($profile['telepon'], ENT_QUOTES, 'UTF-8'); ?>" required>
+              value="<?= htmlspecialchars($profile['telepon'], ENT_QUOTES, 'UTF-8'); ?>" required maxlength="13">
           </div>
           <div class="form-group mb-3">
             <label for="tempatlahir" class="form-label">Tempat Lahir:</label>

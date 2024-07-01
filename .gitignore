@@ -1,10 +1,4 @@
 src/files/.DS_Store
-src/files/Kontrak Kuliah Matbis.docx
-src/files/materi/Kontrak Kuliah Matbis.docx
-src/files/materi/LEMBAR PERSETUJUAN MENJADI INFORMAN _ NARASUMBER _ RESPONDEN_.docx
-src/files/materi/tabel indikator.docx
-src/files/materi/Untitled document.docx
-src/files/tugas/Kontrak Kuliah Matbis (3).docx
 demo/detail-matkul.php
 demo/edit-jadwal.php
 demo/jadwal-mengajar.php
@@ -36,7 +30,3 @@ demo/admin/jadwal-pergantian.php
 demo/admin/mata-kuliah.php
 demo/admin/tambah-jadwal.php
 demo/admin/tambah-matkul.php
-src/files/materi/Doc1.docx
-src/files/tugas/0_Format Kwitansi.docx
-src/files/tugas/Doc1.docx
-src/files/tugas/Kontrak Kuliah Matbis.docx
