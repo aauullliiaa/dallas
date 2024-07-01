@@ -179,12 +179,14 @@ function updateProfile($user_id, $role, $data)
                 $message = "Foto berhasil diunggah.";
                 $alert_type = "success";
                 $data['foto'] = $newFileName;
-                error_log("New file name set: " . $newFileName); // Logging the new file name
             } else {
                 $message = "Maaf, terjadi kesalahan saat mengunggah foto Anda.";
                 $alert_type = "danger";
             }
         }
+    } else {
+        // Use the existing photo if no new file is uploaded
+        $data['foto'] = $profile['foto'];
     }
 
     if (updateUserProfile($user_id, $role, $data)) {
@@ -213,10 +215,10 @@ function getUserProfile($user_id, $role)
             $stmt = $db->prepare("SELECT nama, foto FROM admin_profiles WHERE user_id = ?");
             break;
         case 'mahasiswa':
-            $stmt = $db->prepare("SELECT nama, nim, telepon, tempatlahir, tanggallahir, foto, kelas, alamat FROM mahasiswa_profiles WHERE user_id = ?");
+            $stmt = $db->prepare("SELECT email, nama, nim, telepon, tempatlahir, tanggallahir, foto, kelas, alamat FROM mahasiswa_profiles WHERE user_id = ?");
             break;
         case 'dosen':
-            $stmt = $db->prepare("SELECT nama, nip, telepon, tempatlahir, tanggallahir, foto, penghargaan, pengabdian, alamat FROM dosen_profiles WHERE user_id = ?");
+            $stmt = $db->prepare("SELECT email, nama, nip, telepon, tempatlahir, tanggallahir, foto, penghargaan, pengabdian, alamat FROM dosen_profiles WHERE user_id = ?");
             break;
         default:
             return null;
@@ -240,35 +242,53 @@ function updateUserProfile($user_id, $role, $data)
 {
     global $db;
 
-    switch ($role) {
-        case 'admin':
-            $stmt = $db->prepare("UPDATE admin_profiles SET nama = ?, foto = ? WHERE user_id = ?");
-            $stmt->bind_param("ssi", $data['nama'], $data['foto'], $user_id);
-            break;
-        case 'mahasiswa':
-            $stmt = $db->prepare("UPDATE mahasiswa_profiles SET nama = ?, nim = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?, foto = ?, kelas = ?, alamat = ? WHERE user_id = ?");
-            $stmt->bind_param("ssssssssi", $data['nama'], $data['nim'], $data['telepon'], $data['tempatlahir'], $data['tanggallahir'], $data['foto'], $data['kelas'], $data['alamat'], $user_id);
-            break;
-        case 'dosen':
-            $stmt = $db->prepare("UPDATE dosen_profiles SET nama = ?, nip = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?, foto = ?, penghargaan = ?, pengabdian = ?, alamat = ? WHERE user_id = ?");
-            $stmt->bind_param("sssssssssi", $data['nama'], $data['nip'], $data['telepon'], $data['tempatlahir'], $data['tanggallahir'], $data['foto'], $data['penghargaan'], $data['pengabdian'], $data['alamat'], $user_id);
-            break;
-        default:
-            return false;
-    }
+    $db->begin_transaction();
 
-    if (!$stmt) {
-        echo "Error: " . $db->error;
+    try {
+        // Update profile based on role
+        switch ($role) {
+            case 'admin':
+                $stmt = $db->prepare("UPDATE admin_profiles SET nama = ?, email = ?, foto = ? WHERE user_id = ?");
+                $stmt->bind_param("sssi", $data['nama'], $data['email'], $data['foto'], $user_id);
+                break;
+            case 'mahasiswa':
+                $stmt = $db->prepare("UPDATE mahasiswa_profiles SET nama = ?, email = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?, foto = ?, kelas = ?, alamat = ? WHERE user_id = ?");
+                $stmt->bind_param("ssssssssi", $data['nama'], $data['email'], $data['telepon'], $data['tempatlahir'], $data['tanggallahir'], $data['foto'], $data['kelas'], $data['alamat'], $user_id);
+                break;
+            case 'dosen':
+                $stmt = $db->prepare("UPDATE dosen_profiles SET nama = ?, email = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?, foto = ?, penghargaan = ?, pengabdian = ?, alamat = ? WHERE user_id = ?");
+                $stmt->bind_param("sssssssssi", $data['nama'], $data['email'], $data['telepon'], $data['tempatlahir'], $data['tanggallahir'], $data['foto'], $data['penghargaan'], $data['pengabdian'], $data['alamat'], $user_id);
+                break;
+            default:
+                return false;
+        }
+
+        if (!$stmt) {
+            throw new Exception("Error: " . $db->error);
+        }
+
+        $stmt->execute();
+        $stmt->close();
+
+        // Update email in users table if email is provided in data
+        if (isset($data['email'])) {
+            $stmt = $db->prepare("UPDATE users SET email = ? WHERE id = ?");
+            if (!$stmt) {
+                throw new Exception("Error: " . $db->error);
+            }
+            $stmt->bind_param("si", $data['email'], $user_id);
+            $stmt->execute();
+            $stmt->close();
+        }
+
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollback();
+        echo $e->getMessage();
         return false;
     }
-
-    $stmt->execute();
-    $result = $stmt->affected_rows > 0;
-    $stmt->close();
-
-    return $result;
 }
-
 // function edit data dosen (admin)
 function ubah($data)
 {
@@ -826,7 +846,6 @@ function fetch_all_slots($db)
     }
     return $all_slots;
 }
-
 // Menghapus jadwal pergantian mata kuliah secara otomatis jika sudah hari minggu pada minggu tersebut
 function delete_expired_temporary_schedules($db)
 {

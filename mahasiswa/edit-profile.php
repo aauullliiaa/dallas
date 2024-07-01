@@ -9,8 +9,8 @@ $role = $_SESSION['role'];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Data profil yang diambil dari input pengguna
   $data = [
+    'email' => $_POST['email'],
     'nama' => $_POST['nama'],
-    'nim' => $_POST['nim'],
     'telepon' => $_POST['telepon'],
     'tempatlahir' => $_POST['tempatlahir'],
     'tanggallahir' => $_POST['tanggallahir'],
@@ -31,8 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $message = '';
   $alert_type = '';
 }
-
-$email = $_SESSION['email'];
 ?>
 
 <!DOCTYPE html>
@@ -122,7 +120,7 @@ $email = $_SESSION['email'];
         <form method="post" enctype="multipart/form-data">
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" value="<?= htmlspecialchars($email); ?>" class="form-control" readonly>
+            <input type="email" name="email" value="<?= htmlspecialchars($profile["email"]); ?>" class="form-control">
           </div>
           <div class="mb-3">
             <label for="nama" class="form-label">Nama</label>
@@ -132,12 +130,12 @@ $email = $_SESSION['email'];
           <div class="mb-4">
             <label for="nim">NIM</label>
             <input type="text" name="nim" value="<?= htmlspecialchars($profile["nim"]); ?>" class="form-control"
-              required>
+              disabled required>
           </div>
           <div class="mb-4">
             <label for="telepon">Telepon</label>
             <input type="text" name="telepon" value="<?= htmlspecialchars($profile["telepon"]); ?>" class="form-control"
-              required>
+              maxlength="13" required>
           </div>
           <div class="mb-4">
             <label for="tempatlahir">Tempat Lahir</label>
