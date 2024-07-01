@@ -20,25 +20,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $message = 'Email sudah terdaftar, silakan gunakan email lain.';
         $alert_type = 'danger';
     } else {
-        $user_id = registerUser($email, $password, $role, $nama);
+        if ($role == 'dosen') {
+            $nip = htmlspecialchars($_POST['nip']);
 
-        if ($user_id !== false) {
-            if ($role == 'mahasiswa') {
+            // Verifikasi NIP dosen
+            $stmt = $db->prepare("SELECT * FROM daftar_dosen WHERE nip = ?");
+            $stmt->bind_param("s", $nip);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows == 0) {
+                $message = 'NIP tidak ditemukan, anda tidak terdaftar sebagai dosen program studi ini.';
+                $alert_type = 'danger';
+            } else {
+                // Registrasi user jika NIP valid
+                $user_id = registerUser($email, $password, $role, $nama);
+                if ($user_id !== false) {
+                    registerDosenProfile($user_id, $email, $nama, $nip);
+                    $message = 'Registrasi anda berhasil, silakan gunakan kredensial anda untuk masuk.';
+                    $alert_type = 'success';
+                } else {
+                    $message = 'Gagal mendaftarkan pengguna';
+                    $alert_type = 'danger';
+                }
+            }
+        } else {
+            // Registrasi untuk role mahasiswa
+            $user_id = registerUser($email, $password, $role, $nama);
+            if ($user_id !== false) {
                 $nim = htmlspecialchars($_POST['nim']);
                 registerMahasiswaProfile($user_id, $email, $nama, $nim);
                 $message = 'Registrasi anda berhasil, silakan gunakan kredensial anda untuk masuk.';
                 $alert_type = 'success';
-            } elseif ($role == 'dosen') {
-                $nip = htmlspecialchars($_POST['nip']);
-                registerDosenProfile($user_id, $email, $nama, $nip);
-                $message = 'Registrasi anda berhasil, silakan gunakan kredensial anda untuk masuk.';
-                $alert_type = 'success';
+            } else {
+                $message = 'Gagal mendaftarkan pengguna';
+                $alert_type = 'danger';
             }
-        } else {
-            $message = 'Gagal mendaftarkan pengguna';
-            $alert_type = '';
         }
     }
+}
+
+if ($alert_type === 'success') {
+    $_SESSION['message'] = $message;
+    $_SESSION['alert_type'] = $alert_type;
+    header("Location: index.php");
+    exit;
 }
 ?>
 
@@ -104,10 +130,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="mb-3" id="nimField" style="display: none;">
                             <label for="nim" class="form-label">NIM:</label>
                             <input type="text" id="nim" name="nim" class="form-control" required>
+
                         </div>
                         <div class="mb-3" id="nipField" style="display: none;">
                             <label for="nip" class="form-label">NIP:</label>
-                            <input type="text" id="nip" name="nip" class="form-control" required>
+                            <input type="text" id="nip" name="nip" class="form-control" maxlength="18" required>
+                            <small id="nipError" style="color: red; display: none;">NIP harus 18 digit</small>
                         </div>
                     </div>
                     <div class="row mb-3 text-center justify-content-center">
@@ -141,6 +169,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $('#nipField').hide();
                     $('#nim').removeAttr('required');
                     $('#nip').removeAttr('required');
+                }
+            });
+
+            $('#nip').on('input', function () {
+                var nip = $(this).val();
+                if (nip.length != 18) {
+                    $('#nipError').show();
+                    $(this).addClass('is-invalid');
+                } else {
+                    $('#nipError').hide();
+                    $(this).removeClass('is-invalid');
                 }
             });
 

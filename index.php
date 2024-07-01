@@ -2,15 +2,18 @@
 session_start();
 require 'src/db/functions.php';
 
-$message = "";
-$alert_type = "";
+$message = $_SESSION['message'] ?? '';
+$alert_type = $_SESSION['alert_type'] ?? '';
+
+unset($_SESSION['message']);
+unset($_SESSION['alert_type']);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = htmlspecialchars($_POST['email']);
+    $emailOrId = htmlspecialchars($_POST['emailOrId']);
     $password = htmlspecialchars($_POST['password']);
 
-    if (loginUser($email, $password)) {
-        // Redirect the user based on their role
+    if (loginUser($emailOrId, $password)) {
+        // Arahkan berdasarkan role
         switch ($_SESSION['role']) {
             case 'admin':
                 header('Location: admin/index.php');
@@ -24,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         exit;
     } else {
-        $message = "Email atau password salah, silakan coba lagi";
+        $message = "Email, NIP, atau NIM atau password salah, silakan coba lagi";
         $alert_type = 'danger';
     }
 }
@@ -67,8 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     <?php endif; ?>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" id="email" required>
+                        <label for="emailOrId" class="form-label">NIP/NIM</label>
+                        <input type="text" class="form-control" name="emailOrId" id="emailOrId" required maxlength="18">
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
