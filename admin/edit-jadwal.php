@@ -56,6 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     die("ID jadwal tidak ditemukan.");
 }
+
+unset($_SESSION['message']);
+unset($_SESSION['alert_type']);
 ?>
 
 <!DOCTYPE html>

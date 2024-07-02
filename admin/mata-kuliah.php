@@ -47,6 +47,9 @@ if (isset($_GET['delete'])) {
 }
 
 $mata_kuliah = getAllMataKuliah($db);
+
+unset($_SESSION['message']);
+unset($_SESSION['alert_type']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -125,8 +128,10 @@ $mata_kuliah = getAllMataKuliah($db);
               Data Pengguna
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="data-dosen.php">Data Dosen</a></li>
-              <li><a class="dropdown-item" href="data-mahasiswa.php">Data Mahasiswa</a></li>
+              <li><a class="dropdown-item" href="data-users.php">Data Pengguna</a></li>
+              <li>
+                <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item dropdown">

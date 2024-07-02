@@ -3,6 +3,7 @@ session_start();
 require '../src/db/functions.php';
 checkRole('admin');
 
+
 $time_slots = get_time_slots_for_adding();
 $occupied_slots = [];
 $kelas = $_GET['kelas'] ?? $_POST['kelas'];
@@ -42,6 +43,9 @@ if (isset($_POST['matkul'])) {
     $dosen_id = $_POST['dosen_id'];
     $dosen_name = getDosenName($db, $dosen_id);
 }
+
+unset($_SESSION['message']);
+unset($_SESSION['alert_type']);
 ?>
 
 <!DOCTYPE html>
@@ -100,11 +104,10 @@ if (isset($_POST['matkul'])) {
                             Data Pengguna
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="data-dosen.php">Data Dosen</a></li>
+                            <li><a class="dropdown-item" href="data-users.php">Data Pengguna</a></li>
                             <li>
                                 <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
                             </li>
-                            <li><a class="dropdown-item" href="data-mahasiswa.php">Data Mahasiswa</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">

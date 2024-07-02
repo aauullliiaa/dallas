@@ -21,6 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Menutup koneksi
 $db->close();
 
+if ($alert_type === 'success') {
+  $_SESSION['message'] = $message;
+  $_SESSION['alert_type'] = $alert_type;
+  header("Location: mata-kuliah.php");
+  exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,24 +63,36 @@ $db->close();
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">Home</a>
+              aria-expanded="false">
+              Home
+            </a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="index.php#about">About</a></li>
-              <li><a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a></li>
-              <li><a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a></li>
+              <li>
+                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">Data Pengguna</a>
+              aria-expanded="false">
+              Data Pengguna
+            </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="data-dosen.php">Data Dosen</a></li>
-              <li><a class="dropdown-item" href="data-mahasiswa.php">Data Mahasiswa</a></li>
+              <li><a class="dropdown-item" href="data-users.php">Data Pengguna</a></li>
+              <li>
+                <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">Perkuliahan</a>
+              aria-expanded="false">
+              Perkuliahan
+            </a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a></li>
               <li><a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a></li>

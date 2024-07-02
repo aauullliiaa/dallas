@@ -6,51 +6,42 @@ checkRole('admin');
 $message = '';
 $alert_type = '';
 
-// Mengambil id dari data;
-$id = isset($_GET["id"]) ? intval($_GET["id"]) : 0;
+if (isset($_POST['submit'])) {
+  $nama = htmlspecialchars($_POST["nama"]);
+  $nip = htmlspecialchars($_POST["nip"]);
 
-// Mengambil data dosen dari id dengan prepared statement
-$stmt = $db->prepare("SELECT * FROM dosen_profiles WHERE user_id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$dsn = $result->fetch_assoc();
-$stmt->close();
-
-// Cek apakah tombol submit sudah ditekan atau belum
-if (isset($_POST["submit"])) {
-  // Memastikan data POST telah disanitasi
-  $data = [
-    'id' => intval($_POST['id']),
-    'nama' => htmlspecialchars($_POST['nama']),
-    'nip' => htmlspecialchars($_POST['nip']),
-    'email' => htmlspecialchars($_POST['email']),
-    'alamat' => htmlspecialchars($_POST['alamat']),
-    'telepon' => htmlspecialchars($_POST['telepon']),
-  ];
-
-  // Cek apakah data berhasil diedit atau gagal diedit
-  if (ubah($data) > 0) {
-    $message = "Data berhasil di update!";
-    $alert_type = "success";
+  if (!empty($nama) && !empty($nip)) {
+    $data = [
+      'nama' => $nama,
+      'nip' => $nip
+    ];
+    $result = input_dosen($data);
+    if ($result === true) {
+      $alert_type = 'success';
+      $message = 'Data berhasil ditambahkan';
+    } else {
+      $alert_type = 'danger';
+      $message = 'Data gagal ditambahkan: ' . $result;
+    }
   } else {
-    $message = "Data gagal diedit, silakan coba lagi";
-    $alert_type = "error";
+    $alert_type = 'danger';
+    $message = 'Data tidak boleh kosong';
   }
 }
-?>
 
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Data Dosen</title>
+  <title>APD Learning Space - Input NIP Dosen</title>
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
     rel="stylesheet" />
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -60,9 +51,7 @@ if (isset($_POST["submit"])) {
   <!-- CSS -->
   <link rel="stylesheet" href="../src/css/style.css" />
 </head>
-
 <header>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
     <div class="container">
       <a class="navbar-brand" href="index.php#home">
@@ -120,61 +109,48 @@ if (isset($_POST["submit"])) {
       </div>
     </div>
   </nav>
-  <!-- End of Navbar -->
-  <section class="mhs-hero d-flex align-items-center justify-content-center">
-    <h1>Edit Data Dosen</h1>
+  <section>
+    <div class="row text-center">
+      <h1>Input Data Dosen</h1>
+    </div>
   </section>
 </header>
 
 <body>
   <div class="container">
-    <div class="card p-4 mb-3">
+    <div class="card p-3">
       <div class="card-body">
-        <?php if ($message != ''): ?>
-          <div class="alert alert-<?= htmlspecialchars($alert_type); ?>">
-            <?= htmlspecialchars($message); ?>
+        <?php if ($message): ?>
+          <div class="alert alert-<?= $alert_type; ?>" role="alert">
+            <?= $message; ?>
           </div>
         <?php endif; ?>
         <form action="" method="post">
-          <input type="hidden" name="id" value="<?= htmlspecialchars($dsn["user_id"]); ?>">
-          <div class="row">
-            <img src="../src/images/<?= htmlspecialchars($dsn["foto"]); ?>"
-              style="width: 90px; margin-left: 0px; border-radius: 50%;">
+          <div class="mb-3">
+            <label for="nama" class="form-label">Nama Dosen</label>
+            <input type="text" class="form-control" name="nama" id="nama" required />
           </div>
-          <div class="row mt-3">
-            <label for="nama" class="form-label">Nama</label>
-            <input type="text" class="form-control" id="nama" name="nama"
-              value="<?= htmlspecialchars($dsn["nama"]); ?>" />
+          <div class="mb-3">
+            <label for="nip" class="form-label">Nomor Induk Pegawai</label>
+            <input type="text" class="form-control" name="nip" id="nip" maxlength="18" required />
           </div>
-          <div class="row mt-2">
-            <label for="nip" class="form-label">NIP</label>
-            <input type="text" class="form-control" id="nip" name="nip" value="<?= htmlspecialchars($dsn["nip"]); ?>" />
-          </div>
-          <div class="row mt-2">
-            <label for="email" class="form-label">Email</label>
-            <input type="text" class="form-control" id="email" name="email"
-              value="<?= htmlspecialchars($dsn["email"]); ?>" />
-          </div>
-          <div class="row mt-2">
-            <label for="alamat" class="form-label">Alamat</label>
-            <input type="text" class="form-control" id="alamat" name="alamat"
-              value="<?= htmlspecialchars($dsn["alamat"]); ?>" />
-          </div>
-          <div class="row mt-2">
-            <label for="telepon" class="form-label">Telepon</label>
-            <input type="text" class="form-control" id="telepon" name="telepon"
-              value="<?= htmlspecialchars($dsn["telepon"]); ?>" />
-          </div>
-          <div class="row mt-4">
+          <div class="mt-3 text-center">
             <div class="col submit-button">
-              <button type="submit" name="submit" class="btn">Simpan</button> |
-              <a href="../admin/data-dosen.php" class="btn">Kembali</a>
+              <button type="submit" class="btn btn-light" name="submit">
+                Submit
+              </button>
             </div>
           </div>
         </form>
+        <div class="row mt-2 text-center">
+          <div class="col submit-button">
+            <a href="index.php" class="btn btn-light">Kembali</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
