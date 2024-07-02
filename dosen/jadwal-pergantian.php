@@ -11,20 +11,40 @@ $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 $time_slots_viewing = get_time_slots_for_viewing();
 $time_slots_adding = get_time_slots_for_adding();
 
+// Logika untuk menghapus jadwal yang sudah kadaluarsa
+delete_expired_temporary_schedules($db);
+
+$all_slots = fetch_all_slots($db);
+
+$days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+$time_slots_viewing = get_time_slots_for_viewing();
+$time_slots_adding = get_time_slots_for_adding();
+
 $message = '';
 $alert_class = '';
+
+// Ambil pesan dari session jika ada
+if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
+  $message = $_SESSION['message'];
+  $alert_class = $_SESSION['alert_class'];
+
+  // Hapus pesan dari session setelah ditampilkan
+  unset($_SESSION['message']);
+  unset($_SESSION['alert_class']);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['delete_schedule'])) {
     $schedule_id = $_POST['schedule_id'];
     if (delete_schedule($db, $schedule_id)) {
-      $message = "Jadwal berhasil dihapus.";
-      $alert_class = "alert-success";
+      $_SESSION['message'] = "Jadwal berhasil dihapus.";
+      $_SESSION['alert_class'] = "alert-success";
     } else {
-      $message = "Error: Gagal menghapus jadwal.";
-      $alert_class = "alert-danger";
+      $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
+      $_SESSION['alert_class'] = "alert-danger";
     }
     header("Location: jadwal-pergantian.php");
+    exit;
   } elseif (isset($_POST['hari'], $_POST['jam_mulai'], $_POST['jam_selesai'], $_POST['matkul'], $_POST['dosen_id'], $_POST['classroom'], $_POST['kelas'])) {
     $hari = $_POST['hari'];
     $jam_mulai = $_POST['jam_mulai'];
@@ -45,15 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['alert_class'] = $alert_class;
     header("Location: jadwal-pergantian.php");
     exit;
-
   }
 }
-
-$message = $_SESSION['message'] ?? '';
-$alert_class = $_SESSION['alert_class'] ?? '';
-
-unset($_SESSION['message']);
-unset($_SESSION['alert_class']);
 ?>
 
 <!DOCTYPE html>
