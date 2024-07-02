@@ -3,6 +3,7 @@ session_start();
 require '../src/db/functions.php';
 checkRole('admin');
 
+// Logika untuk menghapus jadwal yang sudah kadaluarsa
 delete_expired_temporary_schedules($db);
 
 $all_slots = fetch_all_slots($db);
@@ -14,16 +15,28 @@ $time_slots_adding = get_time_slots_for_adding();
 $message = '';
 $alert_class = '';
 
+// Ambil pesan dari session jika ada
+if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
+  $message = $_SESSION['message'];
+  $alert_class = $_SESSION['alert_class'];
+
+  // Hapus pesan dari session setelah ditampilkan
+  unset($_SESSION['message']);
+  unset($_SESSION['alert_class']);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['delete_schedule'])) {
     $schedule_id = $_POST['schedule_id'];
     if (delete_schedule($db, $schedule_id)) {
-      $message = "Jadwal berhasil dihapus.";
-      $alert_class = "alert-success";
+      $_SESSION['message'] = "Jadwal berhasil dihapus.";
+      $_SESSION['alert_class'] = "alert-success";
     } else {
-      $message = "Error: Gagal menghapus jadwal.";
-      $alert_class = "alert-danger";
+      $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
+      $_SESSION['alert_class'] = "alert-danger";
     }
+    header("Location: jadwal-pergantian.php");
+    exit;
   } elseif (isset($_POST['hari'], $_POST['jam_mulai'], $_POST['jam_selesai'], $_POST['matkul'], $_POST['dosen_id'], $_POST['classroom'], $_POST['kelas'])) {
     $hari = $_POST['hari'];
     $jam_mulai = $_POST['jam_mulai'];
@@ -39,9 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $end_index = array_search($jam_selesai, $time_slots_adding);
 
     list($message, $alert_class) = insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $time_slots_adding, $start_index, $end_index, $is_temporary, $end_date);
+
+    $_SESSION['message'] = $message;
+    $_SESSION['alert_class'] = $alert_class;
+    header("Location: jadwal-pergantian.php");
+    exit;
   }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -253,8 +272,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="is_temporary" name="is_temporary">
-                <label class="form-check-label" for="is_temporary">Jadwal Sementara (Sampai Minggu Ini)</label>
+                <input class="form-check-input" type="checkbox" id="is_temporary" name="is_temporary" required>
+                <label class="form-check-label" for="is_temporary">Jadwal Sementara (Hanya Pekan Ini)</label>
               </div>
             </div>
             <div class="modal-footer">
