@@ -108,7 +108,7 @@ $db->close();
                     <?php endif; ?>
                     <div class="mb-3">
                         <label for="kode" class="form-label">Kode Mata Kuliah:</label>
-                        <input type="text" class="form-control" id="kode" name="kode" required>
+                        <input type="text" class="form-control" id="kode" name="kode" required maxlength="11">
                     </div>
                     <div class="mb-3">
                         <label for="nama" class="form-label">Nama Mata Kuliah:</label>
