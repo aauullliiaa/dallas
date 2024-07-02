@@ -76,12 +76,38 @@ function registerDosenProfile($user_id, $email, $nama, $nip)
     $stmt->execute();
     $stmt->close();
 }
+function isNIP($id)
+{
+    // Periksa apakah ID adalah NIP (Anda dapat menyesuaikan logika ini berdasarkan format NIP Anda)
+    return preg_match('/^[0-9]{18}$/', $id); // Contoh: NIP memiliki 8 hingga 10 digit
+}
 
-function loginUser($email, $password)
+function isNIM($id)
+{
+    // Periksa apakah ID adalah NIM (Anda dapat menyesuaikan logika ini berdasarkan format NIM Anda)
+    return preg_match('/^[0-9]{5,12}$/', $id); // Contoh: NIM memiliki 5 hingga 12 digit
+}
+
+function loginUser($emailOrId, $password)
 {
     global $db;
-    $stmt = $db->prepare("SELECT id, password, role, nama FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
+
+    // Identifikasi apakah input adalah email, NIP, atau NIM
+    if (filter_var($emailOrId, FILTER_VALIDATE_EMAIL)) {
+        $query = "SELECT id, password, role, nama FROM users WHERE email = ?";
+        $role = 'admin'; // default role if checking by email
+    } elseif (isNIP($emailOrId)) {
+        $query = "SELECT u.id, u.password, 'dosen' as role, dp.nama FROM users u JOIN dosen_profiles dp ON u.id = dp.user_id WHERE dp.nip = ?";
+        $role = 'dosen';
+    } elseif (isNIM($emailOrId)) {
+        $query = "SELECT u.id, u.password, 'mahasiswa' as role, mp.nama FROM users u JOIN mahasiswa_profiles mp ON u.id = mp.user_id WHERE mp.nim = ?";
+        $role = 'mahasiswa';
+    } else {
+        return false;
+    }
+
+    $stmt = $db->prepare($query);
+    $stmt->bind_param("s", $emailOrId);
     $stmt->execute();
     $stmt->bind_result($user_id, $hashed_password, $role, $nama);
     $stmt->fetch();
@@ -90,40 +116,16 @@ function loginUser($email, $password)
     if (password_verify($password, $hashed_password)) {
         session_start();
         $_SESSION['user_id'] = $user_id;
-        $_SESSION['email'] = $email;
+        $_SESSION['emailOrId'] = $emailOrId;
         $_SESSION['role'] = $role;
         $_SESSION['nama'] = $nama;
 
-        // Ambil nama dosen jika role adalah dosen
-        if ($role === 'dosen') {
-            $stmt = $db->prepare("SELECT nama FROM dosen_profiles WHERE user_id = ?");
-            $stmt->bind_param("i", $user_id);
-            $stmt->execute();
-            $stmt->bind_result($nama_dosen);
-            $stmt->fetch();
-            $_SESSION['nama_dosen'] = $nama_dosen;
-            $stmt->close();
-        }
-
-        switch ($role) {
-            case 'admin':
-                header('Location: admin/index.php');
-                break;
-            case 'mahasiswa':
-                header('Location: mahasiswa/index.php');
-                break;
-            case 'dosen':
-                header('Location: dosen/index.php');
-                break;
-        }
-        exit;
+        return true;
     } else {
         return false;
     }
-    return true;
 }
 // end of halaman login functions
-
 // halaman edit profil mahasiswa functions
 function updateProfile($user_id, $role, $data)
 {
@@ -1073,5 +1075,88 @@ function get_all_courses($db)
         $courses[] = $row;
     }
     return $courses;
+}
+
+function input_dosen($data)
+{
+    global $db;
+    $sql = "INSERT INTO daftar_dosen (nama, nip) VALUES (?, ?)";
+    $stmt = $db->prepare($sql);
+    if ($stmt === false) {
+        return "Error: " . $db->error;
+    }
+    $stmt->bind_param("ss", $data['nama'], $data['nip']);
+    if ($stmt->execute() === true) {
+        $stmt->close();
+        return true;
+    } else {
+        $stmt->close();
+        return "Error: " . $stmt->error;
+    }
+}
+
+// functions.php
+
+function deleteUserAndDependencies($db, $delete_id, $role)
+{
+    try {
+        // Mulai transaksi
+        mysqli_begin_transaction($db);
+
+        if ($role == 'dosen') {
+            // Logika penghapusan data terkait dosen
+            $stmt = $db->prepare("SELECT id FROM mata_kuliah WHERE dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $mata_kuliah_ids = $result->fetch_all(MYSQLI_ASSOC);
+
+            foreach ($mata_kuliah_ids as $mata_kuliah_id) {
+                $stmt = $db->prepare("SELECT id FROM pertemuan WHERE mata_kuliah_id = ?");
+                $stmt->bind_param("i", $mata_kuliah_id['id']);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $pertemuan_ids = $result->fetch_all(MYSQLI_ASSOC);
+
+                foreach ($pertemuan_ids as $pertemuan_id) {
+                    $stmt = $db->prepare("DELETE FROM tugas_pertemuan WHERE pertemuan_id = ?");
+                    $stmt->bind_param("i", $pertemuan_id['id']);
+                    $stmt->execute();
+                }
+
+                $stmt = $db->prepare("DELETE FROM pertemuan WHERE mata_kuliah_id = ?");
+                $stmt->bind_param("i", $mata_kuliah_id['id']);
+                $stmt->execute();
+            }
+
+            $stmt = $db->prepare("DELETE FROM jadwal_kuliah WHERE dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            $stmt = $db->prepare("DELETE FROM mata_kuliah WHERE dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+        } elseif ($role == 'mahasiswa') {
+            // Logika penghapusan data terkait mahasiswa
+            $stmt = $db->prepare("DELETE FROM tugas_kumpul WHERE mahasiswa_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+        }
+
+        // Menghapus dari tabel users
+        $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+        $stmt->bind_param("i", $delete_id);
+        $stmt->execute();
+
+        // Commit transaksi
+        mysqli_commit($db);
+
+        return ["message" => "Data berhasil dihapus", "alert_class" => "success"];
+    } catch (Exception $e) {
+        // Rollback transaksi jika terjadi kesalahan
+        mysqli_rollback($db);
+
+        return ["message" => "Gagal menghapus data: " . $e->getMessage(), "alert_class" => "danger"];
+    }
 }
 ?>
