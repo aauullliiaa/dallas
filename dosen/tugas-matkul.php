@@ -7,8 +7,12 @@ $matkul_id = $_GET["id"];
 $detailmk = retrieve("SELECT nama FROM mata_kuliah WHERE id = ?", [$matkul_id])[0];
 $tugasList = retrieve("SELECT tp.*, p.pertemuan as pertemuan_ke FROM tugas_pertemuan tp JOIN pertemuan p ON tp.pertemuan_id = p.id WHERE p.mata_kuliah_id = ?", [$matkul_id]);
 
-$message = $_GET['message'] ?? '';
-$alert_type = $_GET['alert_type'] ?? '';
+$message = $_SESSION['message'] ?? '';
+$alert_type = $_SESSION['alert_type'] ?? '';
+
+// Hapus pesan dari sesi setelah ditampilkan
+unset($_SESSION['message']);
+unset($_SESSION['alert_type']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_tugas_id']) && isset($_POST['delete_pertemuan_id'])) {
   $tugas_id = $_POST['delete_tugas_id'];

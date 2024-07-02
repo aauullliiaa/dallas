@@ -51,19 +51,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
 
             if (insertTugasPertemuan($tugas_data)) {
-                $message = "Tugas berhasil diberikan.";
-                $alert_type = "success";
+                $_SESSION['message'] = "Tugas berhasil diberikan.";
+                $_SESSION['alert_type'] = "success";
             } else {
-                $message = "Gagal memberikan tugas, silakan coba lagi.";
-                $alert_type = "danger";
+                $_SESSION['message'] = "Gagal memberikan tugas, silakan coba lagi.";
+                $_SESSION['alert_type'] = "danger";
             }
         } else {
-            $message = "Gagal menyimpan pertemuan, silakan coba lagi.";
-            $alert_type = "danger";
+            $_SESSION['message'] = "Gagal menyimpan pertemuan, silakan coba lagi.";
+            $_SESSION['alert_type'] = "danger";
         }
+
+        // Redirect ke halaman tugas mata kuliah
+        header("Location: tugas-matkul.php?id=$matkul_id");
+        exit;
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
