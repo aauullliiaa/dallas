@@ -5,7 +5,7 @@ checkRole('admin');
 
 $time_slots = get_time_slots_for_adding();
 $occupied_slots = [];
-$kelas = $_GET['kelas'] ?? '';
+$kelas = $_GET['kelas'] ?? $_POST['kelas'];
 
 if (isset($_GET['hari']) && isset($_GET['kelas'])) {
     $hari = $_GET['hari'];
@@ -28,6 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
     $end_index = array_search($jam_selesai, $time_slots);
 
     list($message, $alert_class) = insert_schedule($db, $hari, $course, $dosen_id, $classroom, $kelas, $time_slots, $start_index, $end_index);
+
+    if ($alert_class == "alert-success") {
+        $_SESSION['message'] = $message;
+        $_SESSION['alert_class'] = $alert_class;
+        header("Location: jadwal-kuliah.php?kelas={$kelas}");
+        exit();
+    }
 }
 
 $dosen_name = '';
@@ -94,6 +101,9 @@ if (isset($_POST['matkul'])) {
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="data-dosen.php">Data Dosen</a></li>
+                            <li>
+                                <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
+                            </li>
                             <li><a class="dropdown-item" href="data-mahasiswa.php">Data Mahasiswa</a></li>
                         </ul>
                     </li>
@@ -159,6 +169,8 @@ if (isset($_POST['matkul'])) {
                 </form>
 
                 <form action="" method="post" id="scheduleForm">
+                    <input type="hidden" name="hari" value="<?= htmlspecialchars($hari); ?>">
+                    <input type="hidden" name="kelas" value="<?= htmlspecialchars($kelas); ?>">
                     <div class="mb-3">
                         <label for="matkul" class="form-label">Mata Kuliah:</label>
                         <select id="matkul" name="matkul" class="form-select" required>
