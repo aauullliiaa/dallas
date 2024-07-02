@@ -6,16 +6,21 @@ checkRole('admin');
 $time_slots = get_time_slots_for_adding();
 $courses = get_all_courses($db);
 
+// Ambil query string kelas dari URL sebelumnya atau input hidden
+$kelas = $_GET['kelas'] ?? $_POST['kelas'];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete_schedule'])) {
         $schedule_id = $_POST['schedule_id'];
         if (delete_schedule($db, $schedule_id)) {
-            $message = "Jadwal berhasil dihapus.";
-            $alert_class = "alert-success";
+            $_SESSION['message'] = "Jadwal berhasil dihapus.";
+            $_SESSION['alert_class'] = "alert-success";
         } else {
-            $message = "Error: Gagal menghapus jadwal.";
-            $alert_class = "alert-danger";
+            $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
+            $_SESSION['alert_class'] = "alert-danger";
         }
+        header("Location: jadwal-kuliah.php?kelas={$kelas}");
+        exit();
     } else {
         $hari = $_POST['hari'];
         $matkul = $_POST['matkul'];
@@ -29,6 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $old_jam_selesai = $_POST['old_jam_selesai'] ?? null;
 
         list($message, $alert_class) = update_or_insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $jam_mulai, $jam_selesai, $time_slots, 0, NULL, $old_hari, $old_jam_mulai, $old_jam_selesai);
+
+        if ($alert_class == "alert-success") {
+            $_SESSION['message'] = $message;
+            $_SESSION['alert_class'] = $alert_class;
+            header("Location: jadwal-kuliah.php?kelas={$kelas}");
+            exit();
+        }
     }
 } elseif (isset($_GET['id'])) {
     $schedule_id = $_GET['id'];
@@ -45,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     die("ID jadwal tidak ditemukan.");
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -99,6 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="data-dosen.php">Data Dosen</a></li>
+                            <li>
+                                <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
+                            </li>
                             <li><a class="dropdown-item" href="data-mahasiswa.php">Data Mahasiswa</a></li>
                         </ul>
                     </li>
@@ -135,6 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo "<div class='alert {$alert_class} alert-dismissible fade show' role='alert'>{$message}<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
                 } ?>
                 <form action="" method="post">
+                    <input type="hidden" name="kelas" value="<?= htmlspecialchars($kelas); ?>">
                     <div class="mb-3">
                         <label for="hari" class="form-label">Hari:</label>
                         <select id="hari" name="hari" class="form-select" required>

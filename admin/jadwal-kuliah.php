@@ -19,6 +19,12 @@ $schedules = !empty($class) ? fetch_schedules($db, $class) : [];
 
 $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 $time_slots = get_time_slots_for_viewing();
+
+$message = $_SESSION['message'] ?? '';
+$alert_class = $_SESSION['alert_class'] ?? '';
+
+unset($_SESSION['message']);
+unset($_SESSION['alert_class']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,6 +82,9 @@ $time_slots = get_time_slots_for_viewing();
             </a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="data-dosen.php">Data Dosen</a></li>
+              <li>
+                <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
+              </li>
               <li><a class="dropdown-item" href="data-mahasiswa.php">Data Mahasiswa</a></li>
             </ul>
           </li>
@@ -135,10 +144,10 @@ $time_slots = get_time_slots_for_viewing();
     </div>
     <div class="card p-3">
       <div class="card-body">
-        <?php if (isset($message)): ?>
-          <div class='alert <?= $alert_class; ?> alert-dismissible fade show' role='alert'>
-            <?= $message; ?>
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        <?php if ($message): ?>
+          <div class="alert <?= $alert_class ?> alert-dismissible fade show" role="alert">
+            <?= $message ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         <?php endif; ?>
         <?php if (!empty($class)): ?>
