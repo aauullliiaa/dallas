@@ -1,4 +1,5 @@
 <?php
+session_start();
 require 'src/db/functions.php';
 
 $message = "";
@@ -6,7 +7,6 @@ $alert_type = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $role = $_POST['role'];
-    $nama = htmlspecialchars($_POST['nama']);
     $email = htmlspecialchars($_POST['email']);
     $password = htmlspecialchars($_POST['password']);
 
@@ -20,42 +20,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $message = 'Email sudah terdaftar, silakan gunakan email lain.';
         $alert_type = 'danger';
     } else {
-        if ($role == 'dosen') {
-            $nip = htmlspecialchars($_POST['nip']);
+        $user_id = registerUser($email, $password, $role);
+        if ($user_id !== false) {
+            if ($role == 'dosen') {
+                $nip = htmlspecialchars($_POST['nip']);
 
-            // Verifikasi NIP dosen
-            $stmt = $db->prepare("SELECT * FROM daftar_dosen WHERE nip = ?");
-            $stmt->bind_param("s", $nip);
-            $stmt->execute();
-            $result = $stmt->get_result();
+                // Verifikasi NIP dosen
+                $stmt = $db->prepare("SELECT * FROM daftar_dosen WHERE nip = ?");
+                $stmt->bind_param("s", $nip);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
-            if ($result->num_rows == 0) {
-                $message = 'NIP tidak ditemukan, anda tidak terdaftar sebagai dosen program studi ini.';
-                $alert_type = 'danger';
-            } else {
-                // Registrasi user jika NIP valid
-                $user_id = registerUser($email, $password, $role, $nama);
-                if ($user_id !== false) {
-                    registerDosenProfile($user_id, $email, $nama, $nip);
-                    $message = 'Registrasi anda berhasil, silakan gunakan kredensial anda untuk masuk.';
-                    $alert_type = 'success';
-                } else {
-                    $message = 'Gagal mendaftarkan pengguna';
+                if ($result->num_rows == 0) {
+                    $message = 'NIP tidak ditemukan, Anda tidak terdaftar sebagai dosen program studi ini.';
                     $alert_type = 'danger';
+                } else {
+                    // Update email, password, dan user_id di tabel daftar_dosen
+                    if (updateDosenProfile($user_id, $email, $password, $nip)) {
+                        $message = 'Registrasi Anda berhasil, silakan gunakan kredensial Anda untuk masuk.';
+                        $alert_type = 'success';
+                    } else {
+                        $message = 'Gagal memperbarui data dosen.';
+                        $alert_type = 'danger';
+                        error_log("Error in updating dosen profile for user_id $user_id, email $email, nip $nip");
+                    }
+                }
+            } elseif ($role == 'mahasiswa') {
+                $nim = htmlspecialchars($_POST['nim']);
+
+                // Verifikasi NIM mahasiswa
+                $stmt = $db->prepare("SELECT * FROM daftar_mahasiswa WHERE nim = ?");
+                $stmt->bind_param("s", $nim);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                if ($result->num_rows == 0) {
+                    $message = 'NIM tidak ditemukan, Anda tidak terdaftar sebagai mahasiswa program studi ini.';
+                    $alert_type = 'danger';
+                } else {
+                    // Update email, password, dan user_id di tabel mahasiswa
+                    if (updateMahasiswaProfile($user_id, $email, $password, $nim)) {
+                        $message = 'Registrasi Anda berhasil, silakan gunakan kredensial Anda untuk masuk.';
+                        $alert_type = 'success';
+                    } else {
+                        $message = 'Gagal memperbarui data mahasiswa.';
+                        $alert_type = 'danger';
+                        error_log("Error in updating mahasiswa profile for user_id $user_id, email $email, nim $nim");
+                    }
                 }
             }
         } else {
-            // Registrasi untuk role mahasiswa
-            $user_id = registerUser($email, $password, $role, $nama);
-            if ($user_id !== false) {
-                $nim = htmlspecialchars($_POST['nim']);
-                registerMahasiswaProfile($user_id, $email, $nama, $nim);
-                $message = 'Registrasi anda berhasil, silakan gunakan kredensial anda untuk masuk.';
-                $alert_type = 'success';
-            } else {
-                $message = 'Gagal mendaftarkan pengguna';
-                $alert_type = 'danger';
-            }
+            $message = 'Gagal mendaftarkan pengguna.';
+            $alert_type = 'danger';
         }
     }
 }
@@ -116,10 +132,6 @@ if ($alert_type === 'success') {
                     </div>
                     <div id="formContainer">
                         <div class="mb-3">
-                            <label for="nama" class="form-label">Nama:</label>
-                            <input type="text" id="nama" name="nama" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
                             <input type="email" id="email" name="email" class="form-control" required>
                         </div>
@@ -130,7 +142,6 @@ if ($alert_type === 'success') {
                         <div class="mb-3" id="nimField" style="display: none;">
                             <label for="nim" class="form-label">NIM:</label>
                             <input type="text" id="nim" name="nim" class="form-control" required>
-
                         </div>
                         <div class="mb-3" id="nipField" style="display: none;">
                             <label for="nip" class="form-label">NIP:</label>
@@ -144,7 +155,7 @@ if ($alert_type === 'success') {
                         </div>
                     </div>
                     <div class="row text-center">
-                        <small>Sudah memiliki akun? Silahkan <a href="index.php">login</a> disini </small>
+                        <small>Sudah memiliki akun? Silakan <a href="index.php">login</a> disini </small>
                     </div>
                 </form>
             </div>
