@@ -117,62 +117,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?>
           </div>
         <?php endif; ?>
-        <form method="post" enctype="multipart/form-data">
-          <div class="form-group mb-3">
-            <label for="email" class="form-label">Email:</label>
-            <input type="email" name="email" class="form-control"
-              value="<?= htmlspecialchars($profile['email'], ENT_QUOTES, 'UTF-8'); ?>">
-          </div>
-          <div class="form-group mb-3">
-            <label for="nama">Nama:</label>
-            <input type="text" name="nama" class="form-control"
-              value="<?= htmlspecialchars($profile['nama'], ENT_QUOTES, 'UTF-8'); ?>" required>
-          </div>
-          <div class="form-group mb-3">
-            <label for="nip" class="form-label">NIP:</label>
-            <input type="text" name="nip" class="form-control"
-              value="<?= htmlspecialchars($profile['nip'], ENT_QUOTES, 'UTF-8'); ?>" required disabled>
-          </div>
-          <div class="form-group mb-3">
-            <label for="telepon">Telepon:</label>
-            <input type="text" name="telepon" class="form-control"
-              value="<?= htmlspecialchars($profile['telepon'], ENT_QUOTES, 'UTF-8'); ?>" required maxlength="13">
-          </div>
-          <div class="form-group mb-3">
-            <label for="tempatlahir" class="form-label">Tempat Lahir:</label>
-            <input type="text" name="tempatlahir" class="form-control"
-              value="<?= htmlspecialchars($profile['tempatlahir'], ENT_QUOTES, 'UTF-8'); ?>" required>
-          </div>
-          <div class="form-group mb-3">
-            <label for="tanggallahir" class="form-label">Tanggal Lahir:</label>
-            <input type="date" name="tanggallahir" class="form-control"
-              value="<?= htmlspecialchars($profile['tanggallahir'], ENT_QUOTES, 'UTF-8'); ?>" required>
-          </div>
-          <div class="form-group mb-3">
-            <label for="foto" class="form-label">Foto:</label>
-            <input type="file" name="foto" class="form-control">
-          </div>
-          <div class="form-group mb-3">
-            <label for="penghargaan" class="form-label">Penghargaan:</label>
-            <textarea name="penghargaan"
-              class="form-control"><?= htmlspecialchars($profile['penghargaan'], ENT_QUOTES, 'UTF-8'); ?></textarea>
-          </div>
-          <div class="form-group mb-3">
-            <label for="pengabdian" class="form-label">Pengabdian:</label>
-            <textarea name="pengabdian"
-              class="form-control"><?= htmlspecialchars($profile['pengabdian'], ENT_QUOTES, 'UTF-8'); ?></textarea>
-          </div>
-          <div class="form-group mb-3">
-            <label for="alamat" class="form-label">Alamat:</label>
-            <textarea name="alamat"
-              class="form-control"><?= htmlspecialchars($profile['alamat'], ENT_QUOTES, 'UTF-8'); ?></textarea>
-          </div>
-          <div class="row mb-1">
-            <div class="col text-center submit-button">
-              <button type="submit" class="btn btn-light">Update Profile</button>
-            </div>
-          </div>
-        </form>
+        <div class="form-group mb-3">
+          <label for="email" class="form-label">Email:</label>
+          <input type="email" name="email" class="form-control"
+            value="<?= htmlspecialchars($profile['email'], ENT_QUOTES, 'UTF-8'); ?>">
+        </div>
+        <div class="form-group mb-3">
+          <label for="nama">Nama:</label>
+          <input type="text" name="nama" class="form-control"
+            value="<?= htmlspecialchars($profile['nama'], ENT_QUOTES, 'UTF-8'); ?>" readonly>
+        </div>
+        <div class="form-group mb-3">
+          <label for="nip" class="form-label">NIP:</label>
+          <input type="text" name="nip" class="form-control"
+            value="<?= htmlspecialchars($profile['nip'], ENT_QUOTES, 'UTF-8'); ?>" readonly disabled>
+        </div>
+        <div class="form-group mb-3">
+          <label for="telepon">Telepon:</label>
+          <input type="text" name="telepon" class="form-control"
+            value="<?= htmlspecialchars($profile['telepon'], ENT_QUOTES, 'UTF-8'); ?>" readonly maxlength="13">
+        </div>
+        <div class="form-group mb-3">
+          <label for="tempatlahir" class="form-label">Tempat Lahir:</label>
+          <input type="text" name="tempatlahir" class="form-control"
+            value="<?= htmlspecialchars($profile['tempatlahir'], ENT_QUOTES, 'UTF-8'); ?>" readonly>
+        </div>
+        <div class="form-group mb-3">
+          <label for="tanggallahir" class="form-label">Tanggal Lahir:</label>
+          <input type="date" name="tanggallahir" class="form-control"
+            value="<?= htmlspecialchars($profile['tanggallahir'], ENT_QUOTES, 'UTF-8'); ?>" readonly>
+        </div>
+        <div class="form-group mb-3">
+          <label for="alamat" class="form-label">Alamat:</label>
+          <textarea name="alamat"
+            class="form-control"><?= htmlspecialchars($profile['alamat'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+        </div>
         <div class="row">
           <div class="col submit-button text-center">
             <a href="index.php"><button class="btn btn-light">Kembali</button></a>

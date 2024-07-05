@@ -120,51 +120,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form method="post" enctype="multipart/form-data">
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" value="<?= htmlspecialchars($profile["email"]); ?>" class="form-control">
+            <input type="email" name="email" value="<?= htmlspecialchars($profile["email"]); ?>" class="form-control"
+              readonly>
           </div>
           <div class="mb-3">
             <label for="nama" class="form-label">Nama</label>
-            <input type="text" name="nama" value="<?= htmlspecialchars($profile["nama"]); ?>" class="form-control"
-              required>
+            <input type="text" name="nama" value="<?= htmlspecialchars($profile["nama"]); ?>"
+              class="form-control readonly" readonly>
           </div>
           <div class="mb-4">
             <label for="nim">NIM</label>
             <input type="text" name="nim" value="<?= htmlspecialchars($profile["nim"]); ?>" class="form-control"
-              disabled required>
+              disabled readonly>
           </div>
           <div class="mb-4">
             <label for="telepon">Telepon</label>
             <input type="text" name="telepon" value="<?= htmlspecialchars($profile["telepon"]); ?>" class="form-control"
-              maxlength="13" required>
+              maxlength="13" readonly>
           </div>
           <div class="mb-4">
             <label for="tempatlahir">Tempat Lahir</label>
             <input type="text" name="tempatlahir" value="<?= htmlspecialchars($profile["tempatlahir"]); ?>"
-              class="form-control" required>
+              class="form-control" readonly>
           </div>
           <div class="mb-4">
             <label for="tanggallahir">Tanggal Lahir</label>
             <input type="date" name="tanggallahir" value="<?= htmlspecialchars($profile["tanggallahir"]); ?>"
-              class="form-control" required>
+              class="form-control" readonly>
           </div>
           <div class="form-group mb-3">
             <label for="kelas" class="form-label">Kelas</label>
             <input type="text" name="kelas" class="form-control" value="<?= htmlspecialchars($profile["kelas"]); ?>"
-              required>
+              readonly>
           </div>
           <div class="mb-4">
             <label for="alamat">Alamat</label> <!-- Menambahkan field alamat -->
             <input type="text" name="alamat" class="form-control" value="<?= htmlspecialchars($profile["alamat"]); ?>"
-              required>
-          </div>
-          <div class="mb-4">
-            <label for="foto">Upload Foto</label>
-            <input type="file" name="foto" class="form-control">
-          </div>
-          <div class="row mb-1">
-            <div class="col submit-button text-center">
-              <button type="submit" class="btn btn-light">Update Profile</button>
-            </div>
+              readonly>
           </div>
         </form>
         <div class="row">
