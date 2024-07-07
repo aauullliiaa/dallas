@@ -171,7 +171,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                     <th>Tempat Lahir</th>
                                     <th>Tanggal Lahir</th>
                                     <th>Alamat</th>
-                                    <th>Foto</th>
                                     <th><?= $role == 'mahasiswa' ? 'Kelas' : 'NIP' ?></th>
                                 </tr>
                             </thead>
@@ -187,7 +186,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                         <td><?= htmlspecialchars($user['tempatlahir']) ?></td>
                                         <td><?= htmlspecialchars($user['tanggallahir']) ?></td>
                                         <td><?= htmlspecialchars($user['alamat']) ?></td>
-                                        <td><img src="<?= htmlspecialchars($user['foto']) ?>" alt="Foto" width="50px"></td>
                                         <td><?= htmlspecialchars($role == 'mahasiswa' ? $user['kelas'] : $user['nip']) ?></td>
                                     </tr>
                                     <?php $i++; ?>

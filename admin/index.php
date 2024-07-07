@@ -113,6 +113,63 @@ checkRole('admin');
     </div>
   </section>
   <!-- End of Jumbotron -->
+  <section>
+    <div class="container">
+      <div class="row text-center mb-2">
+        <h1>Menu Admin APD Learning Space</h1>
+      </div>
+      <div class="row justify-content-center">
+        <div class="card m-1 p-3" style="width: 20rem">
+          <img src="../src/images/eric-rothermel-FoKO4DpXamQ-unsplash.jpg" alt="" class="img-fluid rounded" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Jadwal Perkuliahan</h5>
+            <p class="card-text">
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Natus
+              quasi culpa quos in harum quidem mollitia, repellat expedita hic
+              voluptates!
+            </p>
+            <div class="card-footer text-end">
+              <small>
+                <a href="jadwal-kuliah.php">Lanjut<i class="bi bi-arrow-right-short"></i> </a></small>
+            </div>
+          </div>
+        </div>
+        <div class="card m-1 p-2" style="width: 20rem">
+          <img src="../src/images/patrick-tomasso-Oaqk7qqNh_c-unsplash.jpg" alt="" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Mata Kuliah</h5>
+            <p class="card-text">
+              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iste,
+              deleniti. Harum provident dolorem saepe beatae maiores veritatis
+              alias esse debitis?
+            </p>
+            <div class="card-footer text-end">
+              <small>
+                <a href="mata-kuliah.php">Lanjut<i class="bi bi-arrow-right-short"></i></a>
+              </small>
+            </div>
+          </div>
+        </div>
+        <div class="card m-1 p-2" style="width: 20rem">
+          <img src="../src/images/hero-mah.jpg" alt="" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Data Pengguna</h5>
+            <p class="card-text">
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Natus
+              quasi culpa quos in harum quidem mollitia, repellat expedita hic
+              voluptates!
+            </p>
+            <div class="card-footer text-end">
+              <small>
+                <a href="data-users.php">Lanjut<i class="bi bi-arrow-right-short"></i>
+                </a>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <!-- About -->
   <section id="about">
     <div class="container">
@@ -139,31 +196,6 @@ checkRole('admin');
     </div>
   </section>
   <!-- End of About -->
-  <!-- Sepatah Kata dari Kaprodi -->
-  <section id="kata-sambutan">
-    <div class="container">
-      <div class="row text-center pb-3">
-        <h1>Sambutan dari Ketua Program Studi</h1>
-      </div>
-      <div class="row align-items-center">
-        <div class="col-md-6 text-center">
-          <img src="../src/images/jk.jpg" class="img-fluid" alt="" />
-        </div>
-        <div class="col-md-6">
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Libero
-            illo debitis voluptatem et dignissimos sint fuga voluptates est
-            sit itaque obcaecati, consequuntur deserunt facere incidunt
-            aliquam, quod perferendis harum sunt recusandae aperiam.
-            Explicabo, harum sint nisi, dolorem accusamus aliquid, doloremque
-            inventore sunt omnis accusantium possimus doloribus nostrum iusto
-            est amet!
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- End of Sepatah Kata dari Kaprodi -->
   <!-- Alamat -->
   <section id="alamat">
     <div class="container justify-content-center">
