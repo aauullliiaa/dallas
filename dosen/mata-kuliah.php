@@ -11,15 +11,7 @@ unset($_SESSION['alert_type']);
 
 $dosen_id = $_SESSION['user_id'] ?? null;
 
-$approved_courses = retrieve(
-  "SELECT * FROM mata_kuliah WHERE dosen_id = ? AND status = 'Approved'",
-  [$dosen_id]
-);
-
-$pending_courses = retrieve(
-  "SELECT * FROM mata_kuliah WHERE dosen_id = ? AND status = 'Pending'",
-  [$dosen_id]
-);
+$courses = retrieve("SELECT * FROM mata_kuliah WHERE dosen_id = $dosen_id");
 ?>
 
 <!DOCTYPE html>
@@ -104,41 +96,16 @@ $pending_courses = retrieve(
       </div>
     <?php endif; ?>
 
-    <div class="card p-2">
-      <div class="card-body">
-        <p>Silakan tambahkan mata kuliah jika mata kuliah anda belum tersedia disini atau jika anda sudah menambahkan
-          mata kuliah anda, hubungi administrator untuk persetujuan mata kuliah.</p>
-        <div class="row">
-          <div class="col submit-button text-center">
-            <a href="tambah-matkul.php"><button class="btn">Tambah Mata Kuliah</button></a>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="row daftar-matkul mt-4">
-      <h5>Mata Kuliah yang terdaftar</h5>
+      <h5>Daftar Mata Kuliah</h5>
       <ul>
-        <?php if (empty($approved_courses)): ?>
+        <?php if (empty($courses)): ?>
           <li>Belum ada mata kuliah yang terdaftar.</li>
         <?php else: ?>
-          <?php foreach ($approved_courses as $course): ?>
+          <?php foreach ($courses as $course): ?>
             <li>
               <a href="detail-matkul.php?id=<?= $course["id"]; ?>"><?= $course["nama"] ?> -
                 <?= $course["kode"] ?></a>
-            </li>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </ul>
-    </div>
-    <div class="row daftar-matkul mt-4">
-      <h5>Mata kuliah yang belum terdaftar</h5>
-      <ul>
-        <?php if (empty($pending_courses)): ?>
-          <li>Belum ada mata kuliah yang ditambahkan</li>
-        <?php else: ?>
-          <?php foreach ($pending_courses as $course): ?>
-            <li>
-              <?= $course['nama']; ?> - <?= $course['kode'] ?>
             </li>
           <?php endforeach; ?>
         <?php endif; ?>

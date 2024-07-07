@@ -5,18 +5,19 @@ checkRole('admin');
 
 $role = isset($_GET['role']) ? $_GET['role'] : '';
 $users = [];
+
 if ($role == 'mahasiswa') {
-    $stmt = $db->prepare("SELECT u.id, u.nama, u.email, mp.telepon, mp.tempatlahir, mp.tanggallahir, mp.alamat
+    $stmt = $db->prepare("SELECT u.id, u.email, dm.nama, dm.nim, dm.alamat, dm.telepon, dm.tempatlahir, dm.tanggallahir, dm.foto, dm.kelas
                            FROM users u
-                           JOIN mahasiswa_profiles mp ON u.id = mp.user_id
+                           JOIN daftar_mahasiswa dm ON u.id = dm.user_id
                            WHERE u.role = 'mahasiswa'");
     $stmt->execute();
     $result = $stmt->get_result();
     $users = $result->fetch_all(MYSQLI_ASSOC);
 } elseif ($role == 'dosen') {
-    $stmt = $db->prepare("SELECT u.id, u.nama, u.email, dp.telepon, dp.tempatlahir, dp.tanggallahir, dp.alamat
+    $stmt = $db->prepare("SELECT u.id, u.email, dd.nama, dd.nip, dd.alamat, dd.telepon, dd.tempatlahir, dd.tanggallahir, dd.foto
                            FROM users u
-                           JOIN dosen_profiles dp ON u.id = dp.user_id
+                           JOIN daftar_dosen dd ON u.id = dd.user_id
                            WHERE u.role = 'dosen'");
     $stmt->execute();
     $result = $stmt->get_result();
@@ -25,18 +26,6 @@ if ($role == 'mahasiswa') {
 
 $message = "";
 $alert_class = "";
-
-if (isset($_POST['delete_id'])) {
-    $delete_id = $_POST['delete_id'];
-
-    $result = deleteUserAndDependencies($db, $delete_id, $role);
-    $_SESSION['message'] = $result['message'];
-    $_SESSION['alert_class'] = $result['alert_class'];
-
-    // Redirect ke halaman yang sama untuk memuat ulang data
-    header("Location: " . $_SERVER['PHP_SELF'] . "?role=" . $role);
-    exit;
-}
 
 // Ambil pesan dan alert dari session jika ada
 if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
@@ -56,7 +45,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>APD Learning Space - Data Pengguna</title>
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -141,7 +129,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
             <div class="mb-3">
                 <label for="role" class="form-label">Pilih Role:</label>
                 <div class="row">
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <select id="role" name="role" class="form-select" required>
                             <option value="">Pilih Role</option>
                             <option value="mahasiswa" <?= ($role == 'mahasiswa') ? 'selected' : ''; ?>>Mahasiswa</option>
@@ -183,7 +171,8 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                     <th>Tempat Lahir</th>
                                     <th>Tanggal Lahir</th>
                                     <th>Alamat</th>
-                                    <th>Aksi</th>
+                                    <th>Foto</th>
+                                    <th><?= $role == 'mahasiswa' ? 'Kelas' : 'NIP' ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -198,14 +187,8 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                         <td><?= htmlspecialchars($user['tempatlahir']) ?></td>
                                         <td><?= htmlspecialchars($user['tanggallahir']) ?></td>
                                         <td><?= htmlspecialchars($user['alamat']) ?></td>
-                                        <td>
-                                            <form action="" method="post"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini? Jika anda menghapus data ini, maka dosen terkait tidak dapat mengakses web ini!');">
-                                                <input type="hidden" name="delete_id"
-                                                    value="<?= htmlspecialchars($user['id']) ?>">
-                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                            </form>
-                                        </td>
+                                        <td><img src="<?= htmlspecialchars($user['foto']) ?>" alt="Foto" width="50px"></td>
+                                        <td><?= htmlspecialchars($role == 'mahasiswa' ? $user['kelas'] : $user['nip']) ?></td>
                                     </tr>
                                     <?php $i++; ?>
                                 <?php endforeach; ?>

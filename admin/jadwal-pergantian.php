@@ -3,7 +3,6 @@ session_start();
 require '../src/db/functions.php';
 checkRole('admin');
 
-// Logika untuk menghapus jadwal yang sudah kadaluarsa
 delete_expired_temporary_schedules($db);
 
 $all_slots = fetch_all_slots($db);
@@ -26,9 +25,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  if (isset($_POST['delete_schedule'])) {
+  if (isset($_POST['delete_schedule_permanently'])) {
     $schedule_id = $_POST['schedule_id'];
-    if (delete_schedule($db, $schedule_id)) {
+    if (delete_schedule_permanently($db, $schedule_id)) {
       $_SESSION['message'] = "Jadwal berhasil dihapus.";
       $_SESSION['alert_class'] = "alert-success";
     } else {
@@ -61,24 +60,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>APD Learning Space - Jadwal Pergantian</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
   <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <!-- CSS -->
-  <link rel="stylesheet" href="../src/css/style.css">
+  <link rel="stylesheet" href="../src/css/style.css" />
 </head>
 
 <header>
@@ -115,11 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               Data Pengguna
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="data-dosen.php">Data Dosen</a></li>
+              <li><a class="dropdown-item" href="data-users.php">Data Pengguna</a></li>
               <li>
                 <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
               </li>
-              <li><a class="dropdown-item" href="data-mahasiswa.php">Data Mahasiswa</a></li>
             </ul>
           </li>
           <li class="nav-item dropdown">
@@ -181,15 +178,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div><small>Dosen: <?= htmlspecialchars($schedule['dosen']); ?></small></div>
                         <div><small>Kelas: <?= htmlspecialchars($schedule['kelas']); ?></small></div>
                         <div><small>Ruang: <?= htmlspecialchars($schedule['classroom']); ?></small></div>
-                        <?php if ($schedule['is_temporary']): ?>
-                          <span class="badge bg-warning">Jadwal Pergantian</span><br>
-                          <form action="" method="post" class="d-inline"
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?');">
-                            <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
-                            <button type="submit" name="delete_schedule" class="btn btn-sm btn-danger mt-2">Hapus</button>
-                          </form>
-                        <?php endif; ?>
-                        <hr>
                       <?php endforeach; ?>
                     <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
                       Istirahat
@@ -237,10 +225,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <select id="matkul" name="matkul" class="form-select" required>
                 <option value="">--Pilih Mata Kuliah--</option>
                 <?php
-                $sql = "SELECT mata_kuliah.nama AS matkul_nama, dosen_profiles.nama AS dosen_nama, dosen_profiles.user_id AS dosen_id 
-                        FROM mata_kuliah 
-                        JOIN dosen_profiles ON mata_kuliah.dosen_id = dosen_profiles.user_id 
-                        WHERE mata_kuliah.status = 'Approved'";
+                $sql = "SELECT mata_kuliah.nama AS matkul_nama, daftar_dosen.nama AS dosen_nama, daftar_dosen.user_id AS dosen_id 
+                                        FROM mata_kuliah 
+                                        JOIN daftar_dosen ON mata_kuliah.dosen_id = daftar_dosen.user_id 
+                                        WHERE mata_kuliah.status = 'Approved'";
                 $result = $db->query($sql);
 
                 if ($result->num_rows > 0) {

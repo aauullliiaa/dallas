@@ -3,35 +3,6 @@ session_start();
 require '../src/db/functions.php';
 checkRole('admin');
 
-// Handle approval
-if (isset($_GET['approve'])) {
-  $id = $_GET['approve'];
-  if (approveMataKuliah($db, $id)) {
-    $_SESSION['message'] = "Mata kuliah berhasil disetujui.";
-    $_SESSION['alert_type'] = "success";
-  } else {
-    $_SESSION['message'] = "Gagal menyetujui mata kuliah. Silakan coba lagi.";
-    $_SESSION['alert_type'] = "danger";
-  }
-  header('Location: mata-kuliah.php');
-  exit;
-}
-
-// Handle rejection
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_id'])) {
-  $id = $_POST['reject_id'];
-  $reason = htmlspecialchars($_POST['reason']);
-  if (rejectMataKuliah($db, $id, $reason)) {
-    $_SESSION['message'] = "Mata kuliah berhasil ditolak.";
-    $_SESSION['alert_type'] = "success";
-  } else {
-    $_SESSION['message'] = "Gagal menolak mata kuliah. Silakan coba lagi.";
-    $_SESSION['alert_type'] = "danger";
-  }
-  header('Location: mata-kuliah.php');
-  exit;
-}
-
 // Handle deletion
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
@@ -47,10 +18,8 @@ if (isset($_GET['delete'])) {
 }
 
 $mata_kuliah = getAllMataKuliah($db);
-
-unset($_SESSION['message']);
-unset($_SESSION['alert_type']);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -72,21 +41,6 @@ unset($_SESSION['alert_type']);
   <!-- CSS -->
   <link rel="stylesheet" href="../src/css/style.css" />
   <script>
-    function confirmApproval(event, url) {
-      event.preventDefault();
-      if (confirm("Apakah anda yakin ingin menyetujui mata kuliah ini?")) {
-        window.location.href = url;
-      }
-    }
-
-    function showRejectModal(id) {
-      if (confirm("Apakah anda yakin ingin menolak mata kuliah ini?")) {
-        document.getElementById('reject-form').reject_id.value = id;
-        var rejectModal = new bootstrap.Modal(document.getElementById('rejectModal'));
-        rejectModal.show();
-      }
-    }
-
     function confirmDeletion(event, url) {
       event.preventDefault();
       if (confirm("Apakah anda yakin ingin menghapus mata kuliah ini?")) {
@@ -95,6 +49,7 @@ unset($_SESSION['alert_type']);
     }
   </script>
 </head>
+
 <header>
   <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
     <div class="container">
@@ -159,7 +114,7 @@ unset($_SESSION['alert_type']);
 </header>
 
 <body>
-  <div class="container mt-5">
+  <div class="container mt-5 text-center">
     <?php if (isset($_SESSION['message'])): ?>
       <div class="alert alert-<?= $_SESSION['alert_type']; ?>" role="alert">
         <?= $_SESSION['message']; ?>
@@ -175,8 +130,6 @@ unset($_SESSION['alert_type']);
               <th scope="col">Nama Mata Kuliah</th>
               <th scope="col">Deskripsi</th>
               <th scope="col">Dosen Pengampu</th>
-              <th scope="col">Status</th>
-              <th scope="col">Alasan Penolakan</th>
               <th scope="col">Aksi</th>
             </tr>
           </thead>
@@ -187,19 +140,9 @@ unset($_SESSION['alert_type']);
                 <td><?= $mata_kuliah_item['nama']; ?></td>
                 <td><?= $mata_kuliah_item['deskripsi']; ?></td>
                 <td><?= $mata_kuliah_item['dosen']; ?></td>
-                <td><?= $mata_kuliah_item['status']; ?></td>
-                <td><?= $mata_kuliah_item['status'] == 'Rejected' ? $mata_kuliah_item['reason'] : '-'; ?></td>
                 <td>
-                  <?php if ($mata_kuliah_item['status'] == 'Pending'): ?>
-                    <a href="mata-kuliah.php?approve=<?= $mata_kuliah_item['id']; ?>" class="btn btn-success btn-sm mb-1"
-                      onclick="confirmApproval(event, this.href)">Approve</a>
-                    <button class="btn btn-danger btn-sm mb-1"
-                      onclick="showRejectModal(<?= $mata_kuliah_item['id']; ?>)">Tolak</button><br>
-                  <?php endif; ?>
-                  <?php if ($mata_kuliah_item['status'] != 'Approved'): ?>
-                    <a href="mata-kuliah.php?delete=<?= $mata_kuliah_item['id']; ?>" class="btn btn-danger btn-sm"
-                      onclick="confirmDeletion(event, this.href)">Hapus</a>
-                  <?php endif; ?>
+                  <a href="mata-kuliah.php?delete=<?= $mata_kuliah_item['id']; ?>" class="btn btn-danger btn-sm"
+                    onclick="confirmDeletion(event, this.href)">Hapus</a>
                 </td>
               </tr>
             <?php endforeach; ?>
@@ -208,29 +151,6 @@ unset($_SESSION['alert_type']);
       </div>
     </div>
   </div>
-
-  <!-- Modal for rejection -->
-  <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="rejectModalLabel">Tolak Mata Kuliah</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="reject-form" method="post" action="">
-            <input type="hidden" name="reject_id" value="">
-            <div class="mb-3">
-              <label for="reason" class="form-label">Alasan Penolakan</label>
-              <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-danger">Tolak</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>

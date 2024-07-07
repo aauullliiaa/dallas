@@ -179,7 +179,7 @@ unset($_SESSION['alert_type']);
                         <select id="matkul" name="matkul" class="form-select" required>
                             <option value="">--Pilih Mata Kuliah--</option>
                             <?php
-                            $sql = "SELECT id, nama, dosen_id FROM mata_kuliah WHERE status = 'Approved'";
+                            $sql = "SELECT id, nama, dosen_id FROM mata_kuliah";
                             $result = $db->query($sql);
 
                             if ($result->num_rows > 0) {
@@ -254,7 +254,7 @@ unset($_SESSION['alert_type']);
             // Find the selected dosen name from the options
             var dosenName = '';
             <?php
-            $sql = "SELECT user_id, nama FROM dosen_profiles";
+            $sql = "SELECT user_id, nama FROM daftar_dosen";
             $result = $db->query($sql);
             $dosen_list = [];
             while ($row = $result->fetch_assoc()) {

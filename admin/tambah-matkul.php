@@ -3,9 +3,9 @@ session_start();
 require '../src/db/functions.php';
 checkRole('admin');
 
-// Ambil daftar nama dosen dari tabel dosen_profiles
+// Ambil daftar nama dosen dari tabel daftar_dosen
 $dosenList = [];
-$query = "SELECT user_id, nama FROM dosen_profiles";
+$query = "SELECT user_id, nama FROM daftar_dosen";
 $result = $db->query($query);
 if ($result) {
   while ($row = $result->fetch_assoc()) {
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Menutup koneksi
 $db->close();
 
-if ($alert_type === 'success') {
+if (isset($alert_type) && $alert_type === 'success') {
   $_SESSION['message'] = $message;
   $_SESSION['alert_type'] = $alert_type;
   header("Location: mata-kuliah.php");
@@ -151,7 +151,7 @@ if ($alert_type === 'success') {
           </div>
         </form>
         <div class="row submit-button">
-          <a href="mata-kuliah.php"><button class="btn">Kembali</button></a>
+          <a href="mata-kuliah.php"><button class="btn btn-light">Kembali</button></a>
         </div>
       </div>
     </div>

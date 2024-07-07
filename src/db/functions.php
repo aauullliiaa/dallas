@@ -43,73 +43,85 @@ function checkRole($role)
 }
 
 // fungsi halaman register
-function registerUser($email, $password, $role, $nama)
+function registerUser($email, $password, $role)
 {
     global $db;
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $db->prepare("INSERT INTO users (email, password, role, nama) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $email, $hashed_password, $role, $nama);
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+    $stmt = $db->prepare("INSERT INTO users (email, password, role) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $email, $hashed_password, $role);
     if ($stmt->execute()) {
-        $user_id = $stmt->insert_id;  // Get the ID of the newly inserted user
-        $stmt->close();
-        return $user_id;
+        return $stmt->insert_id; // Mengembalikan ID pengguna yang baru
     } else {
-        $stmt->close();
+        error_log("Error in registerUser: " . $stmt->error);
         return false;
     }
 }
 
-function registerMahasiswaProfile($user_id, $email, $nama, $nim)
+function updateDosenProfile($user_id, $email, $password, $nip)
 {
     global $db;
-    $stmt = $db->prepare("INSERT INTO mahasiswa_profiles (user_id, email, nama, nim) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("isss", $user_id, $email, $nama, $nim);
-    $stmt->execute();
-    $stmt->close();
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+    $stmt = $db->prepare("UPDATE daftar_dosen SET email = ?, password = ?, user_id = ? WHERE nip = ?");
+    $stmt->bind_param("ssis", $email, $hashed_password, $user_id, $nip);
+    if ($stmt->execute()) {
+        return true;
+    } else {
+        error_log("Error in updateDosenProfile: " . $stmt->error);
+        return false;
+    }
 }
 
-function registerDosenProfile($user_id, $email, $nama, $nip)
+function updateMahasiswaProfile($user_id, $email, $password, $nim)
 {
     global $db;
-    $stmt = $db->prepare("INSERT INTO dosen_profiles (user_id, email, nama, nip) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("isss", $user_id, $email, $nama, $nip);
-    $stmt->execute();
-    $stmt->close();
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+    $stmt = $db->prepare("UPDATE daftar_mahasiswa SET email = ?, password = ?, user_id = ? WHERE nim = ?");
+    $stmt->bind_param("ssis", $email, $hashed_password, $user_id, $nim);
+    if ($stmt->execute()) {
+        return true;
+    } else {
+        error_log("Error in updateMahasiswaProfile: " . $stmt->error);
+        return false;
+    }
 }
-function isNIP($id)
+function isNIP($input)
 {
-    // Periksa apakah ID adalah NIP (Anda dapat menyesuaikan logika ini berdasarkan format NIP Anda)
-    return preg_match('/^[0-9]{18}$/', $id); // Contoh: NIP memiliki 8 hingga 10 digit
+    // Validasi NIP: 18 digit
+    return preg_match('/^[0-9]{18}$/', $input);
 }
 
-function isNIM($id)
+function isNIM($input)
 {
-    // Periksa apakah ID adalah NIM (Anda dapat menyesuaikan logika ini berdasarkan format NIM Anda)
-    return preg_match('/^[0-9]{5,12}$/', $id); // Contoh: NIM memiliki 5 hingga 12 digit
+    // Validasi NIM: 8 digit
+    return preg_match('/^[0-9]{8}$/', $input);
 }
 
 function loginUser($emailOrId, $password)
 {
     global $db;
 
-    // Identifikasi apakah input adalah email, NIP, atau NIM
     if (filter_var($emailOrId, FILTER_VALIDATE_EMAIL)) {
-        $query = "SELECT id, password, role, nama FROM users WHERE email = ?";
+        $query = "SELECT id, password, role FROM users WHERE email = ?";
         $role = 'admin'; // default role if checking by email
     } elseif (isNIP($emailOrId)) {
-        $query = "SELECT u.id, u.password, 'dosen' as role, dp.nama FROM users u JOIN dosen_profiles dp ON u.id = dp.user_id WHERE dp.nip = ?";
+        $query = "SELECT u.id, u.password, 'dosen' as role FROM users u JOIN daftar_dosen dd ON u.id = dd.user_id WHERE dd.nip = ?";
         $role = 'dosen';
     } elseif (isNIM($emailOrId)) {
-        $query = "SELECT u.id, u.password, 'mahasiswa' as role, mp.nama FROM users u JOIN mahasiswa_profiles mp ON u.id = mp.user_id WHERE mp.nim = ?";
+        $query = "SELECT u.id, u.password, 'mahasiswa' as role FROM users u JOIN daftar_mahasiswa dm ON u.id = dm.user_id WHERE dm.nim = ?";
         $role = 'mahasiswa';
     } else {
         return false;
     }
 
     $stmt = $db->prepare($query);
+    if (!$stmt) {
+        error_log("Prepare failed: " . $db->error);
+        return false;
+    }
+
     $stmt->bind_param("s", $emailOrId);
     $stmt->execute();
-    $stmt->bind_result($user_id, $hashed_password, $role, $nama);
+    $stmt->bind_result($user_id, $hashed_password, $role);
     $stmt->fetch();
     $stmt->close();
 
@@ -118,7 +130,6 @@ function loginUser($emailOrId, $password)
         $_SESSION['user_id'] = $user_id;
         $_SESSION['emailOrId'] = $emailOrId;
         $_SESSION['role'] = $role;
-        $_SESSION['nama'] = $nama;
 
         return true;
     } else {
@@ -214,20 +225,21 @@ function getUserProfile($user_id, $role)
 
     switch ($role) {
         case 'admin':
-            $stmt = $db->prepare("SELECT nama, foto FROM admin_profiles WHERE user_id = ?");
+            // Sesuaikan query untuk admin jika ada tabel atau kolom yang relevan untuk admin
+            $stmt = $db->prepare("SELECT email FROM users WHERE id = ?");
             break;
         case 'mahasiswa':
-            $stmt = $db->prepare("SELECT email, nama, nim, telepon, tempatlahir, tanggallahir, foto, kelas, alamat FROM mahasiswa_profiles WHERE user_id = ?");
+            $stmt = $db->prepare("SELECT email, nama, nim, alamat, foto, telepon, kelas, tempatlahir, tanggallahir FROM daftar_mahasiswa WHERE user_id = ?");
             break;
         case 'dosen':
-            $stmt = $db->prepare("SELECT email, nama, nip, telepon, tempatlahir, tanggallahir, foto, penghargaan, pengabdian, alamat FROM dosen_profiles WHERE user_id = ?");
+            $stmt = $db->prepare("SELECT email, nama, nip, alamat, telepon, foto, tempatlahir, tanggallahir FROM daftar_dosen WHERE user_id = ?");
             break;
         default:
             return null;
     }
 
     if (!$stmt) {
-        echo "Error: " . $db->error;
+        error_log("Prepare failed: " . $db->error);
         return null;
     }
 
@@ -254,12 +266,37 @@ function updateUserProfile($user_id, $role, $data)
                 $stmt->bind_param("sssi", $data['nama'], $data['email'], $data['foto'], $user_id);
                 break;
             case 'mahasiswa':
-                $stmt = $db->prepare("UPDATE mahasiswa_profiles SET nama = ?, email = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?, foto = ?, kelas = ?, alamat = ? WHERE user_id = ?");
-                $stmt->bind_param("ssssssssi", $data['nama'], $data['email'], $data['telepon'], $data['tempatlahir'], $data['tanggallahir'], $data['foto'], $data['kelas'], $data['alamat'], $user_id);
+                $stmt = $db->prepare("UPDATE daftar_mahasiswa SET nama = ?, email = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?,
+foto = ?, kelas = ?, alamat = ? WHERE user_id = ?");
+                $stmt->bind_param(
+                    "ssssssssi",
+                    $data['nama'],
+                    $data['email'],
+                    $data['telepon'],
+                    $data['tempatlahir'],
+                    $data['tanggallahir'],
+                    $data['foto'],
+                    $data['kelas'],
+                    $data['alamat'],
+                    $user_id
+                );
                 break;
             case 'dosen':
-                $stmt = $db->prepare("UPDATE dosen_profiles SET nama = ?, email = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?, foto = ?, penghargaan = ?, pengabdian = ?, alamat = ? WHERE user_id = ?");
-                $stmt->bind_param("sssssssssi", $data['nama'], $data['email'], $data['telepon'], $data['tempatlahir'], $data['tanggallahir'], $data['foto'], $data['penghargaan'], $data['pengabdian'], $data['alamat'], $user_id);
+                $stmt = $db->prepare("UPDATE daftar_dosen SET nama = ?, email = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?,
+foto = ?, penghargaan = ?, pengabdian = ?, alamat = ? WHERE user_id = ?");
+                $stmt->bind_param(
+                    "sssssssssi",
+                    $data['nama'],
+                    $data['email'],
+                    $data['telepon'],
+                    $data['tempatlahir'],
+                    $data['tanggallahir'],
+                    $data['foto'],
+                    $data['penghargaan'],
+                    $data['pengabdian'],
+                    $data['alamat'],
+                    $user_id
+                );
                 break;
             default:
                 return false;
@@ -304,7 +341,8 @@ function ubah($data)
     $telepon = $data["telepon"];
 
     // Prepare statement to prevent SQL Injection
-    $stmt = $db->prepare("UPDATE dosen_profiles SET nama = ?, nip = ?, email = ?, alamat = ?, telepon = ? WHERE user_id = ?");
+    $stmt = $db->prepare("UPDATE daftar_dosen SET nama = ?, nip = ?, email = ?, alamat = ?, telepon = ? WHERE user_id =
+?");
     if ($stmt === false) {
         die('Prepare failed: ' . htmlspecialchars($db->error));
     }
@@ -342,7 +380,8 @@ function edit($data)
     $alamat = $data["alamat"];
 
     // Prepare statement to prevent SQL Injection
-    $stmt = $db->prepare("UPDATE mahasiswa_profiles SET nama = ?, nim = ?, telepon = ?, kelas = ?, alamat = ? WHERE user_id = ?");
+    $stmt = $db->prepare("UPDATE daftar_mahasiswa SET nama = ?, nim = ?, telepon = ?, kelas = ?, alamat = ? WHERE user_id
+= ?");
     if ($stmt === false) {
         die('Prepare failed: ' . htmlspecialchars($db->error));
     }
@@ -369,43 +408,6 @@ function edit($data)
 }
 // end of function edit data (admin)
 
-// fungsi untuk menyimpan data mata kuliah saat pertama kali ditambahkan
-function processCourseFormByDosen($db)
-{
-    $message = '';
-    $alert_type = '';
-
-    if (isset($_POST['kode'], $_POST['nama'], $_POST['deskripsi'], $_POST['dosen_id'])) {
-        // Escape special characters to prevent XSS
-        $kode = htmlspecialchars($_POST['kode']);
-        $nama = htmlspecialchars($_POST['nama']);
-        $deskripsi = htmlspecialchars($_POST['deskripsi']);
-        $dosen_id = intval($_POST['dosen_id']); // Convert to integer for safety
-
-        // Prepare SQL statement with email_dosen field
-        $sql = "INSERT INTO mata_kuliah (kode, nama, deskripsi, status, dosen_id) VALUES (?, ?, ?, 'Pending', ?)";
-        $stmt = $db->prepare($sql);
-
-        if ($stmt === false) {
-            $message = "Terjadi kesalahan dalam persiapan statement SQL.";
-            $alert_type = "danger";
-            return [$message, $alert_type];
-        }
-
-        $stmt->bind_param("sssi", $kode, $nama, $deskripsi, $dosen_id);
-
-        if ($stmt->execute()) {
-            $message = "Mata Kuliah berhasil ditambahkan. Mohon hubungi administrator untuk proses persetujuan lebih lanjut.";
-            $alert_type = "success";
-        } else {
-            $message = "Mata kuliah gagal ditambahkan, silakan coba lagi.";
-            $alert_type = "danger";
-        }
-        $stmt->close();
-    }
-    return [$message, $alert_type];
-}
-// Akhir kode untuk menyimpan data detail mata kuliah
 
 // fungsi untuk mengupload data berupa materi pembelajaran
 function processMaterialUpload($db)
@@ -496,7 +498,14 @@ function editmk($matkul)
         return false;
     }
 
-    $stmt->bind_param("ssisi", $matkul["nama"], $matkul["kode"], $matkul["dosen_id"], $matkul["deskripsi"], $matkul["id"]);
+    $stmt->bind_param(
+        "ssisi",
+        $matkul["nama"],
+        $matkul["kode"],
+        $matkul["dosen_id"],
+        $matkul["deskripsi"],
+        $matkul["id"]
+    );
     $stmt->execute();
 
     $affected_rows = $stmt->affected_rows;
@@ -556,18 +565,32 @@ function get_course_name($db, $matkul_id)
 }
 
 // Menyimpan data yang disubmit dari halaman tambah jadwal
-function insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $time_slots, $start_index, $end_index, $is_temporary = 0, $end_date = NULL)
-{
+function insert_schedule(
+    $db,
+    $hari,
+    $matkul,
+    $dosen_id,
+    $classroom,
+    $kelas,
+    $time_slots,
+    $start_index,
+    $end_index,
+    $is_temporary = 0,
+    $end_date = NULL
+) {
     $message = "";
     $alert_class = "";
 
     // Validate required parameters
-    if (empty($hari) || empty($matkul) || empty($dosen_id) || empty($classroom) || empty($kelas) || $start_index === false || $end_index === false || $start_index > $end_index) {
+    if (
+        empty($hari) || empty($matkul) || empty($dosen_id) || empty($classroom) || empty($kelas) || $start_index ===
+        false || $end_index === false || $start_index > $end_index
+    ) {
         return ["Error: Invalid input data", "alert-danger"];
     }
 
     // Validate dosen_id exists in dosen_profiles
-    $stmt = $db->prepare("SELECT 1 FROM dosen_profiles WHERE user_id = ?");
+    $stmt = $db->prepare("SELECT 1 FROM daftar_dosen WHERE user_id = ?");
     $stmt->bind_param("i", $dosen_id);
     $stmt->execute();
     $stmt->store_result();
@@ -591,7 +614,8 @@ function insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $ti
     $stmt->close();
 
     // Prepare the SQL statement
-    $stmt = $db->prepare("INSERT INTO jadwal_kuliah (hari, matkul, dosen_id, classroom, kelas, jam, is_temporary, end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $db->prepare("INSERT INTO jadwal_kuliah (hari, matkul, dosen_id, classroom, kelas, jam, is_temporary,
+    end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
     if (!$stmt) {
         return ["Error: " . $db->error, "alert-danger"];
@@ -603,7 +627,17 @@ function insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $ti
     try {
         for ($i = $start_index; $i <= $end_index; $i++) {
             $current_time = $time_slots[$i];
-            $stmt->bind_param("ssisssis", $hari, $matkul, $dosen_id, $classroom, $kelas, $current_time, $is_temporary, $end_date);
+            $stmt->bind_param(
+                "ssisssis",
+                $hari,
+                $matkul,
+                $dosen_id,
+                $classroom,
+                $kelas,
+                $current_time,
+                $is_temporary,
+                $end_date
+            );
 
             if (!$stmt->execute()) {
                 throw new Exception($stmt->error);
@@ -654,7 +688,7 @@ function get_time_slots_for_viewing()
 // Akhir kode untuk fungsi menampilkan keseluruhan jadwal
 
 // Fungsi untuk menghapus jadwal
-function delete_schedule($db, $schedule_id)
+function delete_schedule_permanently($db, $schedule_id)
 {
     $sql = "DELETE FROM jadwal_kuliah WHERE id = ?";
     $stmt = $db->prepare($sql);
@@ -663,14 +697,22 @@ function delete_schedule($db, $schedule_id)
     $stmt->close();
     return $result;
 }
+
+function delete_schedule_temporarily($db, $hari, $jam)
+{
+    $sql = "UPDATE jadwal_kuliah SET is_deleted_temp = 1 WHERE hari = ? AND jam = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param('ss', $hari, $jam);
+    return $stmt->execute();
+}
 // Akhir kode untuk menghapus jadwal
 
 // Fungsi untuk menampilkan jadwal sesuai dengan kelas
 function fetch_schedules($db, $kelas)
 {
-    $sql = "SELECT jk.*, dp.nama as dosen FROM jadwal_kuliah jk 
-            JOIN dosen_profiles dp ON jk.dosen_id = dp.user_id
-            WHERE jk.kelas = ?";
+    $sql = "SELECT jk.*, dp.nama as dosen FROM jadwal_kuliah jk
+        JOIN daftar_dosen dp ON jk.dosen_id = dp.user_id
+        WHERE jk.kelas = ?";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("s", $kelas);
     $stmt->execute();
@@ -718,8 +760,23 @@ function fetch_schedules_by_details($db, $hari, $matkul, $kelas)
 }
 
 // Fungsi untuk mengupdate atau memasukkan jadwal apabila belum ditambahkan
-function update_or_insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $jam_mulai, $jam_selesai, $time_slots, $is_temporary = 0, $end_date = NULL, $old_hari = NULL, $old_jam_mulai = NULL, $old_jam_selesai = NULL)
-{
+function update_or_insert_schedule(
+    $db,
+    $hari,
+    $matkul,
+    $dosen_id,
+    $classroom,
+    $kelas,
+    $jam_mulai,
+    $jam_selesai,
+    $time_slots,
+    $is_temporary = 0,
+    $end_date = NULL,
+    $old_hari = NULL,
+    $old_jam_mulai = NULL,
+    $old_jam_selesai =
+    NULL
+) {
     $message = "";
     $alert_class = "";
 
@@ -757,16 +814,36 @@ function update_or_insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $
 
     for ($i = $start_index; $i <= $end_index; $i++) {
         $current_time = $time_slots[$i];
-        if (isset($existing_schedules[$current_time])) {
-            $sql = "UPDATE jadwal_kuliah SET matkul = ?, dosen_id = ?, classroom = ?, is_temporary = ?, end_date = ? WHERE id = ?";
+        if
+        (isset($existing_schedules[$current_time])) {
+            $sql = "UPDATE jadwal_kuliah SET matkul = ?, dosen_id = ?, classroom = ?, is_temporary = ?, end_date = ? WHERE id = ?"
+            ;
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("sisssi", $matkul, $dosen_id, $classroom, $is_temporary, $end_date, $existing_schedules[$current_time]);
+            $stmt->bind_param(
+                "sisssi",
+                $matkul,
+                $dosen_id,
+                $classroom,
+                $is_temporary,
+                $end_date,
+                $existing_schedules[$current_time]
+            );
             unset($existing_schedules[$current_time]);
         } else {
             $sql = "INSERT INTO jadwal_kuliah (hari, matkul, dosen_id, classroom, kelas, jam, is_temporary, end_date)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $db->prepare($sql);
-            $stmt->bind_param("ssisssis", $hari, $matkul, $dosen_id, $classroom, $kelas, $current_time, $is_temporary, $end_date);
+            $stmt->bind_param(
+                "ssisssis",
+                $hari,
+                $matkul,
+                $dosen_id,
+                $classroom,
+                $kelas,
+                $current_time,
+                $is_temporary,
+                $end_date
+            );
         }
 
         if (!$stmt->execute()) {
@@ -824,9 +901,10 @@ function fetch_all_slots($db)
 
     foreach ($days as $day) {
         foreach ($time_slots as $slot) {
-            $sql = "SELECT jk.*, dp.nama AS dosen FROM jadwal_kuliah jk 
-                    JOIN dosen_profiles dp ON jk.dosen_id = dp.user_id 
-                    WHERE jk.hari = ? AND jk.jam = ? AND (jk.is_temporary = 0 OR (jk.is_temporary = 1 AND jk.end_date >= CURDATE()))";
+            $sql = "SELECT jk.*, dp.nama AS dosen FROM jadwal_kuliah jk
+            JOIN daftar_dosen dp ON jk.dosen_id = dp.user_id
+            WHERE jk.hari = ? AND jk.jam = ? AND (jk.is_temporary = 0 OR (jk.is_temporary = 1 AND jk.end_date >=
+            CURDATE()))";
             $stmt = $db->prepare($sql);
             $stmt->bind_param("ss", $day, $slot);
             $stmt->execute();
@@ -867,7 +945,13 @@ function insertPertemuan($data)
     global $db;
     $sql = "INSERT INTO pertemuan (mata_kuliah_id, pertemuan, deskripsi, tanggal) VALUES (?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
-    $stmt->bind_param("iiss", $data['mata_kuliah_id'], $data['pertemuan'], $data['deskripsi'], $data['tanggal']);
+    $stmt->bind_param(
+        "iiss",
+        $data['mata_kuliah_id'],
+        $data['pertemuan'],
+        $data['deskripsi'],
+        $data['tanggal']
+    );
     if ($stmt->execute()) {
         $id = $stmt->insert_id;
         $stmt->close();
@@ -881,9 +965,18 @@ function insertPertemuan($data)
 function insertTugasPertemuan($data)
 {
     global $db;
-    $sql = "INSERT INTO tugas_pertemuan (pertemuan_id, judul, deskripsi, tanggal_deadline, jam_deadline, file_tugas) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO tugas_pertemuan (pertemuan_id, judul, deskripsi, tanggal_deadline, jam_deadline,
+                file_tugas) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
-    $stmt->bind_param("isssss", $data['pertemuan_id'], $data['judul'], $data['deskripsi'], $data['tanggal_deadline'], $data['jam_deadline'], $data['file_tugas']);
+    $stmt->bind_param(
+        "isssss",
+        $data['pertemuan_id'],
+        $data['judul'],
+        $data['deskripsi'],
+        $data['tanggal_deadline'],
+        $data['jam_deadline'],
+        $data['file_tugas']
+    );
     if ($stmt->execute()) {
         $stmt->close();
         return true;
@@ -893,8 +986,17 @@ function insertTugasPertemuan($data)
     }
 }
 
-function uploadFileTugas($file, $target_dir = "../src/files/assignment/", $allowed_types = ['doc', 'docx', 'pdf', 'xls', 'pptx'])
-{
+function uploadFileTugas(
+    $file,
+    $target_dir = "../src/files/assignment/",
+    $allowed_types = [
+        'doc',
+        'docx',
+        'pdf',
+        'xls',
+        'pptx'
+    ]
+) {
     if ($file['error'] == 0) {
         $file_extension = pathinfo($file["name"], PATHINFO_EXTENSION);
         if (in_array($file_extension, $allowed_types)) {
@@ -905,7 +1007,10 @@ function uploadFileTugas($file, $target_dir = "../src/files/assignment/", $allow
                 return ['error' => "Gagal mengupload file tugas."];
             }
         } else {
-            return ['error' => "Format file tidak didukung. Hanya file dengan format doc, docx, pdf, xls, pptx yang diizinkan."];
+            return [
+                'error' => "Format file tidak didukung. Hanya file dengan format doc, docx, pdf, xls, pptx yang
+                diizinkan."
+            ];
         }
     }
     return '';
@@ -915,7 +1020,8 @@ function uploadFileTugas($file, $target_dir = "../src/files/assignment/", $allow
 function insertTugasKumpul($data)
 {
     global $db;
-    $sql = "INSERT INTO tugas_kumpul (tugas_id, mahasiswa_id, file_path, tanggal_kumpul, jam_kumpul) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO tugas_kumpul (tugas_id, mahasiswa_id, file_path, tanggal_kumpul, jam_kumpul) VALUES
+                (?, ?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
     $stmt->bind_param(
         "iisss",
@@ -937,7 +1043,8 @@ function insertTugasKumpul($data)
 function deleteTugasKumpulByPertemuan($pertemuan_id)
 {
     global $db;
-    $sql = "DELETE FROM tugas_kumpul WHERE tugas_id IN (SELECT id FROM tugas_pertemuan WHERE pertemuan_id = ?)";
+    $sql = "DELETE FROM tugas_kumpul WHERE tugas_id IN (SELECT id FROM tugas_pertemuan WHERE pertemuan_id =
+                ?)";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("i", $pertemuan_id);
     if ($stmt->execute()) {
@@ -971,7 +1078,7 @@ function deletePertemuan($pertemuan_id)
 
 function getDosenNameById($db, $dosen_id)
 {
-    $stmt = $db->prepare("SELECT nama FROM dosen_profiles WHERE user_id = ?");
+    $stmt = $db->prepare("SELECT nama FROM daftar_dosen WHERE user_id = ?");
     $stmt->bind_param("s", $dosen_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -981,9 +1088,9 @@ function getDosenNameById($db, $dosen_id)
 
 function getAllMataKuliah($db)
 {
-    $sql = "SELECT mk.id, mk.kode, mk.nama, mk.deskripsi, mk.status, mk.reason, dp.nama as dosen 
+    $sql = "SELECT mk.id, mk.kode, mk.nama, mk.deskripsi, dd.nama as dosen
             FROM mata_kuliah mk
-            JOIN dosen_profiles dp ON mk.dosen_id = dp.user_id";
+            JOIN daftar_dosen dd ON mk.dosen_id = dd.user_id";
     $result = $db->query($sql);
     $mata_kuliah = [];
     while ($row = $result->fetch_assoc()) {
@@ -991,6 +1098,7 @@ function getAllMataKuliah($db)
     }
     return $mata_kuliah;
 }
+
 
 function approveMataKuliah($db, $id)
 {
@@ -1007,7 +1115,6 @@ function rejectMataKuliah($db, $id, $reason)
     $stmt->bind_param('si', $reason, $id);
     return $stmt->execute();
 }
-
 function processCourseFormByAdmin($db)
 {
     $message = '';
@@ -1020,23 +1127,54 @@ function processCourseFormByAdmin($db)
         $deskripsi = htmlspecialchars($_POST['deskripsi']);
         $dosen_id = (int) $_POST['dosen_id'];
 
-        // Prepare SQL statement
-        $sql = "INSERT INTO mata_kuliah (kode, nama, deskripsi, dosen_id, status) VALUES (?, ?, ?, ?, 'Pending')";
+        // Cek apakah dosen_id ada di daftar_dosen
+        $query = "SELECT user_id FROM daftar_dosen WHERE user_id = ?";
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            $message = "Terjadi kesalahan pada persiapan statement: " . $db->error;
+            $alert_type = "danger";
+            return [$message, $alert_type];
+        }
+
+        $stmt->bind_param("i", $dosen_id);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows == 0) {
+            $message = "Dosen dengan ID tersebut tidak ditemukan.";
+            $alert_type = "danger";
+            $stmt->close();
+            return [$message, $alert_type];
+        }
+
+        $stmt->close();
+
+        // Lanjutkan dengan insert jika dosen_id valid
+        $sql = "INSERT INTO mata_kuliah (kode, nama, deskripsi, dosen_id) VALUES (?, ?, ?, ?)";
         $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            $message = "Terjadi kesalahan pada persiapan statement: " . $db->error;
+            $alert_type = "danger";
+            return [$message, $alert_type];
+        }
+
         $stmt->bind_param("sssi", $kode, $nama, $deskripsi, $dosen_id);
 
         if ($stmt->execute()) {
-            $message = "Mata Kuliah berhasil ditambahkan. Mohon hubungi administrator untuk proses persetujuan lebih lanjut.";
+            $message = "Mata Kuliah berhasil ditambahkan.";
             $alert_type = "success";
         } else {
-            $message = "Mata kuliah gagal ditambahkan, silakan coba lagi";
+            $message = "Mata kuliah gagal ditambahkan, silakan coba lagi. Kesalahan: " . $stmt->error;
             $alert_type = "danger";
         }
         $stmt->close();
+    } else {
+        $message = "Harap isi semua kolom yang diperlukan.";
+        $alert_type = "warning";
     }
+
     return [$message, $alert_type];
 }
-
 function deleteMataKuliah($db, $id)
 {
     $query = "DELETE FROM mata_kuliah WHERE id = ?";
@@ -1048,7 +1186,7 @@ function deleteMataKuliah($db, $id)
 function getDosenName($dosen_id)
 {
     global $db;
-    $query = "SELECT nama FROM dosen_profiles WHERE user_id = ?";
+    $query = "SELECT nama FROM daftar_dosen WHERE user_id = ?";
     $stmt = $db->prepare($query);
     $stmt->bind_param("i", $dosen_id);
     $stmt->execute();
@@ -1068,7 +1206,7 @@ function deleteMateri($materi_id)
 
 function get_all_courses($db)
 {
-    $sql = "SELECT id, nama, dosen_id FROM mata_kuliah WHERE status = 'Approved'";
+    $sql = "SELECT id, nama, dosen_id FROM mata_kuliah";
     $result = $db->query($sql);
     $courses = [];
     while ($row = $result->fetch_assoc()) {
@@ -1076,27 +1214,6 @@ function get_all_courses($db)
     }
     return $courses;
 }
-
-function input_dosen($data)
-{
-    global $db;
-    $sql = "INSERT INTO daftar_dosen (nama, nip) VALUES (?, ?)";
-    $stmt = $db->prepare($sql);
-    if ($stmt === false) {
-        return "Error: " . $db->error;
-    }
-    $stmt->bind_param("ss", $data['nama'], $data['nip']);
-    if ($stmt->execute() === true) {
-        $stmt->close();
-        return true;
-    } else {
-        $stmt->close();
-        return "Error: " . $stmt->error;
-    }
-}
-
-// functions.php
-
 function deleteUserAndDependencies($db, $delete_id, $role)
 {
     try {

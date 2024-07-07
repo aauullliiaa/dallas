@@ -5,7 +5,7 @@ checkRole('admin');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_schedule'])) {
   $schedule_id = $_POST['schedule_id'];
-  if (delete_schedule($db, $schedule_id)) {
+  if (delete_schedule_permanently($db, $schedule_id)) {
     $message = "Jadwal berhasil dihapus.";
     $alert_class = "alert-success";
   } else {

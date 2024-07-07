@@ -9,7 +9,7 @@ $materi = retrieve("SELECT * FROM materi WHERE mata_kuliah_id = ? ORDER BY perte
 
 // Ambil nama dosen berdasarkan dosen_id
 $dosen_id = $matkul['dosen_id'];
-$dosen = retrieve("SELECT nama FROM dosen_profiles WHERE user_id = ?", [$dosen_id])[0]['nama'];
+$dosen = retrieve("SELECT nama FROM daftar_dosen WHERE user_id = ?", [$dosen_id])[0]['nama'];
 
 $message = $_SESSION['message'] ?? '';
 $alert_type = $_SESSION['alert_type'] ?? '';
@@ -123,8 +123,6 @@ if (isset($_POST['delete_materi_id'])) {
     </div>
     <div class="row">
       <div class="col submit-button">
-        <a href="edit-matkul.php?id=<?= htmlspecialchars($matkul["id"]); ?>"><button
-            class="btn btn-light">Edit</button></a>
         <a href="upload-materi.php?id=<?= htmlspecialchars($matkul["id"]); ?>"><button class="btn btn-light">Upload
             Materi</button></a>
         <a href="tugas-matkul.php?id=<?= htmlspecialchars($matkul["id"]); ?>"><button

@@ -11,15 +11,6 @@ $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 $time_slots_viewing = get_time_slots_for_viewing();
 $time_slots_adding = get_time_slots_for_adding();
 
-// Logika untuk menghapus jadwal yang sudah kadaluarsa
-delete_expired_temporary_schedules($db);
-
-$all_slots = fetch_all_slots($db);
-
-$days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-$time_slots_viewing = get_time_slots_for_viewing();
-$time_slots_adding = get_time_slots_for_adding();
-
 $message = '';
 $alert_class = '';
 
@@ -34,10 +25,21 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  if (isset($_POST['delete_schedule'])) {
+  if (isset($_POST['delete_schedule_permanently'])) {
     $schedule_id = $_POST['schedule_id'];
-    if (delete_schedule($db, $schedule_id)) {
-      $_SESSION['message'] = "Jadwal berhasil dihapus.";
+    if (delete_schedule_permanently($db, $schedule_id)) {
+      $_SESSION['message'] = "Jadwal berhasil dihapus secara permanen.";
+      $_SESSION['alert_class'] = "alert-success";
+    } else {
+      $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
+      $_SESSION['alert_class'] = "alert-danger";
+    }
+    header("Location: jadwal-pergantian.php");
+    exit;
+  } elseif (isset($_POST['delete_schedule_temporarily'])) {
+    $schedule_id = $_POST['schedule_id'];
+    if (delete_schedule_temporarily($db, $schedule_id)) {
+      $_SESSION['message'] = "Jadwal berhasil dihapus sementara.";
       $_SESSION['alert_class'] = "alert-success";
     } else {
       $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
@@ -68,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -182,10 +185,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           <form action="" method="post" class="d-inline"
                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?');">
                             <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
-                            <button type="submit" name="delete_schedule" class="btn btn-sm btn-danger mt-2">Hapus</button>
+                            <button type="submit" name="delete_schedule_permanently" class="btn btn-sm btn-danger mt-2">Hapus
+                            </button>
                           </form>
+                        <?php else: ?>
+                          <form action="" method="post" class="d-inline"
+                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini untuk sepekan?');">
+                            <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
+                            <button type="submit" name="delete_schedule_temporarily" class="btn btn-sm btn-warning mt-2">Hapus
+                              Sementara</button>
+                          </form>
+                          <hr>
                         <?php endif; ?>
-                        <hr>
                       <?php endforeach; ?>
                     <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
                       Istirahat
@@ -238,10 +249,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <select id="matkul" name="matkul" class="form-select" required>
                 <option value="">--Pilih Mata Kuliah--</option>
                 <?php
-                $sql = "SELECT mata_kuliah.nama AS matkul_nama, dosen_profiles.nama AS dosen_nama, dosen_profiles.user_id AS dosen_id 
+                $sql = "SELECT mata_kuliah.nama AS matkul_nama, daftar_dosen.nama AS dosen_nama, daftar_dosen.user_id AS dosen_id 
                         FROM mata_kuliah 
-                        JOIN dosen_profiles ON mata_kuliah.dosen_id = dosen_profiles.user_id 
-                        WHERE mata_kuliah.status = 'Approved'";
+                        JOIN daftar_dosen ON mata_kuliah.dosen_id = daftar_dosen.user_id";
                 $result = $db->query($sql);
 
                 if ($result->num_rows > 0) {
@@ -273,7 +283,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="is_temporary" name="is_temporary" required>
+                <input class="form-check-input" type="checkbox" id="is_temporary" name="is_temporary">
                 <label class="form-check-label" for="is_temporary">Jadwal Sementara (Hanya Pekan Ini)</label>
               </div>
             </div>
