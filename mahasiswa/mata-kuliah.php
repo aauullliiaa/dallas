@@ -3,7 +3,7 @@ session_start();
 require '../src/db/functions.php';
 checkRole('mahasiswa');
 
-$matkul = retrieve("SELECT * FROM mata_kuliah WHERE status = 'approved'");
+$matkul = retrieve("SELECT * FROM mata_kuliah");
 $id = $_GET["id"];
 
 ?>
@@ -64,7 +64,7 @@ $id = $_GET["id"];
           <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="edit-profile.php">Profil</a>
+          <a class="nav-link" href="profile.php">Profil</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="../logout.php">Logout</a>

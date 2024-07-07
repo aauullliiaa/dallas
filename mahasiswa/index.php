@@ -38,33 +38,7 @@ checkRole('mahasiswa');
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="index.php#home" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Home
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="index.php#about">About</a></li>
-              <li>
-                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="dosen.php">Dosen</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="edit-profile.php">Profil</a>
-          </li>
+          <li class="nav-item dropdown"></li>
           <li class="nav-item">
             <a class="nav-link" href="../logout.php">Logout</a>
           </li>
@@ -77,8 +51,7 @@ checkRole('mahasiswa');
 
 <body id="home">
   <!-- Jumbotron -->
-  <section class="jumbotron d-flex align-items-center"
-    style="background-image: url(../src/images/mahasiswa-jbtrn.jpg);">
+  <section class="jumbotron d-flex align-items-center" style="background-image: url(../src/images/mahasiswa-jbtrn.jpg)">
     <div class="container">
       <div class="row p-2">
         <h1>Selamat Datang</h1>
@@ -103,14 +76,89 @@ checkRole('mahasiswa');
     </div>
   </section>
   <!-- End of Jumbotron -->
+  <section>
+    <div class="container">
+      <div class="row text-center mb-2">
+        <h1>Menu APD Learning Space</h1>
+      </div>
+      <div class="row justify-content-center">
+        <div class="card m-1 p-3" style="width: 20rem">
+          <img src="../src/images/eric-rothermel-FoKO4DpXamQ-unsplash.jpg" alt="" class="img-fluid rounded" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Jadwal Perkuliahan</h5>
+            <p class="card-text">
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Natus
+              quasi culpa quos in harum quidem mollitia, repellat expedita hic
+              voluptates!
+            </p>
+            <div class="card-footer text-end">
+              <small>
+                <a href="jadwal-kuliah.php">Lanjut<i class="bi bi-arrow-right-short"></i> </a></small>
+            </div>
+          </div>
+        </div>
+        <div class="card m-1 p-2" style="width: 20rem">
+          <img src="../src/images/patrick-tomasso-Oaqk7qqNh_c-unsplash.jpg" alt="" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Mata Kuliah</h5>
+            <p class="card-text">
+              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Iste,
+              deleniti. Harum provident dolorem saepe beatae maiores veritatis
+              alias esse debitis?
+            </p>
+            <div class="card-footer text-end">
+              <small>
+                <a href="mata-kuliah.php">Lanjut<i class="bi bi-arrow-right-short"></i></a>
+              </small>
+            </div>
+          </div>
+        </div>
+        <div class="card m-1 p-2" style="width: 20rem">
+          <img src="../src/images/imagegen1720363796006.png" alt="" style="" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Profil</h5>
+            <p class="card-text">
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Natus
+              quasi culpa quos in harum quidem mollitia, repellat expedita hic
+              voluptates!
+            </p>
+            <div class="card-footer text-end">
+              <small>
+                <a href="profile.php">Lanjut<i class="bi bi-arrow-right-short"></i>
+                </a>
+              </small>
+            </div>
+          </div>
+        </div>
+        <div class="card m-1 p-2" style="width: 20rem">
+          <img
+            src="../src/images/education-concept-student-studying-brainstorming-campus-concept-close-up-students-discussing-their-subject-books-textbooks-selective-focus_1418-627.avif"
+            alt="" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Dosen</h5>
+            <p class="card-text">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum
+              dignissimos sapiente qui! Saepe totam sequi rem, magni
+              perferendis consequatur ex.
+            </p>
+            <div class="card-footer text-end">
+              <small>
+                <a href="dosen.php">Lanjut<i class="bi bi-arrow-right-short"></i></a>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <!-- About -->
   <section id="about">
     <div class="container">
       <div class="row pb-4">
         <h1 class="text-center">Tentang Program Studi</h1>
       </div>
-      <div class="row pb-4 align-items-center">
-        <div class="col-md-6 text-start">
+      <div class="row pb-4 align-items-center justify-content-between">
+        <div class="col-md-5 text-start">
           <p>
             Lorem ipsum dolor, sit amet consectetur adipisicing elit.
             Doloribus quis eligendi nobis numquam omnis tempora nulla,
@@ -123,37 +171,52 @@ checkRole('mahasiswa');
           </p>
         </div>
         <div class="col-md-6 text-center">
-          <img src="../src/images/foto kampus.jpg" class="img-fluid" alt="Foto Kampus" />
+          <img src="../src/images/foto kampus.jpg" alt="Foto Kampus" class="img-fluid" />
+        </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="container">
+      <div class="row text-center mb-3">
+        <h1>Visi dan Misi Program Studi</h1>
+      </div>
+      <div class="row align-items-center justify-content-center">
+        <div class="col-md-6">
+          <div class="card p-3">
+            <div class="card-body">
+              <h5 class="card-title text-center">Visi</h5>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut
+                quis accusamus quam dignissimos neque officia amet sequi
+                voluptas error fuga explicabo libero labore laboriosam,
+                consectetur velit? Animi asperiores corporis adipisci, nihil
+                odio sequi nisi rem qui debitis quidem voluptatum iure ea, eum
+                nesciunt dignissimos iste quam ipsam quo fugiat temporibus.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card p-3">
+            <div class="card-body">
+              <h5 class="card-title text-center">Misi</h5>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem
+                odit porro temporibus deserunt reprehenderit aliquid delectus,
+                veritatis omnis nisi, praesentium itaque quae atque sed quos.
+                Impedit amet doloremque fuga laudantium expedita laborum
+                ducimus, molestias iure unde molestiae cumque quia nulla
+                temporibus labore, similique harum culpa vitae quos illo qui
+                tenetur.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
   <!-- End of About -->
-  <!-- Sepatah Kata dari Kaprodi -->
-  <section id="kata-sambutan">
-    <div class="container">
-      <div class="row text-center pb-3">
-        <h1>Sambutan dari Ketua Program Studi</h1>
-      </div>
-      <div class="row align-items-center">
-        <div class="col-md-6 text-center">
-          <img src="../src/images/jk.jpg" class="img-fluid" alt="" />
-        </div>
-        <div class="col-md-6">
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Libero
-            illo debitis voluptatem et dignissimos sint fuga voluptates est
-            sit itaque obcaecati, consequuntur deserunt facere incidunt
-            aliquam, quod perferendis harum sunt recusandae aperiam.
-            Explicabo, harum sint nisi, dolorem accusamus aliquid, doloremque
-            inventore sunt omnis accusantium possimus doloribus nostrum iusto
-            est amet!
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- End of Sepatah Kata dari Kaprodi -->
   <!-- Alamat -->
   <section id="alamat">
     <div class="container justify-content-center">

@@ -65,7 +65,7 @@ $dosen = retrieve("SELECT * FROM dosen_profiles");
             <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="edit-profile.php">Profil</a>
+            <a class="nav-link" href="profile.php">Profil</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../logout.php">Logout</a>
@@ -82,24 +82,22 @@ $dosen = retrieve("SELECT * FROM dosen_profiles");
 
 <body>
   <div class="container">
-    <div class="row mb-5">
+    <div class="row justify-content-center mb-5">
       <?php foreach ($dosen as $row): ?>
-        <div class="col-md-4 mt-3">
-          <div class="card h-100 p-3">
-            <img src="../src/images/<?= $row["foto"] ?>" class="card-img-top" alt="Team member image"
-              style="width: 60px; border-radius: 50%; margin-left: 10px;" />
-            <div class="card-body">
-              <div class="row">
-                <h5 class="card-title"><?= $row["nama"] ?></h5>
-                <p>NIP: <?= $row["nip"] ?></p>
-                <p>Alamat: <?= $row["alamat"] ?> </p>
-              </div>
+        <div class="card m-2 p-3" style="width: 20rem">
+          <img src="../src/images/<?= $row["foto"] ?>" class="card-img-top" alt="Team member image"
+            style="width: 60px; border-radius: 50%; margin-left: 10px;" />
+          <div class="card-body">
+            <div class="row">
+              <h5 class="card-title"><?= $row["nama"] ?></h5>
+              <p>NIP: <?= $row["nip"] ?></p>
+              <p>Alamat: <?= $row["alamat"] ?> </p>
             </div>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">Email: <?= $row["email"] ?></li>
-              <li class="list-group-item">Telepon: <?= $row["telepon"] ?></li>
-            </ul>
           </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Email: <?= $row["email"] ?></li>
+            <li class="list-group-item">Telepon: <?= $row["telepon"] ?></li>
+          </ul>
         </div>
       <?php endforeach; ?>
     </div>

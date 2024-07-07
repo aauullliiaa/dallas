@@ -69,7 +69,7 @@ $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND t
                         <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="edit-profile.php">Profil</a>
+                        <a class="nav-link" href="profile.php">Profil</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../logout.php">Logout</a>
