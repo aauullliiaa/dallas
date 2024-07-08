@@ -5,7 +5,7 @@ checkRole('admin');
 
 // Ambil daftar nama dosen dari tabel daftar_dosen
 $dosenList = [];
-$query = "SELECT user_id, nama FROM daftar_dosen";
+$query = "SELECT id, nama FROM daftar_dosen";
 $result = $db->query($query);
 if ($result) {
   while ($row = $result->fetch_assoc()) {
@@ -139,7 +139,7 @@ if (isset($alert_type) && $alert_type === 'success') {
             <select class="form-control" id="dosen_id" name="dosen_id" required>
               <option value="">Pilih Dosen Pengampu</option>
               <?php foreach ($dosenList as $dosen): ?>
-                <option value="<?= htmlspecialchars($dosen['user_id']); ?>"><?= htmlspecialchars($dosen['nama']); ?>
+                <option value="<?= htmlspecialchars($dosen['id']); ?>"><?= htmlspecialchars($dosen['nama']); ?>
                 </option>
               <?php endforeach; ?>
             </select>

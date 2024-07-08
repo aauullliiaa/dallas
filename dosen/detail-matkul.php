@@ -9,7 +9,7 @@ $materi = retrieve("SELECT * FROM materi WHERE mata_kuliah_id = ? ORDER BY perte
 
 // Ambil nama dosen berdasarkan dosen_id
 $dosen_id = $matkul['dosen_id'];
-$dosen = retrieve("SELECT nama FROM daftar_dosen WHERE user_id = ?", [$dosen_id])[0]['nama'];
+$dosen = retrieve("SELECT nama FROM daftar_dosen WHERE id = ?", [$dosen_id])[0]['nama'];
 
 $message = $_SESSION['message'] ?? '';
 $alert_type = $_SESSION['alert_type'] ?? '';
@@ -88,7 +88,7 @@ if (isset($_POST['delete_materi_id'])) {
             <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="edit-profile.php">Profil</a>
+            <a class="nav-link" href="profile.php">Profil</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../logout.php">Logout</a>

@@ -4,7 +4,7 @@ require '../src/db/functions.php';
 checkRole('mahasiswa');
 
 $id = $_GET["user_id"];
-$dosen = retrieve("SELECT * FROM dosen_profiles");
+$dosen = retrieve("SELECT * FROM daftar_dosen");
 ?>
 <!DOCTYPE html>
 <html lang="en">

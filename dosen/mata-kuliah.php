@@ -9,9 +9,21 @@ $alert_type = $_SESSION['alert_type'] ?? '';
 unset($_SESSION['message']);
 unset($_SESSION['alert_type']);
 
-$dosen_id = $_SESSION['user_id'] ?? null;
+$user_id = $_SESSION['user_id'] ?? null;
 
-$courses = retrieve("SELECT * FROM mata_kuliah WHERE dosen_id = $dosen_id");
+// Ambil dosen_id dari tabel daftar_dosen berdasarkan user_id
+$dosen_id = null;
+if ($user_id !== null) {
+  $result = retrieve("SELECT id FROM daftar_dosen WHERE user_id = $user_id");
+  if (!empty($result)) {
+    $dosen_id = $result[0]['id'];
+  }
+}
+
+$courses = [];
+if ($dosen_id !== null) {
+  $courses = retrieve("SELECT * FROM mata_kuliah WHERE dosen_id = $dosen_id");
+}
 ?>
 
 <!DOCTYPE html>
@@ -74,7 +86,7 @@ $courses = retrieve("SELECT * FROM mata_kuliah WHERE dosen_id = $dosen_id");
             <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="edit-profile.php">Profil</a>
+            <a class="nav-link" href="profile.php">Profil</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../logout.php">Logout</a>

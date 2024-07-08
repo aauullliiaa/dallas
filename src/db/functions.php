@@ -140,6 +140,7 @@ function loginUser($emailOrId, $password)
 // halaman edit profil mahasiswa functions
 function updateProfile($user_id, $role, $data)
 {
+    global $db;
     $message = "";
     $alert_type = "";
 
@@ -183,15 +184,16 @@ function updateProfile($user_id, $role, $data)
             $message = "Maaf, foto Anda tidak diunggah.";
             $alert_type = "danger";
         } else {
-            // Remove old photo if it exists
-            if (!empty($profile['foto']) && file_exists($target_dir . $profile['foto'])) {
-                unlink($target_dir . $profile['foto']);
-            }
-
+            // Move uploaded file to target directory
             if (move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
                 $message = "Foto berhasil diunggah.";
                 $alert_type = "success";
                 $data['foto'] = $newFileName;
+
+                // Remove old photo if it exists
+                if (!empty($profile['foto']) && file_exists($target_dir . $profile['foto'])) {
+                    unlink($target_dir . $profile['foto']);
+                }
             } else {
                 $message = "Maaf, terjadi kesalahan saat mengunggah foto Anda.";
                 $alert_type = "danger";
@@ -203,12 +205,12 @@ function updateProfile($user_id, $role, $data)
     }
 
     if (updateUserProfile($user_id, $role, $data)) {
-        $message = "Profil berhasil diperbarui.";
+        $message .= " Profil berhasil diperbarui.";
         $alert_type = "success";
         // Fetch updated profile
         $profile = getUserProfile($user_id, $role);
     } else {
-        $message = "Terjadi kesalahan saat memperbarui profil.";
+        $message .= " Terjadi kesalahan saat memperbarui profil.";
         $alert_type = "danger";
     }
 
@@ -218,6 +220,7 @@ function updateProfile($user_id, $role, $data)
         'alert_type' => $alert_type
     ];
 }
+
 // fungsi untuk mendapatkan data user untuk di halaman profil masing-masing profil
 function getUserProfile($user_id, $role)
 {
@@ -229,10 +232,10 @@ function getUserProfile($user_id, $role)
             $stmt = $db->prepare("SELECT email FROM users WHERE id = ?");
             break;
         case 'mahasiswa':
-            $stmt = $db->prepare("SELECT email, nama, nim, alamat, foto, telepon, kelas, tempatlahir, tanggallahir FROM daftar_mahasiswa WHERE user_id = ?");
+            $stmt = $db->prepare("SELECT * FROM daftar_mahasiswa WHERE user_id = ?");
             break;
         case 'dosen':
-            $stmt = $db->prepare("SELECT email, nama, nip, alamat, telepon, foto, tempatlahir, tanggallahir FROM daftar_dosen WHERE user_id = ?");
+            $stmt = $db->prepare("SELECT * FROM daftar_dosen WHERE user_id = ?");
             break;
         default:
             return null;
@@ -256,158 +259,28 @@ function updateUserProfile($user_id, $role, $data)
 {
     global $db;
 
-    $db->begin_transaction();
+    switch ($role) {
+        case 'mahasiswa':
+            $stmt = $db->prepare("UPDATE daftar_mahasiswa SET foto = ? WHERE user_id = ?");
+            $stmt->bind_param("si", $data['foto'], $user_id);
+            break;
+        case 'dosen':
+            $stmt = $db->prepare("UPDATE daftar_dosen SET foto = ? WHERE user_id = ?");
+            $stmt->bind_param("si", $data['foto'], $user_id);
+            break;
+        default:
+            return false;
+    }
 
-    try {
-        // Update profile based on role
-        switch ($role) {
-            case 'admin':
-                $stmt = $db->prepare("UPDATE admin_profiles SET nama = ?, email = ?, foto = ? WHERE user_id = ?");
-                $stmt->bind_param("sssi", $data['nama'], $data['email'], $data['foto'], $user_id);
-                break;
-            case 'mahasiswa':
-                $stmt = $db->prepare("UPDATE daftar_mahasiswa SET nama = ?, email = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?,
-foto = ?, kelas = ?, alamat = ? WHERE user_id = ?");
-                $stmt->bind_param(
-                    "ssssssssi",
-                    $data['nama'],
-                    $data['email'],
-                    $data['telepon'],
-                    $data['tempatlahir'],
-                    $data['tanggallahir'],
-                    $data['foto'],
-                    $data['kelas'],
-                    $data['alamat'],
-                    $user_id
-                );
-                break;
-            case 'dosen':
-                $stmt = $db->prepare("UPDATE daftar_dosen SET nama = ?, email = ?, telepon = ?, tempatlahir = ?, tanggallahir = ?,
-foto = ?, penghargaan = ?, pengabdian = ?, alamat = ? WHERE user_id = ?");
-                $stmt->bind_param(
-                    "sssssssssi",
-                    $data['nama'],
-                    $data['email'],
-                    $data['telepon'],
-                    $data['tempatlahir'],
-                    $data['tanggallahir'],
-                    $data['foto'],
-                    $data['penghargaan'],
-                    $data['pengabdian'],
-                    $data['alamat'],
-                    $user_id
-                );
-                break;
-            default:
-                return false;
-        }
-
-        if (!$stmt) {
-            throw new Exception("Error: " . $db->error);
-        }
-
-        $stmt->execute();
+    if ($stmt->execute()) {
         $stmt->close();
-
-        // Update email in users table if email is provided in data
-        if (isset($data['email'])) {
-            $stmt = $db->prepare("UPDATE users SET email = ? WHERE id = ?");
-            if (!$stmt) {
-                throw new Exception("Error: " . $db->error);
-            }
-            $stmt->bind_param("si", $data['email'], $user_id);
-            $stmt->execute();
-            $stmt->close();
-        }
-
-        $db->commit();
         return true;
-    } catch (Exception $e) {
-        $db->rollback();
-        echo $e->getMessage();
+    } else {
+        error_log("Update failed: " . $stmt->error);
+        $stmt->close();
         return false;
     }
 }
-// function edit data dosen (admin)
-function ubah($data)
-{
-    global $db;
-
-    $id = $data["id"];
-    $nama = $data["nama"];
-    $nip = $data["nip"];
-    $email = $data["email"];
-    $alamat = $data["alamat"];
-    $telepon = $data["telepon"];
-
-    // Prepare statement to prevent SQL Injection
-    $stmt = $db->prepare("UPDATE daftar_dosen SET nama = ?, nip = ?, email = ?, alamat = ?, telepon = ? WHERE user_id =
-?");
-    if ($stmt === false) {
-        die('Prepare failed: ' . htmlspecialchars($db->error));
-    }
-
-    // Bind parameters
-    $bind = $stmt->bind_param('sssssi', $nama, $nip, $email, $alamat, $telepon, $id);
-    if ($bind === false) {
-        die('Bind param failed: ' . htmlspecialchars($stmt->error));
-    }
-
-    // Execute the statement
-    $exec = $stmt->execute();
-    if ($exec === false) {
-        die('Execute failed: ' . htmlspecialchars($stmt->error));
-    }
-
-    // Return the number of affected rows
-    $affected_rows = $stmt->affected_rows;
-
-    // Close the statement
-    $stmt->close();
-
-    return $affected_rows;
-}
-// function edit data mahasiswa (admin)
-function edit($data)
-{
-    global $db;
-
-    $id = $data["id"];
-    $nama = $data["nama"];
-    $nim = $data["nim"];
-    $telepon = $data["telepon"];
-    $kelas = $data["kelas"];
-    $alamat = $data["alamat"];
-
-    // Prepare statement to prevent SQL Injection
-    $stmt = $db->prepare("UPDATE daftar_mahasiswa SET nama = ?, nim = ?, telepon = ?, kelas = ?, alamat = ? WHERE user_id
-= ?");
-    if ($stmt === false) {
-        die('Prepare failed: ' . htmlspecialchars($db->error));
-    }
-
-    // Bind parameters
-    $bind = $stmt->bind_param('sssssi', $nama, $nim, $telepon, $kelas, $alamat, $id);
-    if ($bind === false) {
-        die('Bind param failed: ' . htmlspecialchars($stmt->error));
-    }
-
-    // Execute the statement
-    $exec = $stmt->execute();
-    if ($exec === false) {
-        die('Execute failed: ' . htmlspecialchars($stmt->error));
-    }
-
-    // Return the number of affected rows
-    $affected_rows = $stmt->affected_rows;
-
-    // Close the statement
-    $stmt->close();
-
-    return $affected_rows;
-}
-// end of function edit data (admin)
-
 
 // fungsi untuk mengupload data berupa materi pembelajaran
 function processMaterialUpload($db)
@@ -485,34 +358,6 @@ function getAllMaterialsByMataKuliah($db, $mata_kuliah_id)
     return $materials;
 }
 // Akhir kode untuk mengambil semua data materi perkuliahan
-
-// Mengedit data mata kuliah (dosen)
-function editmk($matkul)
-{
-    global $db;
-
-    $query = "UPDATE mata_kuliah SET nama =?, kode =?, dosen_id =?, deskripsi =? WHERE id =?";
-
-    $stmt = $db->prepare($query);
-    if (!$stmt) {
-        return false;
-    }
-
-    $stmt->bind_param(
-        "ssisi",
-        $matkul["nama"],
-        $matkul["kode"],
-        $matkul["dosen_id"],
-        $matkul["deskripsi"],
-        $matkul["id"]
-    );
-    $stmt->execute();
-
-    $affected_rows = $stmt->affected_rows;
-    $stmt->close();
-
-    return $affected_rows;
-}
 // Akhir kode untuk fungsi edit data MK
 
 // Fungsi untuk menambah jadwal kuliah pada halaman tambah jadwal dan menampilkan jadwal sesuai dengan kelas yang ada pada dropdown
@@ -1016,7 +861,6 @@ function uploadFileTugas(
     return '';
 }
 
-
 function insertTugasKumpul($data)
 {
     global $db;
@@ -1076,44 +920,17 @@ function deletePertemuan($pertemuan_id)
     return false;
 }
 
-function getDosenNameById($db, $dosen_id)
-{
-    $stmt = $db->prepare("SELECT nama FROM daftar_dosen WHERE user_id = ?");
-    $stmt->bind_param("s", $dosen_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    return $row['nama'] ?? null;
-}
-
 function getAllMataKuliah($db)
 {
     $sql = "SELECT mk.id, mk.kode, mk.nama, mk.deskripsi, dd.nama as dosen
             FROM mata_kuliah mk
-            JOIN daftar_dosen dd ON mk.dosen_id = dd.user_id";
+            JOIN daftar_dosen dd ON mk.dosen_id = dd.id";
     $result = $db->query($sql);
     $mata_kuliah = [];
     while ($row = $result->fetch_assoc()) {
         $mata_kuliah[] = $row;
     }
     return $mata_kuliah;
-}
-
-
-function approveMataKuliah($db, $id)
-{
-    $query = "UPDATE mata_kuliah SET status = 'Approved' WHERE id = ?";
-    $stmt = $db->prepare($query);
-    $stmt->bind_param('i', $id);
-    return $stmt->execute();
-}
-
-function rejectMataKuliah($db, $id, $reason)
-{
-    $query = "UPDATE mata_kuliah SET status = 'Rejected', reason = ? WHERE id = ?";
-    $stmt = $db->prepare($query);
-    $stmt->bind_param('si', $reason, $id);
-    return $stmt->execute();
 }
 function processCourseFormByAdmin($db)
 {
@@ -1127,8 +944,8 @@ function processCourseFormByAdmin($db)
         $deskripsi = htmlspecialchars($_POST['deskripsi']);
         $dosen_id = (int) $_POST['dosen_id'];
 
-        // Cek apakah dosen_id ada di daftar_dosen
-        $query = "SELECT user_id FROM daftar_dosen WHERE user_id = ?";
+        // Cek apakah dosen_id ada di daftar_dosen berdasarkan kolom id
+        $query = "SELECT id FROM daftar_dosen WHERE id = ?";
         $stmt = $db->prepare($query);
         if (!$stmt) {
             $message = "Terjadi kesalahan pada persiapan statement: " . $db->error;
@@ -1175,6 +992,8 @@ function processCourseFormByAdmin($db)
 
     return [$message, $alert_type];
 }
+
+
 function deleteMataKuliah($db, $id)
 {
     $query = "DELETE FROM mata_kuliah WHERE id = ?";
@@ -1186,7 +1005,7 @@ function deleteMataKuliah($db, $id)
 function getDosenName($dosen_id)
 {
     global $db;
-    $query = "SELECT nama FROM daftar_dosen WHERE user_id = ?";
+    $query = "SELECT nama FROM daftar_dosen WHERE id = ?";
     $stmt = $db->prepare($query);
     $stmt->bind_param("i", $dosen_id);
     $stmt->execute();

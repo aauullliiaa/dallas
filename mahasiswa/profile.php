@@ -7,18 +7,6 @@ $user_id = $_SESSION['user_id'];
 $role = $_SESSION['role'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  // Data profil yang diambil dari input pengguna
-  $data = [
-    'email' => $_POST['email'],
-    'nama' => $_POST['nama'],
-    'telepon' => $_POST['telepon'],
-    'tempatlahir' => $_POST['tempatlahir'],
-    'tanggallahir' => $_POST['tanggallahir'],
-    'kelas' => $_POST['kelas'],
-    'alamat' => $_POST['alamat'],
-  ];
-
-  // Panggil fungsi updateProfile
   $result = updateProfile($user_id, $role, $data);
 
   // Ambil hasil dari fungsi updateProfile
@@ -157,6 +145,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="alamat">Alamat</label> <!-- Menambahkan field alamat -->
             <input type="text" name="alamat" class="form-control" value="<?= htmlspecialchars($profile["alamat"]); ?>"
               readonly>
+          </div>
+          <div class="form-group mb-3">
+            <label for="foto" class="form-label">Foto:</label>
+            <input type="file" name="foto" class="form-control">
+          </div>
+          <div class="row mb-1">
+            <div class="col text-center submit-button">
+              <button type="submit" name="submit" class="btn btn-light">Update Profil</button>
+            </div>
           </div>
         </form>
         <div class="row">

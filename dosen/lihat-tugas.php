@@ -81,7 +81,7 @@ $tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_ku
                         <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="edit-profile.php">Profil</a>
+                        <a class="nav-link" href="profile.php">Profil</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../logout.php">Logout</a>
