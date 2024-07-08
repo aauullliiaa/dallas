@@ -4,8 +4,8 @@ require '../src/db/functions.php';
 checkRole('admin');
 
 $id = $_GET["id"];
-$mahasiswa = retrieve("SELECT * FROM mahasiswa_profiles WHERE user_id = $id")[0];
-
+$role = $_GET["role"];
+$mahasiswa = retrieve("SELECT * FROM daftar_mahasiswa WHERE id = $id")[0];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -129,7 +129,7 @@ $mahasiswa = retrieve("SELECT * FROM mahasiswa_profiles WHERE user_id = $id")[0]
                 </div>
                 <div class="row mt-3">
                     <div class="col submit-button text-center">
-                        <a href="data-mahasiswa.php"><button class="btn">Kembali</button></a>
+                        <a href="data-users.php?role=<?= $role ?>"><button class="btn">Kembali</button></a>
                     </div>
                 </div>
             </div>

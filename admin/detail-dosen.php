@@ -4,7 +4,8 @@ require '../src/db/functions.php';
 checkRole('admin');
 
 $id = $_GET["id"];
-$dosen = retrieve("SELECT * FROM dosen_profiles WHERE user_id = $id")[0];
+$role = $_GET["role"];
+$dosen = retrieve("SELECT * FROM daftar_dosen WHERE id = $id")[0];
 
 ?>
 <!DOCTYPE html>
@@ -123,17 +124,9 @@ $dosen = retrieve("SELECT * FROM dosen_profiles WHERE user_id = $id")[0];
           <h5>Email</h5>
           <p><?= $dosen["email"] ?></p>
         </div>
-        <div class="row">
-          <h5>Penghargaan</h5>
-          <p><?= $dosen["penghargaan"] ?></p>
-        </div>
-        <div class="row">
-          <h5>Pengabdian</h5>
-          <p><?= $dosen["pengabdian"] ?></p>
-        </div>
         <div class="row mt-3">
           <div class="col submit-button text-center">
-            <a href="data-dosen.php"><button class="btn">Kembali</button></a>
+            <a href="data-users.php?role=<?= $role ?>"><button class="btn">Kembali</button></a>
           </div>
         </div>
       </div>

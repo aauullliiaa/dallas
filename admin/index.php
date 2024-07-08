@@ -195,6 +195,46 @@ checkRole('admin');
       </div>
     </div>
   </section>
+  <section>
+    <div class="container">
+      <div class="row text-center mb-3">
+        <h1>Visi dan Misi Program Studi</h1>
+      </div>
+      <div class="row align-items-center justify-content-center">
+        <div class="col-md-6">
+          <div class="card p-3">
+            <div class="card-body">
+              <h5 class="card-title text-center">Visi</h5>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut
+                quis accusamus quam dignissimos neque officia amet sequi
+                voluptas error fuga explicabo libero labore laboriosam,
+                consectetur velit? Animi asperiores corporis adipisci, nihil
+                odio sequi nisi rem qui debitis quidem voluptatum iure ea, eum
+                nesciunt dignissimos iste quam ipsam quo fugiat temporibus.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card p-3">
+            <div class="card-body">
+              <h5 class="card-title text-center">Misi</h5>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem
+                odit porro temporibus deserunt reprehenderit aliquid delectus,
+                veritatis omnis nisi, praesentium itaque quae atque sed quos.
+                Impedit amet doloremque fuga laudantium expedita laborum
+                ducimus, molestias iure unde molestiae cumque quia nulla
+                temporibus labore, similique harum culpa vitae quos illo qui
+                tenetur.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <!-- End of About -->
   <!-- Alamat -->
   <section id="alamat">

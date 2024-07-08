@@ -7,18 +7,12 @@ $role = isset($_GET['role']) ? $_GET['role'] : '';
 $users = [];
 
 if ($role == 'mahasiswa') {
-    $stmt = $db->prepare("SELECT u.id, u.email, dm.nama, dm.nim, dm.alamat, dm.telepon, dm.tempatlahir, dm.tanggallahir, dm.foto, dm.kelas
-                           FROM users u
-                           JOIN daftar_mahasiswa dm ON u.id = dm.user_id
-                           WHERE u.role = 'mahasiswa'");
+    $stmt = $db->prepare("SELECT * FROM daftar_mahasiswa");
     $stmt->execute();
     $result = $stmt->get_result();
     $users = $result->fetch_all(MYSQLI_ASSOC);
 } elseif ($role == 'dosen') {
-    $stmt = $db->prepare("SELECT u.id, u.email, dd.nama, dd.nip, dd.alamat, dd.telepon, dd.tempatlahir, dd.tanggallahir, dd.foto
-                           FROM users u
-                           JOIN daftar_dosen dd ON u.id = dd.user_id
-                           WHERE u.role = 'dosen'");
+    $stmt = $db->prepare("SELECT * FROM daftar_dosen");
     $stmt->execute();
     $result = $stmt->get_result();
     $users = $result->fetch_all(MYSQLI_ASSOC);
@@ -164,7 +158,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>ID Pengguna</th>
                                     <th>Nama</th>
                                     <th>Email</th>
                                     <th>Telepon</th>
@@ -172,6 +165,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                     <th>Tanggal Lahir</th>
                                     <th>Alamat</th>
                                     <th><?= $role == 'mahasiswa' ? 'Kelas' : 'NIP' ?></th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -179,7 +173,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                 <?php foreach ($users as $user): ?>
                                     <tr>
                                         <td><?= $i ?></td>
-                                        <td><?= htmlspecialchars($user['id']) ?></td>
                                         <td><?= htmlspecialchars($user['nama']) ?></td>
                                         <td><?= htmlspecialchars($user['email']) ?></td>
                                         <td><?= htmlspecialchars($user['telepon']) ?></td>
@@ -187,6 +180,15 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                         <td><?= htmlspecialchars($user['tanggallahir']) ?></td>
                                         <td><?= htmlspecialchars($user['alamat']) ?></td>
                                         <td><?= htmlspecialchars($role == 'mahasiswa' ? $user['kelas'] : $user['nip']) ?></td>
+                                        <td>
+                                            <?php if ($role == 'mahasiswa'): ?>
+                                                <a href="detail-mahasiswa.php?id=<?= $user['id'] ?>&role=<?= $role ?>"
+                                                    class="btn btn-info btn-sm">Lihat Detail</a>
+                                            <?php elseif ($role == 'dosen'): ?>
+                                                <a href="detail-dosen.php?id=<?= $user['id'] ?>&role=<?= $role ?>"
+                                                    class="btn btn-info btn-sm">Lihat Detail</a>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                     <?php $i++; ?>
                                 <?php endforeach; ?>
