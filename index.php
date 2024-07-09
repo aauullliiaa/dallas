@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php endif; ?>
                     <div class="mb-3">
                         <label for="emailOrId" class="form-label">Email, NIP, atau NIM</label>
-                        <input type="text" class="form-control" name="emailOrId" id="emailOrId" required maxlength="18">
+                        <input type="text" class="form-control" name="emailOrId" id="emailOrId" required>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
