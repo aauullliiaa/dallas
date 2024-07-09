@@ -12,7 +12,7 @@ $kelas = $_GET['kelas'] ?? $_POST['kelas'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete_schedule'])) {
         $schedule_id = $_POST['schedule_id'];
-        if (delete_schedule($db, $schedule_id)) {
+        if (delete_schedule_permanently($db, $schedule_id)) {
             $_SESSION['message'] = "Jadwal berhasil dihapus.";
             $_SESSION['alert_class'] = "alert-success";
         } else {

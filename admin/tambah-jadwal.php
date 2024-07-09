@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
 $dosen_name = '';
 if (isset($_POST['matkul'])) {
     $dosen_id = $_POST['dosen_id'];
-    $dosen_name = getDosenName($db, $dosen_id);
+    $dosen_name = getDosenName($db);
 }
 
 unset($_SESSION['message']);
@@ -254,11 +254,11 @@ unset($_SESSION['alert_type']);
             // Find the selected dosen name from the options
             var dosenName = '';
             <?php
-            $sql = "SELECT user_id, nama FROM daftar_dosen";
+            $sql = "SELECT id, nama FROM daftar_dosen";
             $result = $db->query($sql);
             $dosen_list = [];
             while ($row = $result->fetch_assoc()) {
-                $dosen_list[$row['user_id']] = $row['nama'];
+                $dosen_list[$row['id']] = $row['nama'];
             }
             ?>
             var dosenList = <?= json_encode($dosen_list); ?>;
@@ -266,6 +266,22 @@ unset($_SESSION['alert_type']);
                 dosenName = dosenList[dosenId];
             }
             document.getElementById('dosen').value = dosenName;
+        });
+
+        // Filter jam_selesai options based on jam_mulai selection
+        var timeSlots = <?= json_encode($time_slots); ?>;
+        document.getElementById('jam_mulai').addEventListener('change', function () {
+            var jamMulai = this.value;
+            var jamMulaiIndex = timeSlots.indexOf(jamMulai);
+            var jamSelesaiSelect = document.getElementById('jam_selesai');
+            jamSelesaiSelect.innerHTML = '';
+
+            for (var i = jamMulaiIndex + 1; i < timeSlots.length; i++) {
+                var option = document.createElement('option');
+                option.value = timeSlots[i];
+                option.textContent = timeSlots[i];
+                jamSelesaiSelect.appendChild(option);
+            }
         });
     </script>
 </body>

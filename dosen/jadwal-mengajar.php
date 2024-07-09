@@ -1,11 +1,9 @@
 <?php
 session_start();
 require '../src/db/functions.php';
-checkRole('dosen');
+checkRole('dosen'); // assuming you have a session variable for the lecturer's ID
 
-$dosen_id = $_SESSION['user_id']; // assuming you have a session variable for the lecturer's ID
-
-list($time_slots, $days, $schedule) = fetch_schedule_by_dosen_id($db, $dosen_id);
+list($time_slots, $days, $schedule) = fetch_schedule_by_dosen_id($db);
 ?>
 <!DOCTYPE html>
 <html lang="en">

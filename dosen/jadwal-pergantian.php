@@ -4,6 +4,7 @@ require '../src/db/functions.php';
 checkRole('dosen');
 
 delete_expired_temporary_schedules($db);
+restore_temporary_deleted_schedules($db);
 
 $all_slots = fetch_all_slots($db);
 
@@ -28,18 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['delete_schedule_permanently'])) {
     $schedule_id = $_POST['schedule_id'];
     if (delete_schedule_permanently($db, $schedule_id)) {
-      $_SESSION['message'] = "Jadwal berhasil dihapus secara permanen.";
-      $_SESSION['alert_class'] = "alert-success";
-    } else {
-      $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
-      $_SESSION['alert_class'] = "alert-danger";
-    }
-    header("Location: jadwal-pergantian.php");
-    exit;
-  } elseif (isset($_POST['delete_schedule_temporarily'])) {
-    $schedule_id = $_POST['schedule_id'];
-    if (delete_schedule_temporarily($db, $schedule_id)) {
-      $_SESSION['message'] = "Jadwal berhasil dihapus sementara.";
+      $_SESSION['message'] = "Jadwal berhasil dihapus.";
       $_SESSION['alert_class'] = "alert-success";
     } else {
       $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
@@ -70,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -182,27 +171,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div><small>Ruang: <?= htmlspecialchars($schedule['classroom']); ?></small></div>
                         <?php if ($schedule['is_temporary']): ?>
                           <span class="badge bg-warning">Jadwal Pergantian</span><br>
-                          <form action="" method="post" class="d-inline"
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?');">
-                            <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
-                            <button type="submit" name="delete_schedule_permanently" class="btn btn-sm btn-danger mt-2">Hapus
-                            </button>
-                          </form>
-                        <?php else: ?>
-                          <form action="" method="post" class="d-inline"
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini untuk sepekan?');">
-                            <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
-                            <button type="submit" name="delete_schedule_temporarily" class="btn btn-sm btn-warning mt-2">Hapus
-                              Sementara</button>
-                          </form>
+                          <hr>
+                        <?php endif; ?>
+                        <?php if ($schedule['is_deleted_temporarily']): ?>
+                          <span class="badge bg-danger">Jadwal Dihapus Sementara</span><br>
+                          <button class="btn btn-sm btn-success kosong-btn mt-1" data-bs-toggle="modal"
+                            data-bs-target="#addScheduleModal" data-hari="<?= $day; ?>" data-jam="<?= $slot; ?>"
+                            data-kelas="<?= htmlspecialchars($schedule['kelas']); ?>" style="display: block;">Kosong</button>
                           <hr>
                         <?php endif; ?>
                       <?php endforeach; ?>
                     <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
                       Istirahat
                     <?php else: ?>
-                      <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addScheduleModal"
-                        data-hari="<?= $day; ?>" data-jam="<?= $slot; ?>" style="display: block;">Kosong</button>
+                      <button class="btn btn-sm btn-success kosong-btn" data-bs-toggle="modal"
+                        data-bs-target="#addScheduleModal" data-hari="<?= $day; ?>" data-jam="<?= $slot; ?>" data-kelas=""
+                        style="display: block;">Kosong</button>
                     <?php endif; ?>
                   </td>
                 <?php endforeach; ?>
@@ -249,9 +233,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <select id="matkul" name="matkul" class="form-select" required>
                 <option value="">--Pilih Mata Kuliah--</option>
                 <?php
-                $sql = "SELECT mata_kuliah.nama AS matkul_nama, daftar_dosen.nama AS dosen_nama, daftar_dosen.user_id AS dosen_id 
-                        FROM mata_kuliah 
-                        JOIN daftar_dosen ON mata_kuliah.dosen_id = daftar_dosen.user_id";
+                $sql = "SELECT mata_kuliah.nama AS matkul_nama, daftar_dosen.nama AS dosen_nama, daftar_dosen.id AS dosen_id 
+                                        FROM mata_kuliah 
+                                        JOIN daftar_dosen ON mata_kuliah.dosen_id = daftar_dosen.id";
                 $result = $db->query($sql);
 
                 if ($result->num_rows > 0) {
@@ -283,7 +267,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="is_temporary" name="is_temporary">
+                <input class="form-check-input" type="checkbox" id="is_temporary" name="is_temporary" required>
                 <label class="form-check-label" for="is_temporary">Jadwal Sementara (Hanya Pekan Ini)</label>
               </div>
             </div>
@@ -296,6 +280,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
   </div>
+
   <script>
     document.getElementById('matkul').addEventListener('change', function () {
       var selectedOption = this.options[this.selectedIndex];
@@ -336,6 +321,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     });
   </script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>

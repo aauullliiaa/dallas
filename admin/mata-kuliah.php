@@ -149,6 +149,11 @@ $mata_kuliah = getAllMataKuliah($db);
           </tbody>
         </table>
       </div>
+      <div class="row">
+        <div class="col submit-button">
+          <a href="tambah-matkul.php"><button class="btn btn-light">Tambah Mata Kuliah</button></a>
+        </div>
+      </div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

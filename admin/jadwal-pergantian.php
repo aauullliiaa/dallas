@@ -59,24 +59,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>APD Learning Space - Jadwal Pergantian</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- CSS -->
-  <link rel="stylesheet" href="../src/css/style.css" />
+  <link rel="stylesheet" href="../src/css/style.css">
 </head>
 
 <header>
@@ -178,6 +177,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div><small>Dosen: <?= htmlspecialchars($schedule['dosen']); ?></small></div>
                         <div><small>Kelas: <?= htmlspecialchars($schedule['kelas']); ?></small></div>
                         <div><small>Ruang: <?= htmlspecialchars($schedule['classroom']); ?></small></div>
+                        <?php if ($schedule['is_temporary']): ?>
+                          <span class="badge bg-warning">Jadwal Pergantian</span><br>
+                          <form action="" method="post" class="d-inline"
+                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal pergantian ini?');">
+                            <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
+                            <button type="submit" name="delete_schedule_permanently"
+                              class="btn btn-sm btn-danger mt-2">Hapus</button>
+                          </form>
+                          <hr>
+                        <?php else: ?>
+                          <form action="" method="post" class="d-inline"
+                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini sementara untuk pekan ini?');">
+                            <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
+                            <button type="submit" name="delete_schedule_temporarily" class="btn btn-sm btn-danger mt-2">Hapus
+                              Sementara</button>
+                          </form>
+                        <?php endif; ?>
                       <?php endforeach; ?>
                     <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
                       Istirahat
@@ -191,6 +207,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endforeach; ?>
           </tbody>
         </table>
+        <div class="row text-center">
+          <div class="col submit-button">
+            <a href="jadwal-mengajar.php"><button class="btn btn-light">Kembali</button></a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -225,10 +246,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <select id="matkul" name="matkul" class="form-select" required>
                 <option value="">--Pilih Mata Kuliah--</option>
                 <?php
-                $sql = "SELECT mata_kuliah.nama AS matkul_nama, daftar_dosen.nama AS dosen_nama, daftar_dosen.user_id AS dosen_id 
-                                        FROM mata_kuliah 
-                                        JOIN daftar_dosen ON mata_kuliah.dosen_id = daftar_dosen.user_id 
-                                        WHERE mata_kuliah.status = 'Approved'";
+                $sql = "SELECT mata_kuliah.nama AS matkul_nama, daftar_dosen.nama AS dosen_nama, daftar_dosen.id AS dosen_id 
+                                                        FROM mata_kuliah 
+                                                        JOIN daftar_dosen ON mata_kuliah.dosen_id = daftar_dosen.id";
                 $result = $db->query($sql);
 
                 if ($result->num_rows > 0) {

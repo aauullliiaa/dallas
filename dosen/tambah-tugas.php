@@ -10,6 +10,14 @@ $alert_type = '';
 // Retrieve mata kuliah detail
 $matkul_detail = retrieve("SELECT nama FROM mata_kuliah WHERE id = ?", [$matkul_id])[0];
 
+// Retrieve pertemuan with existing tugas
+$existing_pertemuan = retrieve("SELECT pertemuan FROM tugas_pertemuan tp
+                                JOIN pertemuan p ON tp.pertemuan_id = p.id
+                                WHERE p.mata_kuliah_id = ?", [$matkul_id]);
+
+// Create an array of existing pertemuan
+$existing_pertemuan_array = array_column($existing_pertemuan, 'pertemuan');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pertemuan = $_POST['pertemuan'];
     $judul = $_POST['judul'];
@@ -162,7 +170,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select class="form-select" id="pertemuan" name="pertemuan" required>
                             <?php
                             for ($i = 1; $i <= 16; $i++) {
-                                echo "<option value='$i'>Pertemuan $i</option>";
+                                if (!in_array($i, $existing_pertemuan_array)) {
+                                    echo "<option value='$i'>Pertemuan $i</option>";
+                                }
                             }
                             ?>
                         </select>
@@ -187,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label for="file_tugas" class="form-label">Upload File (DOC, DOCX, PPTX, XLS, PDF)</label>
                         <input type="file" class="form-control" id="file_tugas" name="file_tugas">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <div class="col submit-button">
                             <button type="submit" class="btn btn-light" name="submit">Berikan Tugas</button>
                         </div>

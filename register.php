@@ -10,68 +10,65 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = htmlspecialchars($_POST['email']);
     $password = htmlspecialchars($_POST['password']);
 
-    // Periksa apakah email sudah terdaftar
-    $stmt = $db->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    if ($role == 'dosen') {
+        $nip = htmlspecialchars($_POST['nip']);
 
-    if ($result->num_rows > 0) {
-        $message = 'Email sudah terdaftar, silakan gunakan email lain.';
-        $alert_type = 'danger';
-    } else {
-        $user_id = registerUser($email, $password, $role);
-        if ($user_id !== false) {
-            if ($role == 'dosen') {
-                $nip = htmlspecialchars($_POST['nip']);
+        // Verifikasi NIP dosen
+        $stmt = $db->prepare("SELECT * FROM daftar_dosen WHERE nip = ?");
+        $stmt->bind_param("s", $nip);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-                // Verifikasi NIP dosen
-                $stmt = $db->prepare("SELECT * FROM daftar_dosen WHERE nip = ?");
-                $stmt->bind_param("s", $nip);
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                if ($result->num_rows == 0) {
-                    $message = 'NIP tidak ditemukan, Anda tidak terdaftar sebagai dosen program studi ini.';
-                    $alert_type = 'danger';
-                } else {
-                    // Update email, password, dan user_id di tabel daftar_dosen
-                    if (updateDosenProfile($user_id, $email, $password, $nip)) {
-                        $message = 'Registrasi Anda berhasil, silakan gunakan kredensial Anda untuk masuk.';
-                        $alert_type = 'success';
-                    } else {
-                        $message = 'Gagal memperbarui data dosen.';
-                        $alert_type = 'danger';
-                        error_log("Error in updating dosen profile for user_id $user_id, email $email, nip $nip");
-                    }
-                }
-            } elseif ($role == 'mahasiswa') {
-                $nim = htmlspecialchars($_POST['nim']);
-
-                // Verifikasi NIM mahasiswa
-                $stmt = $db->prepare("SELECT * FROM daftar_mahasiswa WHERE nim = ?");
-                $stmt->bind_param("s", $nim);
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                if ($result->num_rows == 0) {
-                    $message = 'NIM tidak ditemukan, Anda tidak terdaftar sebagai mahasiswa program studi ini.';
-                    $alert_type = 'danger';
-                } else {
-                    // Update email, password, dan user_id di tabel mahasiswa
-                    if (updateMahasiswaProfile($user_id, $email, $password, $nim)) {
-                        $message = 'Registrasi Anda berhasil, silakan gunakan kredensial Anda untuk masuk.';
-                        $alert_type = 'success';
-                    } else {
-                        $message = 'Gagal memperbarui data mahasiswa.';
-                        $alert_type = 'danger';
-                        error_log("Error in updating mahasiswa profile for user_id $user_id, email $email, nim $nim");
-                    }
-                }
-            }
-        } else {
-            $message = 'Gagal mendaftarkan pengguna.';
+        if ($result->num_rows == 0) {
+            $message = 'NIP tidak ditemukan, Anda tidak terdaftar sebagai dosen program studi ini.';
             $alert_type = 'danger';
+        } else {
+            // Registrasi user baru
+            $user_id = registerUser($email, $password, $role);
+            if ($user_id !== false) {
+                // Update email, password, dan user_id di tabel daftar_dosen
+                if (updateDosenProfile($user_id, $email, $password, $nip)) {
+                    $message = 'Registrasi Anda berhasil, silakan gunakan kredensial Anda untuk masuk.';
+                    $alert_type = 'success';
+                } else {
+                    $message = 'Gagal memperbarui data dosen.';
+                    $alert_type = 'danger';
+                    error_log("Error in updating dosen profile for user_id $user_id, email $email, nip $nip");
+                }
+            } else {
+                $message = 'Gagal mendaftarkan pengguna.';
+                $alert_type = 'danger';
+            }
+        }
+    } elseif ($role == 'mahasiswa') {
+        $nim = htmlspecialchars($_POST['nim']);
+
+        // Verifikasi NIM mahasiswa
+        $stmt = $db->prepare("SELECT * FROM daftar_mahasiswa WHERE nim = ?");
+        $stmt->bind_param("s", $nim);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 0) {
+            $message = 'NIM tidak ditemukan, Anda tidak terdaftar sebagai mahasiswa program studi ini.';
+            $alert_type = 'danger';
+        } else {
+            // Registrasi user baru
+            $user_id = registerUser($email, $password, $role);
+            if ($user_id !== false) {
+                // Update email, password, dan user_id di tabel mahasiswa
+                if (updateMahasiswaProfile($user_id, $email, $password, $nim)) {
+                    $message = 'Registrasi Anda berhasil, silakan gunakan kredensial Anda untuk masuk.';
+                    $alert_type = 'success';
+                } else {
+                    $message = 'Gagal memperbarui data mahasiswa.';
+                    $alert_type = 'danger';
+                    error_log("Error in updating mahasiswa profile for user_id $user_id, email $email, nim $nim");
+                }
+            } else {
+                $message = 'Gagal mendaftarkan pengguna.';
+                $alert_type = 'danger';
+            }
         }
     }
 }

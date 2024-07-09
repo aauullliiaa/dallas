@@ -143,16 +143,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_tugas_id']) &&
                         </p>
                       <?php endif; ?>
                     </div>
-                    <div class="col-md-2 submit-button">
-                      <a
-                        href="lihat-tugas.php?tugas_id=<?= $tugas['id']; ?>&matkul_id=<?= $matkul_id; ?>&pertemuan_id=<?= $tugas['pertemuan_id']; ?>"><button
-                          class="btn btn-light mb-1">Lihat</button></a>
-                      <form action="" method="post"
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus tugas ini?');">
-                        <input type="hidden" name="delete_tugas_id" value="<?= $tugas['id']; ?>" />
-                        <input type="hidden" name="delete_pertemuan_id" value="<?= $tugas['pertemuan_id']; ?>" />
-                        <button type="submit" class="btn btn-light">Hapus</button>
-                      </form>
+                    <div class="row">
+                      <div class="col-md-2 submit-button">
+                        <a
+                          href="lihat-tugas.php?tugas_id=<?= $tugas['id']; ?>&matkul_id=<?= $matkul_id; ?>&pertemuan_id=<?= $tugas['pertemuan_id']; ?>"><button
+                            class="btn btn-light mb-1">Lihat</button></a>
+                        <form action="" method="post"
+                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus tugas ini?');">
+                          <input type="hidden" name="delete_tugas_id" value="<?= $tugas['id']; ?>" />
+                          <input type="hidden" name="delete_pertemuan_id" value="<?= $tugas['pertemuan_id']; ?>" />
+                          <button type="submit" class="btn btn-light">Hapus</button>
+                        </form>
+                      </div>
                     </div>
                   </div>
                   <hr />

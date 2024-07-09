@@ -7,7 +7,8 @@ $matkul_id = $_GET["id"];
 $detailmk = retrieve("SELECT * FROM mata_kuliah WHERE id =?", [$matkul_id])[0];
 $tugasList = retrieve("SELECT tp.*, p.pertemuan as pertemuan_ke FROM tugas_pertemuan tp JOIN pertemuan p ON tp.pertemuan_id = p.id WHERE p.mata_kuliah_id =?", [$matkul_id]);
 
-$mahasiswa_id = $_SESSION['user_id']; // assuming you have the user ID stored in the session
+$user_id = $_SESSION['user_id']; // assuming you have the user ID stored in the session
+$mahasiswa_id = retrieve("SELECT id FROM daftar_mahasiswa WHERE user_id = ?", [$user_id])[0]['id'];
 
 $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND tugas_id IN (SELECT id FROM tugas_pertemuan WHERE pertemuan_id IN (SELECT id FROM pertemuan WHERE mata_kuliah_id =?))", [$mahasiswa_id, $matkul_id]);
 
@@ -112,26 +113,40 @@ $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND t
                             <div class="row">
                                 <h6><?= htmlspecialchars($tugas['judul']); ?></h6>
                                 <p><?= nl2br(htmlspecialchars($tugas['deskripsi'])); ?></p>
-                                <p><a href="../src/files/assignment/<?= htmlspecialchars($tugas['file_tugas']); ?>">Lihat
+                                <p><a href="../src/files/tugas/<?= htmlspecialchars($tugas['file_tugas']); ?>">Lihat
                                         Tugas</a><br>
                                     <small>Tenggat: <?= htmlspecialchars($tugas['tanggal_deadline']) ?>,
                                         <?= htmlspecialchars(date('H:i', strtotime($tugas['jam_deadline']))) ?></small>
+                                </p>
                                 <div class="col">
                                     <?php
                                     $deadline = strtotime($tugas['tanggal_deadline'] . ' ' . $tugas['jam_deadline']);
                                     $current_time = time();
-                                    if ($deadline < $current_time): ?>
-                                        <span class="badge rounded-pill text-bg-danger">Tenggat telah lewat</span>
-                                    <?php elseif ($deadline - $current_time < 259200): // 3 days in seconds ?>
-                                        <span class="badge rounded-pill text-bg-warning">Tenggat akan segera berakhir</span>
-                                    <?php elseif (date('Y-m-d', $deadline) == date('Y-m-d', $current_time)): ?>
-                                        <span class="badge rounded-pill text-bg-warning">Tenggat hari ini</span>
-                                    <?php endif; ?>
-                                    <?php foreach ($tugas_kumpul as $kumpul): ?>
-                                        <?php if ($kumpul['tugas_id'] == $tugas['id']): ?>
-                                            <span class="badge rounded-pill text-bg-success">Tugas telah dikumpulkan</span>
+
+                                    $isSubmitted = false;
+                                    $submission_time = null;
+                                    foreach ($tugas_kumpul as $kumpul) {
+                                        if ($kumpul['tugas_id'] == $tugas['id']) {
+                                            $isSubmitted = true;
+                                            $submission_time = strtotime($kumpul['tanggal_kumpul'] . ' ' . $kumpul['jam_kumpul']);
+                                            break;
+                                        }
+                                    }
+
+                                    if ($isSubmitted): ?>
+                                        <span class="badge rounded-pill text-bg-success">Tugas telah dikumpulkan</span>
+                                        <?php if ($submission_time > $deadline): ?>
+                                            <span class="badge rounded-pill text-bg-danger">Terlambat</span>
                                         <?php endif; ?>
-                                    <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <?php if ($deadline < $current_time): ?>
+                                            <span class="badge rounded-pill text-bg-danger">Tenggat telah lewat</span>
+                                        <?php elseif ($deadline - $current_time < 259200): // 3 days in seconds ?>
+                                            <span class="badge rounded-pill text-bg-warning">Tenggat akan segera berakhir</span>
+                                        <?php elseif (date('Y-m-d', $deadline) == date('Y-m-d', $current_time)): ?>
+                                            <span class="badge rounded-pill text-bg-warning">Tenggat hari ini</span>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="row mt-2">

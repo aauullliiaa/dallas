@@ -3,73 +3,74 @@ session_start();
 require '../src/db/functions.php';
 checkRole('mahasiswa');
 
+$tugas_id = $_GET['tugas_id'] ?? null;
 $matkul_id = $_GET['matkul_id'] ?? null;
 $pertemuan_id = $_GET['pertemuan_id'] ?? null;
-$tugas_id = $_GET['tugas_id'] ?? null;
-$user_id = $_SESSION['user_id'] ?? null;
+$user_id = $_SESSION['user_id'];
+$mahasiswa = retrieve("SELECT id, nim FROM daftar_mahasiswa WHERE user_id = ?", [$user_id])[0];
+$mahasiswa_id = $mahasiswa['id'];
+$mahasiswa_nim = $mahasiswa['nim'];
 
-if (!$matkul_id || !$pertemuan_id || !$tugas_id || !$user_id) {
-    die("Parameter tidak lengkap.");
+if (!$tugas_id || !$matkul_id || !$pertemuan_id) {
+    die("ID tugas, mata kuliah, atau pertemuan tidak ditemukan.");
 }
 
-$message = '';
-$alert_type = '';
+// Ambil data pertemuan
+$pertemuanDetail = retrieve("SELECT pertemuan FROM pertemuan WHERE id = ?", [$pertemuan_id])[0];
+$pertemuan_ke = $pertemuanDetail['pertemuan'];
+
+$uploadMessage = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $target_dir = "../src/files/tugas/";
-    $file_name = basename($_FILES["file"]["name"]);
-    $target_file = $target_dir . $file_name;
+    $file_extension = strtolower(pathinfo($_FILES["file_tugas"]["name"], PATHINFO_EXTENSION));
+    $target_file = $target_dir . $mahasiswa_nim . '_tugas_pertemuan_' . $pertemuan_ke . '.' . $file_extension;
     $uploadOk = 1;
-    $fileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-    // Check if file already exists
-    if (file_exists($target_file)) {
-        $message = "File already exists.";
-        $alert_type = "danger";
+    // Allow certain file formats
+    $allowedTypes = ["pdf", "doc", "docx", "pptx", "xls", "jpg", "png", "jpeg"];
+    if (!in_array($file_extension, $allowedTypes)) {
         $uploadOk = 0;
+        $uploadMessage = "Maaf, hanya file dengan format berikut yang diperbolehkan: " . implode(", ", $allowedTypes) . ".";
     }
 
     // Check file size
-    if ($_FILES["file"]["size"] > 5000000) {
-        $message = "Sorry, your file is too large.";
-        $alert_type = "danger";
+    if ($_FILES["file_tugas"]["size"] > 5000000) {
         $uploadOk = 0;
+        $uploadMessage = "Maaf, ukuran file terlalu besar. Maksimal 5MB.";
     }
 
-    // Allow certain file formats
-    if ($fileType != "pdf" && $fileType != "doc" && $fileType != "docx" && $fileType != "xls" && $fileType != "jpg" && $fileType != "jpeg" && $fileType != "png" && $fileType != "pptx") {
-        $message = "Sorry, only PDF, DOC, DOCX, PPTX, XLS, JPEG, JPG, and PNG files are allowed.";
-        $alert_type = "danger";
-        $uploadOk = 0;
-    }
-
-    // Check if $uploadOk is set to 0 by an error
-    if ($uploadOk == 0) {
-        $message = "Sorry, your file was not uploaded.";
-        $alert_type = "danger";
-    } else {
-        if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
-            $data = [
-                'tugas_id' => $tugas_id,
-                'mahasiswa_id' => $user_id,
-                'file_path' => $target_file,
-                'tanggal_kumpul' => date('Y-m-d'),
-                'jam_kumpul' => $_POST['jam_kumpul'] // Get time from the form input
-            ];
-
-            if (insertTugasKumpul($data)) {
-                $message = "Tugas berhasil diunggah.";
-                $alert_type = "success";
+    if ($uploadOk) {
+        if (move_uploaded_file($_FILES["file_tugas"]["tmp_name"], $target_file)) {
+            // Check if there's already a submission
+            $existingSubmission = retrieve("SELECT * FROM tugas_kumpul WHERE tugas_id = ? AND mahasiswa_id = ?", [$tugas_id, $mahasiswa_id]);
+            if ($existingSubmission) {
+                // Update existing submission
+                retrieve("UPDATE tugas_kumpul SET file_path = ?, tanggal_kumpul = NOW(), jam_kumpul = NOW() WHERE tugas_id = ? AND mahasiswa_id = ?", [$target_file, $tugas_id, $mahasiswa_id]);
+                $uploadMessage = "File berhasil diupdate.";
             } else {
-                $message = "Gagal mengunggah tugas, silakan coba lagi.";
-                $alert_type = "danger";
+                // Insert new submission
+                retrieve("INSERT INTO tugas_kumpul (tugas_id, mahasiswa_id, file_path, tanggal_kumpul, jam_kumpul) VALUES (?, ?, ?, NOW(), NOW())", [$tugas_id, $mahasiswa_id, $target_file]);
+                $uploadMessage = "File berhasil diupload.";
             }
         } else {
-            $message = "Sorry, there was an error uploading your file.";
-            $alert_type = "danger";
+            $uploadMessage = "Maaf, terjadi kesalahan saat mengupload file.";
         }
     }
 }
+
+$tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_kuliah, dm.nama as mahasiswa, dm.nim, dm.kelas, 
+                         DATE_FORMAT(tp.tanggal_kumpul, '%Y-%m-%d') as tanggal_kumpul, 
+                         DATE_FORMAT(tp.jam_kumpul, '%H:%i') as jam_kumpul 
+                         FROM tugas_kumpul tp 
+                         JOIN tugas_pertemuan t ON tp.tugas_id = t.id 
+                         JOIN pertemuan p ON t.pertemuan_id = p.id 
+                         JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id 
+                         JOIN daftar_mahasiswa dm ON tp.mahasiswa_id = dm.id 
+                         WHERE tp.tugas_id = ? AND tp.mahasiswa_id = ?",
+    [$tugas_id, $mahasiswa_id]
+)[0];
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -77,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>APD Learning Space - Tugas Kuliah</title>
+    <title>Upload Tugas</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
         rel="stylesheet" />
@@ -88,16 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <!-- CSS -->
     <link rel="stylesheet" href="../src/css/style.css" />
-    <script>
-        function setDeviceTime() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            const time = `${hours}:${minutes}:${seconds}`;
-            document.getElementById('jam_kumpul').value = time;
-        }
-    </script>
 </head>
 <header>
     <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
@@ -111,79 +102,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Home
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="index.php#about">About</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="dosen.php">Dosen</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="profile.php">Profil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../logout.php">Logout</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dosen.php">Dosen</a></li>
+                    <li class="nav-item"><a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.php">Profil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../logout.php">Logout</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-    <section class="tugas-jumbotron d-flex align-items-center justify-content-center">
-        <div class="row text-center">
-            <h1>Upload Tugas Kuliah</h1>
+    <section class="d-flex align-items-center justify-content-center">
+        <div class="row">
+            <h2>Upload Tugas</h2>
         </div>
     </section>
 </header>
 
 <body>
     <div class="container mt-5">
+        <?php if ($uploadMessage): ?>
+            <div class="alert alert-info"><?= $uploadMessage; ?></div>
+        <?php endif; ?>
         <div class="card p-3">
+            <div class="card-header">
+                <h4>Upload Tugas Pertemuan ke-<?= htmlspecialchars($tugasDetail['pertemuan']); ?></h4>
+            </div>
             <div class="card-body">
-                <?php if ($message): ?>
-                    <div class="alert alert-<?= $alert_type; ?>">
-                        <?= $message; ?>
+                <?php if ($tugasDetail): ?>
+                    <div class="alert alert-warning">
+                        Anda sudah mengumpulkan tugas. Anda dapat mengganti file yang telah diupload jika diperlukan.
                     </div>
                 <?php endif; ?>
-                <div class="card-title mb-4">
-                    <h5>Silahkan upload tugas anda disini.</h5>
-                </div>
-                <form action="" method="post" enctype="multipart/form-data" onsubmit="setDeviceTime()">
+                <form
+                    action="upload-tugas.php?tugas_id=<?= $tugas_id ?>&matkul_id=<?= $matkul_id ?>&pertemuan_id=<?= $pertemuan_id ?>"
+                    method="post" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="file" class="form-label">Pilih File Tugas (PDF, DOC, DOCX, PPTX, XLS, JPG, JPEG,
-                            PNG):</label>
-                        <input type="file" class="form-control" id="file" name="file" required>
+                        <label for="file_tugas" class="form-label">File Tugas (pdf, doc, docx, pptx, xls, jpg, png,
+                            jpeg):</label>
+                        <input class="form-control" type="file" name="file_tugas" id="file_tugas" required>
                     </div>
-                    <input type="hidden" id="jam_kumpul" name="jam_kumpul">
                     <div class="row">
                         <div class="col submit-button">
-                            <button type="submit" class="btn btn-light">Unggah Tugas</button>
+                            <?php if ($tugasDetail): ?>
+                                <button type="submit" class="btn btn-light mb-1">Ganti File</button>
+                            <?php else: ?>
+                                <button type="submit" class="btn btn-light mb-1">Upload Tugas</button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </form>
-                <div class="row mt-2">
-                    <div class="col submit-button">
-                        <a href="tugas-matkul.php?id=<?= $matkul_id; ?>"><button
-                                class="btn btn-light">Kembali</button></a>
+                <?php if ($tugasDetail): ?>
+                    <div class="mt-3">
+                        <h5>File yang telah diunggah:</h5>
+                        <p><a href="<?= htmlspecialchars($tugasDetail['file_path']); ?>" target="_blank">Lihat File</a></p>
                     </div>
+                <?php endif; ?>
+                <div class="col submit-button mb-2">
+                    <a href="tugas-matkul.php?id=<?= $matkul_id; ?>" class="btn btn-light">Kembali</a>
                 </div>
             </div>
         </div>

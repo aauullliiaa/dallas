@@ -11,18 +11,20 @@ if (!$tugas_id || !$matkul_id || !$pertemuan_id) {
     die("ID tugas, mata kuliah, atau pertemuan tidak ditemukan.");
 }
 
-$tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_kuliah, mp.nama as mahasiswa, mp.nim, mp.kelas, 
+$tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_kuliah, dm.nama as mahasiswa, dm.nim, dm.kelas, 
                          DATE_FORMAT(tp.tanggal_kumpul, '%Y-%m-%d') as tanggal_kumpul, 
-                         DATE_FORMAT(tp.jam_kumpul, '%H:%i') as jam_kumpul 
+                         DATE_FORMAT(tp.jam_kumpul, '%H:%i') as jam_kumpul,
+                         t.tanggal_deadline, t.jam_deadline, tp.file_path 
                          FROM tugas_kumpul tp 
                          JOIN tugas_pertemuan t ON tp.tugas_id = t.id 
                          JOIN pertemuan p ON t.pertemuan_id = p.id 
                          JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id 
-                         JOIN mahasiswa_profiles mp ON tp.mahasiswa_id = mp.user_id 
-                         WHERE tp.tugas_id =? AND p.mata_kuliah_id =? AND p.id =?",
+                         JOIN daftar_mahasiswa dm ON tp.mahasiswa_id = dm.id 
+                         WHERE tp.tugas_id = ? AND p.mata_kuliah_id = ? AND p.id = ?",
     [$tugas_id, $matkul_id, $pertemuan_id]
-)[0];
+);
 
+$deadline = strtotime($tugasDetail[0]['tanggal_deadline'] . ' ' . $tugasDetail[0]['jam_deadline']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -108,29 +110,45 @@ $tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_ku
             </div>
         <?php else: ?>
             <div class="card p-3">
-                <div class="card-header">
-                    <h4>Detail Tugas Pertemuan ke-<?= htmlspecialchars($tugasDetail['pertemuan']); ?></h4>
-                </div>
                 <div class="card-body">
-                    <table class="table">
-                        <tr>
-                            <th>Nama</th>
-                            <th>NIM</th>
-                            <th>Kelas</th>
-                            <th>Tanggal diserahkan</th>
-                            <th>Waktu diserahkan</th>
-                            <th>File</th>
-                        </tr>
-                        <tr>
-                            <td><?= htmlspecialchars($tugasDetail['mahasiswa']); ?></td>
-                            <td><?= htmlspecialchars($tugasDetail['nim']); ?></td>
-                            <td><?= htmlspecialchars($tugasDetail['kelas']); ?></td>
-                            <td><?= htmlspecialchars($tugasDetail['tanggal_kumpul']); ?></td>
-                            <td><?= htmlspecialchars($tugasDetail['jam_kumpul']); ?></td>
-                            <td><a href="<?= htmlspecialchars($tugasDetail['file_path']); ?>" target="_blank">Lihat File</a>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>NIM</th>
+                                <th>Kelas</th>
+                                <th>Tanggal diserahkan</th>
+                                <th>Waktu diserahkan</th>
+                                <th>File</th>
+                                <th>Status</th>
+                            </tr>
+                            <?php $i = 1; ?>
+                            <?php foreach ($tugasDetail as $tugas): ?>
+                                <tr>
+                                    <td><?= $i; ?></td>
+                                    <td><?= htmlspecialchars($tugas['mahasiswa']); ?></td>
+                                    <td><?= htmlspecialchars($tugas['nim']); ?></td>
+                                    <td><?= htmlspecialchars($tugas['kelas']); ?></td>
+                                    <td><?= htmlspecialchars($tugas['tanggal_kumpul']); ?></td>
+                                    <td><?= htmlspecialchars($tugas['jam_kumpul']); ?></td>
+                                    <td><a href="<?= htmlspecialchars($tugas['file_path']); ?>" target="_blank">Lihat File</a>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $submit_time = strtotime($tugas['tanggal_kumpul'] . ' ' . $tugas['jam_kumpul']);
+                                        if ($submit_time <= $deadline) {
+                                            echo '<span class="badge rounded-pill text-bg-success">Tepat Waktu</span>';
+                                        } else {
+                                            echo '<span class="badge rounded-pill text-bg-danger">Terlambat</span>';
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+                                <?php $i++; ?>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
