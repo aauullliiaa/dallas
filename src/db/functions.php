@@ -95,14 +95,12 @@ function isNIM($input)
     // Validasi NIM: 8 digit
     return preg_match('/^[0-9]{8}$/', $input);
 }
-
 function loginUser($emailOrId, $password)
 {
     global $db;
 
     if (filter_var($emailOrId, FILTER_VALIDATE_EMAIL)) {
-        $query = "SELECT id, password, role FROM users WHERE email = ?";
-        $role = 'admin'; // default role if checking by email
+        $query = "SELECT id, password, role FROM users WHERE email = ? AND role = 'admin'";
     } elseif (isNIP($emailOrId)) {
         $query = "SELECT u.id, u.password, 'dosen' as role FROM users u JOIN daftar_dosen dd ON u.id = dd.user_id WHERE dd.nip = ?";
         $role = 'dosen';
@@ -125,7 +123,7 @@ function loginUser($emailOrId, $password)
     $stmt->fetch();
     $stmt->close();
 
-    if (password_verify($password, $hashed_password)) {
+    if (isset($hashed_password) && password_verify($password, $hashed_password)) {
         session_start();
         $_SESSION['user_id'] = $user_id;
         $_SESSION['emailOrId'] = $emailOrId;
@@ -136,6 +134,7 @@ function loginUser($emailOrId, $password)
         return false;
     }
 }
+
 // end of halaman login functions
 // halaman edit profil mahasiswa functions
 function updateProfile($user_id, $role, $data)
