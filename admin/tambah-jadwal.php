@@ -205,6 +205,7 @@ unset($_SESSION['alert_type']);
                     <div class="mb-3">
                         <label for="jam_mulai" class="form-label">Jam Mulai:</label>
                         <select id="jam_mulai" name="jam_mulai" class="form-select" required>
+                            <option value="">--Pilih Jam Mulai--</option>
                             <?php
                             foreach ($time_slots as $slot) {
                                 if (!in_array($slot, $occupied_slots)) {

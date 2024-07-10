@@ -253,6 +253,21 @@ unset($_SESSION['alert_type']);
             document.getElementById('dosen_id').value = dosenId;
             document.getElementById('dosen_name').value = dosenName;
         });
+
+        var timeSlots = <?= json_encode($time_slots); ?>;
+        document.getElementById('jam_mulai').addEventListener('change', function () {
+            var jamMulai = this.value;
+            var jamMulaiIndex = timeSlots.indexOf(jamMulai);
+            var jamSelesaiSelect = document.getElementById('jam_selesai');
+            jamSelesaiSelect.innerHTML = '';
+
+            for (var i = jamMulaiIndex + 1; i < timeSlots.length; i++) {
+                var option = document.createElement('option');
+                option.value = timeSlots[i];
+                option.textContent = timeSlots[i];
+                jamSelesaiSelect.appendChild(option);
+            }
+        });
     </script>
 </body>
 

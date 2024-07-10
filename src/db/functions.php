@@ -1,28 +1,43 @@
 <?php
-session_start();
 // koneksi ke database
+date_default_timezone_set('Asia/Makassar');
 $db = mysqli_connect("localhost", "root", "", "db_learning_space");
 
 // query fetch data
+// src/db/functions.php
 function retrieve($query, $params = [])
 {
     global $db;
-
     $stmt = $db->prepare($query);
+    if ($stmt === false) {
+        die("Error preparing statement: " . $db->error);
+    }
     if ($params) {
-        $types = str_repeat('s', count($params));
-        $stmt->bind_param($types, ...$params);
+        $stmt->bind_param(str_repeat('s', count($params)), ...$params);
     }
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $rows = [];
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    if (!$stmt->execute()) {
+        die("Error executing query: " . $stmt->error);
     }
-    $stmt->close();
-    return $rows;
-}
 
+    // Check the type of query and handle accordingly
+    if (stripos($query, 'SELECT') === 0) {
+        $result = $stmt->get_result();
+        if ($result === false) {
+            die("Error getting result: " . $stmt->error);
+        }
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        $stmt->close();
+        return $data;
+    } else {
+        // For UPDATE, INSERT, DELETE
+        $affectedRows = $stmt->affected_rows;
+        $stmt->close();
+        return $affectedRows;
+    }
+}
 function checkRole($role)
 {
     if (!isset($_SESSION["role"])) {
@@ -427,14 +442,13 @@ function insert_schedule(
 
     // Validate required parameters
     if (
-        empty($hari) || empty($matkul) || empty($dosen_id) || empty($classroom) || empty($kelas) || $start_index ===
-        false || $end_index === false || $start_index > $end_index
+        empty($hari) || empty($matkul) || empty($dosen_id) || empty($classroom) || empty($kelas) || $start_index === false || $end_index === false || $start_index > $end_index
     ) {
         return ["Error: Invalid input data", "alert-danger"];
     }
 
-    // Validate dosen_id exists in dosen_profiles
-    $stmt = $db->prepare("SELECT 1 FROM daftar_dosen WHERE user_id = ?");
+    // Validate dosen_id exists in daftar_dosen
+    $stmt = $db->prepare("SELECT 1 FROM daftar_dosen WHERE id = ?");
     $stmt->bind_param("i", $dosen_id);
     $stmt->execute();
     $stmt->store_result();
@@ -458,8 +472,7 @@ function insert_schedule(
     $stmt->close();
 
     // Prepare the SQL statement
-    $stmt = $db->prepare("INSERT INTO jadwal_kuliah (hari, matkul, dosen_id, classroom, kelas, jam, is_temporary,
-    end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $db->prepare("INSERT INTO jadwal_kuliah (hari, matkul, dosen_id, classroom, kelas, jam, is_temporary, end_date, is_deleted_temporarily) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)");
 
     if (!$stmt) {
         return ["Error: " . $db->error, "alert-danger"];
@@ -506,6 +519,7 @@ function insert_schedule(
     return [$message, $alert_class];
 }
 
+
 // Akhir kode untuk fungsi tambah jadwal
 
 // Fungsi untuk menampilkan keseluruhan jadwal
@@ -542,20 +556,13 @@ function delete_schedule_permanently($db, $schedule_id)
     return $result;
 }
 
-function delete_schedule_temporarily($db, $hari, $jam)
-{
-    $sql = "UPDATE jadwal_kuliah SET is_deleted_temp = 1 WHERE hari = ? AND jam = ?";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param('ss', $hari, $jam);
-    return $stmt->execute();
-}
 // Akhir kode untuk menghapus jadwal
 
 // Fungsi untuk menampilkan jadwal sesuai dengan kelas
 function fetch_schedules($db, $kelas)
 {
-    $sql = "SELECT jk.*, dp.nama as dosen FROM jadwal_kuliah jk
-        JOIN daftar_dosen dp ON jk.dosen_id = dp.user_id
+    $sql = "SELECT jk.*, dd.nama as dosen FROM jadwal_kuliah jk
+        JOIN daftar_dosen dd ON jk.dosen_id = dd.id
         WHERE jk.kelas = ?";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("s", $kelas);
@@ -712,19 +719,53 @@ function update_or_insert_schedule(
 
     return [$message, $alert_class];
 }
-
-function fetch_schedule_by_dosen_id($db, $dosen_id)
+function get_current_user_id()
 {
+    // Check if session is started
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+
+    // Check if user ID is stored in session
+    if (isset($_SESSION['user_id'])) {
+        return $_SESSION['user_id']; // Return user ID from session
+    }
+
+    // User not logged in or ID not found in session
+    return null;
+}
+
+
+function fetch_schedule_by_dosen_id($db)
+{
+    // Get logged-in user ID (assuming a function exists)
+    $user_id = get_current_user_id();
+
+    // Check if user ID is available
+    if (!$user_id) {
+        return null; // Handle case where user is not logged in
+    }
+
+    // Find dosen data based on user ID (assuming 'daftar_dosen' table has 'user_id')
+    $stmt = $db->prepare('SELECT id FROM daftar_dosen WHERE user_id = ?');
+    $stmt->bind_param('i', $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $dosen = $result->fetch_assoc();
+
+    if (!$dosen) {
+        return null; // Handle case where dosen not found for user ID
+    }
+
+    // Continue with original logic using dosen ID
+    $dosen_id = $dosen['id'];
     $time_slots = get_time_slots_for_viewing();
     $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-
-    // Prepare the statement to fetch the schedule based on dosen ID
     $stmt = $db->prepare('SELECT jk.* FROM jadwal_kuliah jk WHERE jk.dosen_id = ?');
     $stmt->bind_param('i', $dosen_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $jadwal = $result->fetch_all(MYSQLI_ASSOC);
-
     $schedule = [];
     foreach ($jadwal as $item) {
         if (!isset($schedule[$item['hari']])) {
@@ -736,6 +777,7 @@ function fetch_schedule_by_dosen_id($db, $dosen_id)
     return [$time_slots, $days, $schedule];
 }
 
+
 // Fetch all slots (both empty and filled)
 function fetch_all_slots($db)
 {
@@ -745,10 +787,9 @@ function fetch_all_slots($db)
 
     foreach ($days as $day) {
         foreach ($time_slots as $slot) {
-            $sql = "SELECT jk.*, dp.nama AS dosen FROM jadwal_kuliah jk
-            JOIN daftar_dosen dp ON jk.dosen_id = dp.user_id
-            WHERE jk.hari = ? AND jk.jam = ? AND (jk.is_temporary = 0 OR (jk.is_temporary = 1 AND jk.end_date >=
-            CURDATE()))";
+            $sql = "SELECT jk.*, dd.nama AS dosen FROM jadwal_kuliah jk
+            JOIN daftar_dosen dd ON jk.dosen_id = dd.id
+            WHERE jk.hari = ? AND jk.jam = ? AND (jk.is_temporary = 0 OR (jk.is_temporary = 1 AND jk.end_date >= CURDATE()) OR jk.is_deleted_temporarily = 1)";
             $stmt = $db->prepare($sql);
             $stmt->bind_param("ss", $day, $slot);
             $stmt->execute();
@@ -763,6 +804,7 @@ function fetch_all_slots($db)
                     'kelas' => $row['kelas'],
                     'classroom' => $row['classroom'],
                     'is_temporary' => $row['is_temporary'],
+                    'is_deleted_temporarily' => $row['is_deleted_temporarily']
                 ];
             }
             $stmt->close();
@@ -770,6 +812,7 @@ function fetch_all_slots($db)
     }
     return $all_slots;
 }
+
 // Menghapus jadwal pergantian mata kuliah secara otomatis jika sudah hari minggu pada minggu tersebut
 function delete_expired_temporary_schedules($db)
 {
@@ -784,6 +827,104 @@ function delete_expired_temporary_schedules($db)
     }
     $stmt->close();
 }
+function delete_schedule_temporarily($db, $schedule_id)
+{
+    // Fetch the original schedule
+    $schedule = retrieve("SELECT * FROM jadwal_kuliah WHERE id = ?", [$schedule_id]);
+
+    // Check if the schedule exists and contains valid data
+    if (empty($schedule) || empty($schedule[0])) {
+        error_log("Schedule with ID $schedule_id not found.");
+        return false;
+    }
+
+    $schedule = $schedule[0];
+
+    // Get the time slots for adding
+    $time_slots = get_time_slots_for_adding();
+
+    // Find the start and end index of the schedule
+    $jam = $schedule['jam'];
+    $start_index = array_search($jam, $time_slots);
+    $end_index = $start_index;
+
+    // Calculate the end date as the upcoming Sunday
+    $current_date = new DateTime();
+    $current_day_of_week = $current_date->format('w'); // 0 (for Sunday) through 6 (for Saturday)
+    $days_until_sunday = 7 - $current_day_of_week;
+    $end_date = $current_date->add(new DateInterval('P' . $days_until_sunday . 'D'))->format('Y-m-d');
+
+    // Validate required fields
+    if (
+        empty($schedule['hari']) || $start_index === false || $end_index === false ||
+        empty($schedule['matkul']) || empty($schedule['dosen_id']) || empty($schedule['classroom']) || empty($schedule['kelas'])
+    ) {
+        error_log("Invalid schedule data: " . json_encode($schedule));
+        return false;
+    }
+
+    // Insert into temporary_deleted_schedules
+    $sql = "INSERT INTO temporary_deleted_schedules (original_id, hari, jam_mulai, jam_selesai, matkul, dosen_id, classroom, kelas, end_date) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $db->prepare($sql);
+
+    for ($i = $start_index; $i <= $end_index; $i++) {
+        list($jam_mulai, $jam_selesai) = explode(' - ', $time_slots[$i]);
+
+        $stmt->bind_param(
+            "issssisss",
+            $schedule['id'],
+            $schedule['hari'],
+            $jam_mulai,
+            $jam_selesai,
+            $schedule['matkul'],
+            $schedule['dosen_id'],
+            $schedule['classroom'],
+            $schedule['kelas'],
+            $end_date
+        );
+
+        if (!$stmt->execute()) {
+            error_log("Failed to insert into temporary_deleted_schedules: " . $stmt->error);
+            return false;
+        }
+    }
+
+    // Mark the original schedule as temporarily deleted
+    $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 1, end_date = ? WHERE id = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("si", $end_date, $schedule_id);
+    if (!$stmt->execute()) {
+        error_log("Failed to update jadwal_kuliah: " . $stmt->error);
+        return false;
+    }
+
+    return true;
+}
+
+function restore_temporary_deleted_schedules($db)
+{
+    // Ambil tanggal hari ini
+    $today = date('Y-m-d');
+
+    // Ambil semua jadwal sementara yang sudah kadaluarsa
+    $expired_schedules = retrieve("SELECT * FROM temporary_deleted_schedules WHERE end_date < ?", [$today]);
+
+    foreach ($expired_schedules as $schedule) {
+        // Kembalikan jadwal ke tabel jadwal_kuliah
+        $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 0, end_date = NULL WHERE id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $schedule['original_id']);
+        $stmt->execute();
+
+        // Hapus jadwal dari tabel temporary_deleted_schedules
+        $sql = "DELETE FROM temporary_deleted_schedules WHERE id = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $schedule['id']);
+        $stmt->execute();
+    }
+}
+
 function insertPertemuan($data)
 {
     global $db;
@@ -844,9 +985,12 @@ function uploadFileTugas(
     if ($file['error'] == 0) {
         $file_extension = pathinfo($file["name"], PATHINFO_EXTENSION);
         if (in_array($file_extension, $allowed_types)) {
-            $file_path = $target_dir . basename($file["name"]);
+            // Generate unique filename using uniqid and extension
+            $unique_filename = uniqid('', true) . '.' . $file_extension;
+            $file_path = $target_dir . $unique_filename;
+
             if (move_uploaded_file($file["tmp_name"], $file_path)) {
-                return basename($file["name"]); // only save the file name in the database
+                return $unique_filename; // Return the unique filename
             } else {
                 return ['error' => "Gagal mengupload file tugas."];
             }

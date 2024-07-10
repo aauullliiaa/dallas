@@ -156,47 +156,45 @@ unset($_SESSION['alert_class']);
           <?php if (empty($schedules)): ?>
             <div class="alert alert-info">Tidak ada jadwal untuk kelas ini.</div>
           <?php else: ?>
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Jam</th>
-                  <?php foreach ($days as $day): ?>
-                    <th><?= $day; ?></th>
-                  <?php endforeach; ?>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($time_slots as $slot): ?>
-                  <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
-                    <td><?= $slot; ?></td>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Jam</th>
                     <?php foreach ($days as $day): ?>
-                      <td>
-                        <?php if (isset($schedules[$day][$slot])): ?>
-                          <?php foreach ($schedules[$day][$slot] as $schedule): ?>
-                            <?= htmlspecialchars($schedule['matkul']); ?><br>
-                            <small><?= htmlspecialchars($schedule['dosen']); ?></small> -
-                            <small><?= htmlspecialchars($schedule['classroom']); ?></small>
-                            <br>
-                            <?php if ($schedule['is_temporary']): ?>
-                              <span class="badge bg-warning">Jadwal Pergantian</span><br>
-                            <?php endif; ?>
-                            <a href="edit-jadwal.php?id=<?= $schedule['id']; ?>" class="btn btn-sm btn-warning mt-2">Edit</a>
-                            <form action="" method="post" class="d-inline"
-                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?');">
-                              <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
-                              <button type="submit" name="delete_schedule" class="btn btn-sm btn-danger mt-2">Hapus</button>
-                            </form>
-                            <hr>
-                          <?php endforeach; ?>
-                        <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
-                          Istirahat
-                        <?php endif; ?>
-                      </td>
+                      <th><?= $day; ?></th>
                     <?php endforeach; ?>
                   </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  <?php foreach ($time_slots as $slot): ?>
+                    <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
+                      <td><?= $slot; ?></td>
+                      <?php foreach ($days as $day): ?>
+                        <td>
+                          <?php if (isset($schedules[$day][$slot])): ?>
+                            <?php foreach ($schedules[$day][$slot] as $schedule): ?>
+                              <?= htmlspecialchars($schedule['matkul']); ?><br>
+                              <small><?= htmlspecialchars($schedule['dosen']); ?></small> -
+                              <small><?= htmlspecialchars($schedule['classroom']); ?></small>
+                              <br>
+                              <?php if ($schedule['is_temporary']): ?>
+                                <span class="badge bg-warning">Jadwal Pergantian</span><br>
+                              <?php elseif ($schedule['is_deleted_temporarily']): ?>
+                                <span class="badge bg-danger">Jadwal Dikosongkan untuk Pekan ini</span>
+                              <?php endif; ?>
+                              <a href="edit-jadwal.php?id=<?= $schedule['id']; ?>" class="btn btn-sm btn-warning mt-2">Edit</a>
+                            <?php endforeach; ?>
+                          <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
+                            Istirahat
+                          <?php endif; ?>
+                        </td>
+                      <?php endforeach; ?>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
           <?php endif; ?>
         <?php endif; ?>
       </div>

@@ -114,7 +114,7 @@ $mata_kuliah = getAllMataKuliah($db);
 </header>
 
 <body>
-  <div class="container mt-5 text-center">
+  <div class="container mt-5">
     <?php if (isset($_SESSION['message'])): ?>
       <div class="alert alert-<?= $_SESSION['alert_type']; ?>" role="alert">
         <?= $_SESSION['message']; ?>
@@ -122,36 +122,38 @@ $mata_kuliah = getAllMataKuliah($db);
       </div>
     <?php endif; ?>
     <div class="card p-3">
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead style="vertical-align: middle; text-align: center;">
-            <tr>
-              <th scope="col">Kode</th>
-              <th scope="col">Nama Mata Kuliah</th>
-              <th scope="col">Deskripsi</th>
-              <th scope="col">Dosen Pengampu</th>
-              <th scope="col">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($mata_kuliah as $mata_kuliah_item): ?>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead style="vertical-align: middle; text-align: center;">
               <tr>
-                <td><?= $mata_kuliah_item['kode']; ?></td>
-                <td><?= $mata_kuliah_item['nama']; ?></td>
-                <td><?= $mata_kuliah_item['deskripsi']; ?></td>
-                <td><?= $mata_kuliah_item['dosen']; ?></td>
-                <td>
-                  <a href="mata-kuliah.php?delete=<?= $mata_kuliah_item['id']; ?>" class="btn btn-danger btn-sm"
-                    onclick="confirmDeletion(event, this.href)">Hapus</a>
-                </td>
+                <th scope="col">Kode</th>
+                <th scope="col">Nama Mata Kuliah</th>
+                <th scope="col">Deskripsi</th>
+                <th scope="col">Dosen Pengampu</th>
+                <th scope="col">Aksi</th>
               </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
-      <div class="row">
-        <div class="col submit-button">
-          <a href="tambah-matkul.php"><button class="btn btn-light">Tambah Mata Kuliah</button></a>
+            </thead>
+            <tbody>
+              <?php foreach ($mata_kuliah as $mata_kuliah_item): ?>
+                <tr>
+                  <td><?= $mata_kuliah_item['kode']; ?></td>
+                  <td><?= $mata_kuliah_item['nama']; ?></td>
+                  <td><?= $mata_kuliah_item['deskripsi']; ?></td>
+                  <td><?= $mata_kuliah_item['dosen']; ?></td>
+                  <td>
+                    <a href="mata-kuliah.php?delete=<?= $mata_kuliah_item['id']; ?>" class="btn btn-danger btn-sm"
+                      onclick="confirmDeletion(event, this.href)">Hapus</a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+        <div class="row text-center">
+          <div class="col submit-button">
+            <a href="tambah-matkul.php"><button class="btn btn-light">Tambah Mata Kuliah</button></a>
+          </div>
         </div>
       </div>
     </div>

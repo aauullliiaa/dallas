@@ -121,40 +121,42 @@ $time_slots = get_time_slots_for_viewing();
           <?php if (empty($schedules)): ?>
             <div class="alert alert-info">Tidak ada jadwal untuk kelas ini.</div>
           <?php else: ?>
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Jam</th>
-                  <?php foreach ($days as $day): ?>
-                    <th><?= $day; ?></th>
-                  <?php endforeach; ?>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($time_slots as $slot): ?>
-                  <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
-                    <td><?= $slot; ?></td>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Jam</th>
                     <?php foreach ($days as $day): ?>
-                      <td>
-                        <?php if (isset($schedules[$day][$slot])): ?>
-                          <?php foreach ($schedules[$day][$slot] as $schedule): ?>
-                            <?= htmlspecialchars($schedule['matkul']); ?><br>
-                            <small><?= htmlspecialchars($schedule['dosen']); ?></small> -
-                            <small><?= htmlspecialchars($schedule['classroom']); ?></small><br>
-                            <?php if ($schedule['is_temporary']): ?>
-                              <span class="badge bg-warning">Jadwal Pergantian</span><br>
-                            <?php endif; ?>
-                            <hr>
-                          <?php endforeach; ?>
-                        <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
-                          Istirahat
-                        <?php endif; ?>
-                      </td>
+                      <th><?= $day; ?></th>
                     <?php endforeach; ?>
                   </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  <?php foreach ($time_slots as $slot): ?>
+                    <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
+                      <td><?= $slot; ?></td>
+                      <?php foreach ($days as $day): ?>
+                        <td>
+                          <?php if (isset($schedules[$day][$slot])): ?>
+                            <?php foreach ($schedules[$day][$slot] as $schedule): ?>
+                              <?= htmlspecialchars($schedule['matkul']); ?><br>
+                              <small><?= htmlspecialchars($schedule['dosen']); ?></small> -
+                              <small><?= htmlspecialchars($schedule['classroom']); ?></small><br>
+                              <?php if ($schedule['is_temporary']): ?>
+                                <span class="badge bg-warning">Jadwal Pergantian</span><br>
+                              <?php endif; ?>
+                              <hr>
+                            <?php endforeach; ?>
+                          <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
+                            Istirahat
+                          <?php endif; ?>
+                        </td>
+                      <?php endforeach; ?>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
           <?php endif; ?>
         <?php endif; ?>
       </div>
