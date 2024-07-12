@@ -14,6 +14,7 @@ $time_slots_adding = get_time_slots_for_adding();
 
 $message = '';
 $alert_class = '';
+$deleted_schedules = [];
 
 // Ambil pesan dari session jika ada
 if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
@@ -28,37 +29,33 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['delete_schedule_permanently']) || isset($_POST['delete_schedule_temporarily'])) {
     $is_permanent = isset($_POST['delete_schedule_permanently']);
-    $schedule_ids = json_decode($is_permanent ? $_POST['delete_schedule_permanently'] : $_POST['delete_schedule_temporarily']);
-    $success = true;
-    $processed = 0;
-    $failed = 0;
+    $schedule_ids = json_decode($is_permanent ? $_POST['delete_schedule_permanently'] : $_POST['delete_schedule_temporarily'], true);
 
-    foreach ($schedule_ids as $schedule_id) {
+    if (!is_array($schedule_ids)) {
+      $message = "Data jadwal tidak valid.";
+      $alert_class = "alert-danger";
+    } else {
       if ($is_permanent) {
-        $result = delete_schedule_permanently($db, $schedule_id);
+        $result = delete_schedule_permanently($db, $schedule_ids);
       } else {
-        $result = delete_schedule_temporarily($db, $schedule_id);
+        $result = delete_schedule_temporarily($db, $schedule_ids);
       }
 
       if ($result) {
-        $processed++;
+        $_SESSION['message'] = $is_permanent ?
+          "Berhasil menghapus " . count($schedule_ids) . " jadwal secara permanen." :
+          "Berhasil menghapus " . count($schedule_ids) . " jadwal sementara untuk pekan ini.";
+        $_SESSION['alert_class'] = "alert-success";
+        $_SESSION['deleted_schedules'] = $schedule_ids;
       } else {
-        $failed++;
-        $success = false;
+        $_SESSION['message'] = $is_permanent ?
+          "Gagal menghapus jadwal secara permanen." :
+          "Gagal menghapus jadwal sementara.";
+        $_SESSION['alert_class'] = "alert-danger";
       }
+      header("Location: jadwal-pergantian.php");
+      exit;
     }
-
-    if ($alert_class === 'alert-success') {
-      $_SESSION['hidden_buttons'][] = [
-        'hari' => $hari,
-        'jam' => $jam_mulai,
-        'matkul' => $matkul,
-        'dosenId' => $dosen_id,
-        'kelas' => $kelas
-      ];
-    }
-    header("Location: jadwal-pergantian.php");
-    exit;
   } elseif (isset($_POST['hari'], $_POST['jam_mulai'], $_POST['jam_selesai'], $_POST['matkul'], $_POST['dosen_id'], $_POST['classroom'], $_POST['kelas'])) {
     $hari = $_POST['hari'];
     $jam_mulai = $_POST['jam_mulai'];
@@ -195,47 +192,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($time_slots_viewing as $slot): ?>
+              <?php
+              $displayed_schedules = array();
+              foreach ($time_slots_viewing as $slot):
+                ?>
                 <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
                   <td><?= $slot; ?></td>
                   <?php foreach ($days as $day): ?>
                     <td>
                       <?php if (!empty($all_slots[$day][$slot])): ?>
-                        <?php foreach ($all_slots[$day][$slot] as $schedule): ?>
+                        <?php
+                        $deleted_schedules = isset($_SESSION['deleted_schedules']) ? $_SESSION['deleted_schedules'] : [];
+                        foreach ($all_slots[$day][$slot] as $schedule):
+                          $is_deleted = in_array($schedule['id'], $deleted_schedules);
+                          $show_buttons = !in_array($schedule_key, $displayed_schedules) && !$is_deleted;
+                          ?>
                           <div><?= htmlspecialchars($schedule['matkul']); ?></div>
                           <div><small>Dosen: <?= htmlspecialchars($schedule['dosen']); ?></small></div>
                           <div><small>Kelas: <?= htmlspecialchars($schedule['kelas']); ?></small></div>
                           <div><small>Ruang: <?= htmlspecialchars($schedule['classroom']); ?></small></div>
                           <?php if ($schedule['is_temporary']): ?>
                             <span class="badge bg-warning">Jadwal Pergantian</span><br>
-                            <hr>
                           <?php endif; ?>
-                          <?php if ($schedule['is_deleted_temporarily']): ?>
+                          <?php if ($schedule['is_deleted_temporarily'] || in_array($schedule['id'], $deleted_schedules)): ?>
                             <span class="badge bg-danger">Jadwal Dikosongkan Sementara</span><br>
-                            <button class="btn btn-sm btn-warning kosong-temporary-btn mt-1" data-bs-toggle="modal"
-                              data-bs-target="#addScheduleModal" data-hari="<?= $day; ?>" data-jam="<?= $slot; ?>"
+                          <?php endif; ?>
+                          <?php if (!$schedule['is_temporary'] && !$schedule['is_deleted_temporarily'] && !$is_deleted && $show_buttons): ?>
+                            <button class="btn btn-sm btn-danger mt-2 delete-schedule-btn"
+                              data-schedule-id="<?= $schedule['id']; ?>" data-hari="<?= $day; ?>"
                               data-matkul="<?= htmlspecialchars($schedule['matkul']); ?>"
-                              data-dosen="<?= htmlspecialchars($schedule['dosen']); ?>"
                               data-dosen-id="<?= htmlspecialchars($schedule['dosen_id']); ?>"
-                              data-kelas="<?= htmlspecialchars($schedule['kelas']); ?>" data-schedule-id="<?= $schedule['id']; ?>"
-                              onclick="hideKosongTemporaryButton(this)" style="display: block;">Kosong</button>
-                            <hr>
+                              data-kelas="<?= htmlspecialchars($schedule['kelas']); ?>" data-jam="<?= $slot; ?>"
+                              onclick="confirmDeleteSchedule(this, false)">
+                              Hapus Sementara
+                            </button>
+                            <?php $displayed_schedules[] = $schedule_key; ?>
                           <?php endif; ?>
-                          <?php if (!$schedule['is_temporary'] && !$schedule['is_deleted_temporarily']): ?>
-                            <form action="" method="post" class="d-inline delete-schedule-form">
-                              <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
-                              <input type="hidden" name="hari" value="<?= $day; ?>">
-                              <input type="hidden" name="matkul" value="<?= htmlspecialchars($schedule['matkul']); ?>">
-                              <input type="hidden" name="dosen_id" value="<?= htmlspecialchars($schedule['dosen_id']); ?>">
-                              <input type="hidden" name="kelas" value="<?= htmlspecialchars($schedule['kelas']); ?>">
-                              <input type="hidden" name="jam" value="<?= $slot; ?>">
-                              <button type="button" class="btn btn-sm btn-danger mt-2 delete-schedule-btn"
-                                onclick="confirmDeleteSchedule(this, <?= $schedule['is_temporary'] ? 'true' : 'false' ?>)">
-                                Hapus<?= $schedule['is_temporary'] ? '' : ' Sementara' ?>
-                              </button>
-                            </form>
-                          <?php endif; ?>
-
+                          <hr>
                         <?php endforeach; ?>
                       <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
                         Istirahat
@@ -451,51 +444,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     function confirmDeleteSchedule(button, isPermanent) {
-      var form = button.closest('.delete-schedule-form');
-      var hari = form.querySelector('input[name="hari"]').value;
-      var matkul = form.querySelector('input[name="matkul"]').value;
-      var dosenId = form.querySelector('input[name="dosen_id"]').value;
-      var kelas = form.querySelector('input[name="kelas"]').value;
-      var jam = form.querySelector('input[name="jam"]').value;
+      var hari = button.getAttribute('data-hari');
+      var matkul = button.getAttribute('data-matkul');
+      var dosenId = button.getAttribute('data-dosen-id');
+      var kelas = button.getAttribute('data-kelas');
+      var jam = button.getAttribute('data-jam');
 
       var message = isPermanent ?
         "Apakah Anda yakin ingin menghapus semua jadwal yang sama secara permanen?" :
         "Apakah Anda yakin ingin menghapus semua jadwal yang sama sementara untuk pekan ini?";
 
       if (confirm(message)) {
-        var matchingForms = document.querySelectorAll('.delete-schedule-form');
+        var allButtons = document.querySelectorAll('.delete-schedule-btn');
         var scheduleIds = [];
 
-        matchingForms.forEach(function (matchingForm) {
-          if (matchingForm.querySelector('input[name="hari"]').value === hari &&
-            matchingForm.querySelector('input[name="matkul"]').value === matkul &&
-            matchingForm.querySelector('input[name="dosen_id"]').value === dosenId &&
-            matchingForm.querySelector('input[name="kelas"]').value === kelas) {
-            var matchingJam = matchingForm.querySelector('input[name="jam"]').value;
-            if (isAdjacentTimeSlot(jam, matchingJam)) {
-              scheduleIds.push(matchingForm.querySelector('input[name="schedule_id"]').value);
-            }
+        allButtons.forEach(function (btn) {
+          if (btn.getAttribute('data-hari') === hari &&
+            btn.getAttribute('data-matkul') === matkul &&
+            btn.getAttribute('data-dosen-id') === dosenId &&
+            btn.getAttribute('data-kelas') === kelas) {
+            scheduleIds.push(btn.getAttribute('data-schedule-id'));
           }
         });
 
         console.log("Jadwal yang akan dihapus:", scheduleIds);
 
         // Buat form baru untuk mengirim data
-        var submitForm = document.createElement('form');
-        submitForm.method = 'post';
-        submitForm.action = '';
+        var form = document.createElement('form');
+        form.method = 'post';
+        form.style.display = 'none';
 
         var input = document.createElement('input');
         input.type = 'hidden';
         input.name = isPermanent ? 'delete_schedule_permanently' : 'delete_schedule_temporarily';
         input.value = JSON.stringify(scheduleIds);
-        submitForm.appendChild(input);
+        form.appendChild(input);
 
-        document.body.appendChild(submitForm);
-        submitForm.submit();
+        document.body.appendChild(form);
+        form.submit();
       }
     }
-
     function isAdjacentTimeSlot(time1, time2) {
       var slots = ['07.30 - 08.20', '08.20 - 09.10', '09.10 - 10.00', '10.20 - 11.10', '11.10 - 12.00', '13.00 - 13.50', '13.50 - 14.40', '14.40 - 15.30', '16.00 - 16.50', '16.50 - 17.40'];
       var index1 = slots.indexOf(time1);

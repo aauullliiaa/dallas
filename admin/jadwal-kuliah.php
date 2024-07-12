@@ -167,13 +167,22 @@ unset($_SESSION['alert_class']);
                   </tr>
                 </thead>
                 <tbody>
-                  <?php foreach ($time_slots as $slot): ?>
+                  <?php
+                  $displayed_courses = array();
+                  foreach ($time_slots as $slot):
+                    ?>
                     <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
                       <td><?= $slot; ?></td>
                       <?php foreach ($days as $day): ?>
                         <td>
                           <?php if (isset($schedules[$day][$slot])): ?>
-                            <?php foreach ($schedules[$day][$slot] as $schedule): ?>
+                            <?php foreach ($schedules[$day][$slot] as $schedule):
+                              $course_key = $day . '-' . $schedule['matkul'];
+                              $show_edit = !in_array($course_key, $displayed_courses);
+                              if ($show_edit) {
+                                $displayed_courses[] = $course_key;
+                              }
+                              ?>
                               <?= htmlspecialchars($schedule['matkul']); ?><br>
                               <small><?= htmlspecialchars($schedule['dosen']); ?></small> -
                               <small><?= htmlspecialchars($schedule['classroom']); ?></small>
@@ -183,7 +192,10 @@ unset($_SESSION['alert_class']);
                               <?php elseif ($schedule['is_deleted_temporarily']): ?>
                                 <span class="badge bg-danger">Jadwal Dikosongkan untuk Pekan ini</span>
                               <?php endif; ?>
-                              <a href="edit-jadwal.php?id=<?= $schedule['id']; ?>" class="btn btn-sm btn-warning mt-2">Edit</a>
+                              <?php if ($show_edit): ?>
+                                <a href="edit-jadwal.php?id=<?= $schedule['id']; ?>" class="btn btn-sm btn-warning mt-2">Edit</a>
+                              <?php endif; ?>
+                              <br>
                             <?php endforeach; ?>
                           <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
                             Istirahat
