@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_schedule'])) {
   }
 }
 
-$class = isset($_GET['kelas']) ? $_GET['kelas'] : '';
-$schedules = !empty($class) ? fetch_schedules($db, $class) : [];
+// Ambil semua jadwal
+$schedules = fetch_all_schedules($db);
 
 $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 $time_slots = get_time_slots_for_viewing();
@@ -114,31 +114,10 @@ unset($_SESSION['alert_class']);
 
 <body>
   <div class="container">
-    <form action="" method="get" class="mb-2">
-      <div class="mb-3">
-        <label for="kelas" class="form-label">Pilih Kelas:</label>
-        <div class="row">
-          <div class="col-sm-3">
-            <select id="kelas" name="kelas" class="form-select" required>
-              <option value="">Pilih Kelas</option>
-              <option value="1A" <?= ($class == '1A') ? 'selected' : ''; ?>>1A</option>
-              <option value="1B" <?= ($class == '1B') ? 'selected' : ''; ?>>1B</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col submit-button">
-          <button type="submit" class="btn">Lihat Jadwal</button>
-        </div>
-      </div>
-    </form>
     <div class="row mb-3">
       <div class="col-md-5 submit-button">
-        <a href="tambah-jadwal.php?kelas=<?= $class; ?>"><button class="btn mb-2">Tambah Jadwal</button></a>
+        <a href="tambah-jadwal.php"><button class="btn mb-2">Tambah Jadwal</button></a>
         <a href="jadwal-pergantian.php"><button class="btn mb-2">Tambah Pergantian Kuliah</button></a>
-      </div>
-      <div class="col-md-3 submit-button">
       </div>
     </div>
     <div class="card p-3">
@@ -149,65 +128,64 @@ unset($_SESSION['alert_class']);
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         <?php endif; ?>
-        <?php if (!empty($class)): ?>
-          <div class="row mb-2">
-            <h3>Jadwal Kelas <?= htmlspecialchars($class); ?></h3>
-          </div>
-          <?php if (empty($schedules)): ?>
-            <div class="alert alert-info">Tidak ada jadwal untuk kelas ini.</div>
-          <?php else: ?>
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Jam</th>
+        <div class="row mb-2">
+          <h3>Jadwal Perkuliahan</h3>
+        </div>
+        <?php if (empty($schedules)): ?>
+          <div class="alert alert-info">Tidak ada jadwal tersedia.</div>
+        <?php else: ?>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Jam</th>
+                  <?php foreach ($days as $day): ?>
+                    <th><?= $day; ?></th>
+                  <?php endforeach; ?>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                $displayed_courses = array();
+                foreach ($time_slots as $slot):
+                  ?>
+                  <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
+                    <td><?= $slot; ?></td>
                     <?php foreach ($days as $day): ?>
-                      <th><?= $day; ?></th>
+                      <td>
+                        <?php if (isset($schedules[$day][$slot])): ?>
+                          <?php foreach ($schedules[$day][$slot] as $schedule):
+                            $course_key = $day . '-' . $schedule['matkul'] . '-' . $schedule['kelas'];
+                            $show_edit = !in_array($course_key, $displayed_courses);
+                            if ($show_edit) {
+                              $displayed_courses[] = $course_key;
+                            }
+                            ?>
+                            <strong>Kelas <?= htmlspecialchars($schedule['kelas']); ?></strong><br>
+                            <?= htmlspecialchars($schedule['matkul']); ?><br>
+                            <small><?= htmlspecialchars($schedule['dosen']); ?></small> -
+                            <small><?= htmlspecialchars($schedule['classroom']); ?></small>
+                            <br>
+                            <?php if ($schedule['is_temporary']): ?>
+                              <span class="badge bg-warning">Jadwal Pergantian</span><br>
+                            <?php elseif ($schedule['is_deleted_temporarily']): ?>
+                              <span class="badge bg-danger">Jadwal Dikosongkan untuk Pekan ini</span>
+                            <?php endif; ?>
+                            <?php if ($show_edit): ?>
+                              <a href="edit-jadwal.php?id=<?= $schedule['id']; ?>" class="btn btn-sm btn-warning mt-2">Edit</a>
+                            <?php endif; ?>
+                            <br><br>
+                          <?php endforeach; ?>
+                        <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
+                          Istirahat
+                        <?php endif; ?>
+                      </td>
                     <?php endforeach; ?>
                   </tr>
-                </thead>
-                <tbody>
-                  <?php
-                  $displayed_courses = array();
-                  foreach ($time_slots as $slot):
-                    ?>
-                    <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
-                      <td><?= $slot; ?></td>
-                      <?php foreach ($days as $day): ?>
-                        <td>
-                          <?php if (isset($schedules[$day][$slot])): ?>
-                            <?php foreach ($schedules[$day][$slot] as $schedule):
-                              $course_key = $day . '-' . $schedule['matkul'];
-                              $show_edit = !in_array($course_key, $displayed_courses);
-                              if ($show_edit) {
-                                $displayed_courses[] = $course_key;
-                              }
-                              ?>
-                              <?= htmlspecialchars($schedule['matkul']); ?><br>
-                              <small><?= htmlspecialchars($schedule['dosen']); ?></small> -
-                              <small><?= htmlspecialchars($schedule['classroom']); ?></small>
-                              <br>
-                              <?php if ($schedule['is_temporary']): ?>
-                                <span class="badge bg-warning">Jadwal Pergantian</span><br>
-                              <?php elseif ($schedule['is_deleted_temporarily']): ?>
-                                <span class="badge bg-danger">Jadwal Dikosongkan untuk Pekan ini</span>
-                              <?php endif; ?>
-                              <?php if ($show_edit): ?>
-                                <a href="edit-jadwal.php?id=<?= $schedule['id']; ?>" class="btn btn-sm btn-warning mt-2">Edit</a>
-                              <?php endif; ?>
-                              <br>
-                            <?php endforeach; ?>
-                          <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
-                            Istirahat
-                          <?php endif; ?>
-                        </td>
-                      <?php endforeach; ?>
-                    </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-            </div>
-          <?php endif; ?>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
         <?php endif; ?>
       </div>
     </div>

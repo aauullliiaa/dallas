@@ -3,14 +3,12 @@ session_start();
 require '../src/db/functions.php';
 checkRole('admin');
 
-
 $time_slots = get_time_slots_for_adding();
 $occupied_slots = [];
-$kelas = $_GET['kelas'] ?? $_POST['kelas'];
+$kelas = $_GET['kelas'] ?? $_POST['kelas'] ?? '';
 
-if (isset($_GET['hari']) && isset($_GET['kelas'])) {
+if (isset($_GET['hari']) && !empty($kelas)) {
     $hari = $_GET['hari'];
-    $kelas = $_GET['kelas'];
     $occupied_slots = get_occupied_slots($db, $hari, $kelas);
 }
 
@@ -90,12 +88,8 @@ unset($_SESSION['alert_type']);
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="index.php#about">About</a></li>
-                            <li>
-                                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
-                            </li>
+                            <li><a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a></li>
+                            <li><a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -105,9 +99,7 @@ unset($_SESSION['alert_type']);
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="data-users.php">Data Pengguna</a></li>
-                            <li>
-                                <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
-                            </li>
+                            <li><a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -166,8 +158,13 @@ unset($_SESSION['alert_type']);
                     </div>
                     <div class="mb-3">
                         <label for="kelas" class="form-label">Kelas:</label>
-                        <input type="text" id="kelas" name="kelas" class="form-control"
-                            value="<?= htmlspecialchars($kelas); ?>" readonly>
+                        <select id="kelas" name="kelas" class="form-select" required onchange="this.form.submit();">
+                            <option value="">--Pilih Kelas--</option>
+                            <option value="1A" <?php if ($kelas == '1A')
+                                echo 'selected'; ?>>1A</option>
+                            <option value="1B" <?php if ($kelas == '1B')
+                                echo 'selected'; ?>>1B</option>
+                        </select>
                     </div>
                 </form>
 
@@ -228,7 +225,6 @@ unset($_SESSION['alert_type']);
                         </select>
                     </div>
                     <input type="hidden" name="hari" value="<?= htmlspecialchars($hari); ?>">
-                    <input type="hidden" name="kelas" value="<?= htmlspecialchars($kelas); ?>">
                     <input type="hidden" name="submit_form" value="1">
                     <div class="row mb-2">
                         <div class="col submit-button">
@@ -238,8 +234,7 @@ unset($_SESSION['alert_type']);
                 </form>
                 <div class="row">
                     <div class="col submit-button">
-                        <a href="jadwal-kuliah.php?kelas=<?= htmlspecialchars($kelas); ?>"><button
-                                class="btn btn-light">Kembali</button></a>
+                        <a href="jadwal-kuliah.php"><button class="btn btn-light">Kembali</button></a>
                     </div>
                 </div>
             </div>
