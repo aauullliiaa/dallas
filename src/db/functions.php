@@ -787,7 +787,7 @@ function fetch_all_slots($db)
 
     foreach ($days as $day) {
         foreach ($time_slots as $slot) {
-            $sql = "SELECT jk.*, dd.nama AS dosen FROM jadwal_kuliah jk
+            $sql = "SELECT jk.*, dd.nama AS dosen, dd.id AS dosen_id FROM jadwal_kuliah jk
             JOIN daftar_dosen dd ON jk.dosen_id = dd.id
             WHERE jk.hari = ? AND jk.jam = ? AND (jk.is_temporary = 0 OR (jk.is_temporary = 1 AND jk.end_date >= CURDATE()) OR jk.is_deleted_temporarily = 1)";
             $stmt = $db->prepare($sql);
@@ -801,6 +801,7 @@ function fetch_all_slots($db)
                     'id' => $row['id'],
                     'matkul' => $row['matkul'],
                     'dosen' => $row['dosen'],
+                    'dosen_id' => $row['dosen_id'],  // Menambahkan dosen_id
                     'kelas' => $row['kelas'],
                     'classroom' => $row['classroom'],
                     'is_temporary' => $row['is_temporary'],
@@ -827,79 +828,52 @@ function delete_expired_temporary_schedules($db)
     }
     $stmt->close();
 }
-function delete_schedule_temporarily($db, $schedule_id)
+function delete_schedule_temporarily($db, $hari, $matkul, $dosen_id, $kelas)
 {
-    // Fetch the original schedule
-    $schedule = retrieve("SELECT * FROM jadwal_kuliah WHERE id = ?", [$schedule_id]);
+    $db->begin_transaction();
 
-    // Check if the schedule exists and contains valid data
-    if (empty($schedule) || empty($schedule[0])) {
-        error_log("Schedule with ID $schedule_id not found.");
-        return false;
-    }
+    try {
+        $current_date = date('Y-m-d');
+        $end_date = date('Y-m-d', strtotime('next Sunday'));
 
-    $schedule = $schedule[0];
-
-    // Get the time slots for adding
-    $time_slots = get_time_slots_for_adding();
-
-    // Find the start and end index of the schedule
-    $jam = $schedule['jam'];
-    $start_index = array_search($jam, $time_slots);
-    $end_index = $start_index;
-
-    // Calculate the end date as the upcoming Sunday
-    $current_date = new DateTime();
-    $current_day_of_week = $current_date->format('w'); // 0 (for Sunday) through 6 (for Saturday)
-    $days_until_sunday = 7 - $current_day_of_week;
-    $end_date = $current_date->add(new DateInterval('P' . $days_until_sunday . 'D'))->format('Y-m-d');
-
-    // Validate required fields
-    if (
-        empty($schedule['hari']) || $start_index === false || $end_index === false ||
-        empty($schedule['matkul']) || empty($schedule['dosen_id']) || empty($schedule['classroom']) || empty($schedule['kelas'])
-    ) {
-        error_log("Invalid schedule data: " . json_encode($schedule));
-        return false;
-    }
-
-    // Insert into temporary_deleted_schedules
-    $sql = "INSERT INTO temporary_deleted_schedules (original_id, hari, jam_mulai, jam_selesai, matkul, dosen_id, classroom, kelas, end_date) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $db->prepare($sql);
-
-    for ($i = $start_index; $i <= $end_index; $i++) {
-        list($jam_mulai, $jam_selesai) = explode(' - ', $time_slots[$i]);
-
-        $stmt->bind_param(
-            "issssisss",
-            $schedule['id'],
-            $schedule['hari'],
-            $jam_mulai,
-            $jam_selesai,
-            $schedule['matkul'],
-            $schedule['dosen_id'],
-            $schedule['classroom'],
-            $schedule['kelas'],
-            $end_date
-        );
-
-        if (!$stmt->execute()) {
-            error_log("Failed to insert into temporary_deleted_schedules: " . $stmt->error);
-            return false;
+        // Update jadwal_kuliah
+        $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 1, end_date = ? 
+                WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception($db->error);
         }
-    }
+        $stmt->bind_param("sssis", $end_date, $hari, $matkul, $dosen_id, $kelas);
+        $stmt->execute();
 
-    // Mark the original schedule as temporarily deleted
-    $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 1, end_date = ? WHERE id = ?";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param("si", $end_date, $schedule_id);
-    if (!$stmt->execute()) {
-        error_log("Failed to update jadwal_kuliah: " . $stmt->error);
+        // Insert into temporary_deleted_schedules
+        $sql = "INSERT INTO temporary_deleted_schedules (original_id, hari, jam_mulai, jam_selesai, matkul, dosen_id, classroom, kelas, end_date)
+                SELECT id, hari, SUBSTRING_INDEX(jam, ' - ', 1), SUBSTRING_INDEX(jam, ' - ', -1), matkul, dosen_id, classroom, kelas, ?
+                FROM jadwal_kuliah 
+                WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception($db->error);
+        }
+        $stmt->bind_param("sssis", $end_date, $hari, $matkul, $dosen_id, $kelas);
+        $stmt->execute();
+
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollback();
+        error_log("Error in delete_schedule_temporarily: " . $e->getMessage());
         return false;
     }
-
-    return true;
+}
+function get_schedule_info($db, $schedule_id)
+{
+    $sql = "SELECT hari, jam, matkul, dosen_id, kelas FROM jadwal_kuliah WHERE id = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("i", $schedule_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
 }
 
 function restore_temporary_deleted_schedules($db)

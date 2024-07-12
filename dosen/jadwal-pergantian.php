@@ -1,7 +1,7 @@
 <?php
 session_start();
 require '../src/db/functions.php';
-checkRole('admin');
+checkRole('dosen');
 
 delete_expired_temporary_schedules($db);
 restore_temporary_deleted_schedules($db);
@@ -201,33 +201,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($time_slots_viewing as $slot): ?>
+              <?php
+              $displayed_schedules = array();
+              foreach ($time_slots_viewing as $slot):
+                ?>
                 <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
                   <td><?= $slot; ?></td>
                   <?php foreach ($days as $day): ?>
                     <td>
                       <?php if (!empty($all_slots[$day][$slot])): ?>
-                        <?php foreach ($all_slots[$day][$slot] as $schedule): ?>
+                        <?php
+                        foreach ($all_slots[$day][$slot] as $schedule):
+                          $schedule_key = $day . '-' . $schedule['matkul'] . '-' . $schedule['dosen_id'] . '-' . $schedule['kelas'];
+                          $show_buttons = !in_array($schedule_key, $displayed_schedules);
+                          ?>
                           <div><?= htmlspecialchars($schedule['matkul']); ?></div>
                           <div><small>Dosen: <?= htmlspecialchars($schedule['dosen']); ?></small></div>
                           <div><small>Kelas: <?= htmlspecialchars($schedule['kelas']); ?></small></div>
                           <div><small>Ruang: <?= htmlspecialchars($schedule['classroom']); ?></small></div>
                           <?php if ($schedule['is_temporary']): ?>
                             <span class="badge bg-warning">Jadwal Pergantian</span><br>
-                            <hr>
                           <?php endif; ?>
                           <?php if ($schedule['is_deleted_temporarily']): ?>
                             <span class="badge bg-danger">Jadwal Dikosongkan Sementara</span><br>
-                            <button class="btn btn-sm btn-warning kosong-temporary-btn mt-1" data-bs-toggle="modal"
-                              data-bs-target="#addScheduleModal" data-hari="<?= $day; ?>" data-jam="<?= $slot; ?>"
-                              data-matkul="<?= htmlspecialchars($schedule['matkul']); ?>"
-                              data-dosen="<?= htmlspecialchars($schedule['dosen']); ?>"
-                              data-dosen-id="<?= htmlspecialchars($schedule['dosen_id']); ?>"
-                              data-kelas="<?= htmlspecialchars($schedule['kelas']); ?>" data-schedule-id="<?= $schedule['id']; ?>"
-                              onclick="hideKosongTemporaryButton(this)" style="display: block;">Kosong</button>
-                            <hr>
+                            <?php if ($show_buttons): ?>
+                              <button class="btn btn-sm btn-warning kosong-temporary-btn mt-1" data-bs-toggle="modal"
+                                data-bs-target="#addScheduleModal" data-hari="<?= $day; ?>" data-jam="<?= $slot; ?>"
+                                data-matkul="<?= htmlspecialchars($schedule['matkul']); ?>"
+                                data-dosen="<?= htmlspecialchars($schedule['dosen']); ?>"
+                                data-dosen-id="<?= htmlspecialchars($schedule['dosen_id']); ?>"
+                                data-kelas="<?= htmlspecialchars($schedule['kelas']); ?>" data-schedule-id="<?= $schedule['id']; ?>"
+                                onclick="hideKosongTemporaryButton(this)" style="display: block;">Kosong</button>
+                              <?php $displayed_schedules[] = $schedule_key; ?>
+                            <?php endif; ?>
                           <?php endif; ?>
-                          <?php if (!$schedule['is_temporary'] && !$schedule['is_deleted_temporarily']): ?>
+                          <?php if (!$schedule['is_temporary'] && !$schedule['is_deleted_temporarily'] && $show_buttons): ?>
                             <form action="" method="post" class="d-inline delete-schedule-form">
                               <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
                               <input type="hidden" name="hari" value="<?= $day; ?>">
@@ -236,12 +244,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                               <input type="hidden" name="kelas" value="<?= htmlspecialchars($schedule['kelas']); ?>">
                               <input type="hidden" name="jam" value="<?= $slot; ?>">
                               <button type="button" class="btn btn-sm btn-danger mt-2 delete-schedule-btn"
-                                onclick="confirmDeleteSchedule(this, <?= $schedule['is_temporary'] ? 'true' : 'false' ?>)">
-                                Hapus<?= $schedule['is_temporary'] ? '' : ' Sementara' ?>
+                                onclick="confirmDeleteSchedule(this, false)">
+                                Hapus Sementara
                               </button>
                             </form>
+                            <?php $displayed_schedules[] = $schedule_key; ?>
                           <?php endif; ?>
-
+                          <hr>
                         <?php endforeach; ?>
                       <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
                         Istirahat
