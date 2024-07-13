@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $kelas = $_POST['kelas'];
 
     if ($is_permanent) {
-      // Handle permanent deletion logic here
+      $result = delete_schedule_permanently($db, $schedule_id);
     } else {
       $result = delete_schedule_temporarily($db, $hari, $matkul, $dosen_id, $kelas);
     }
@@ -76,9 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['submitted_matkul'] = $matkul;
     $_SESSION['submitted_dosen_id'] = $dosen_id;
     $_SESSION['submitted_kelas'] = $kelas;
-    header("Location: jadwal-pergantian.php");
-    exit;
   }
+  header("Location: jadwal-pergantian.php");
+  exit;
 }
 ?>
 <!DOCTYPE html>
@@ -201,7 +201,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php
                         $deleted_schedules = isset($_SESSION['deleted_schedules']) ? $_SESSION['deleted_schedules'] : [];
                         foreach ($all_slots[$day][$slot] as $schedule):
-                          // Definisikan $schedule_key di sini
                           $schedule_key = $day . '-' . $schedule['matkul'] . '-' . $schedule['dosen_id'] . '-' . $schedule['kelas'];
                           $is_deleted = in_array($schedule['id'], $deleted_schedules);
                           $show_buttons = !in_array($schedule_key, $displayed_schedules) && !$is_deleted;
@@ -223,8 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 data-dosen-id="<?= htmlspecialchars($schedule['dosen_id']); ?>"
                                 data-kelas="<?= htmlspecialchars($schedule['kelas']); ?>"
                                 data-classroom="<?= htmlspecialchars($schedule['classroom']); ?>"
-                                data-schedule-id="<?= $schedule['id']; ?>" onclick="hideKosongTemporaryButton(this)"
-                                style="display: block;">Kosong</button>
+                                data-schedule-id="<?= $schedule['id']; ?>">Kosong</button>
                               <?php $displayed_schedules[] = $schedule_key; ?>
                             <?php endif; ?>
                           <?php endif; ?>
@@ -249,8 +247,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Istirahat
                       <?php else: ?>
                         <button class="btn btn-sm btn-success kosong-btn" data-bs-toggle="modal"
-                          data-bs-target="#addScheduleModal" data-hari="<?= $day; ?>" data-jam="<?= $slot; ?>" data-kelas=""
-                          style="display: block;">Kosong</button>
+                          data-bs-target="#addScheduleModal" data-hari="<?= $day; ?>" data-jam="<?= $slot; ?>"
+                          data-kelas="">Kosong</button>
                       <?php endif; ?>
                     </td>
                   <?php endforeach; ?>
@@ -347,45 +345,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
   <script>
-    document.getElementById('matkul').addEventListener('change', function () {
-      var selectedOption = this.options[this.selectedIndex];
-      var dosen = selectedOption.getAttribute('data-dosen');
-      var dosenId = selectedOption.getAttribute('data-dosen-id');
-      document.getElementById('dosen').value = dosen;
-      document.getElementById('dosen_id').value = dosenId;
+    document.addEventListener('DOMContentLoaded', function () {
+      restoreHiddenButtons();
+      initializeModalHandlers();
+      initializeFormHandlers();
+      loadSubmittedData();
+      loadHiddenButtonsFromStorage();
     });
 
-    var addScheduleModal = document.getElementById('addScheduleModal');
-    addScheduleModal.addEventListener('show.bs.modal', function (event) {
-      var button = event.relatedTarget;
-      var hari = button.getAttribute('data-hari');
-      var jamMulai = button.getAttribute('data-jam');
-      var kelas = button.getAttribute('data-kelas');
-      var isTemporary = button.classList.contains('kosong-temporary-btn');
-      var classroom = button.getAttribute('data-classroom');
+    function initializeModalHandlers() {
+      var addScheduleModal = document.getElementById('addScheduleModal');
+      addScheduleModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var hari = button.getAttribute('data-hari');
+        var jamMulai = button.getAttribute('data-jam');
+        var kelas = button.getAttribute('data-kelas');
+        var isTemporary = button.classList.contains('kosong-temporary-btn');
+        var classroom = button.getAttribute('data-classroom');
 
-      var modalTitle = addScheduleModal.querySelector('.modal-title');
-      var hariInput = addScheduleModal.querySelector('#hari');
-      var jamMulaiInput = addScheduleModal.querySelector('#jam_mulai');
-      var jamSelesaiSelect = addScheduleModal.querySelector('#jam_selesai');
-      var kelasInput = addScheduleModal.querySelector('#kelas');
-      var isTemporaryInput = addScheduleModal.querySelector('#is_temporary');
-      var classroomInput = addScheduleModal.querySelector('#classroom');
+        var modalTitle = addScheduleModal.querySelector('.modal-title');
+        var hariInput = addScheduleModal.querySelector('#hari');
+        var jamMulaiInput = addScheduleModal.querySelector('#jam_mulai');
+        var jamSelesaiSelect = addScheduleModal.querySelector('#jam_selesai');
+        var kelasInput = addScheduleModal.querySelector('#kelas');
+        var isTemporaryInput = addScheduleModal.querySelector('#is_temporary');
+        var classroomInput = addScheduleModal.querySelector('#classroom');
 
-      modalTitle.textContent = 'Tambah Mata Kuliah untuk ' + hari;
-      hariInput.value = hari;
-      jamMulaiInput.value = jamMulai;
-      kelasInput.value = kelas;
-      isTemporaryInput.checked = isTemporary;
-      classroomInput.value = classroom || '';
+        modalTitle.textContent = 'Tambah Mata Kuliah untuk ' + hari;
+        hariInput.value = hari;
+        jamMulaiInput.value = jamMulai;
+        kelasInput.value = kelas;
+        isTemporaryInput.checked = isTemporary;
+        classroomInput.value = classroom || '';
 
-      // Isi opsi jam selesai
+        populateJamSelesaiOptions(jamMulaiInput.value, jamSelesaiSelect);
+      });
+
+      document.querySelector('#addScheduleModal .btn-secondary').addEventListener('click', function () {
+        restoreHiddenButtons();
+      });
+    }
+    function initializeFormHandlers() {
+      document.getElementById('matkul').addEventListener('change', function () {
+        var selectedOption = this.options[this.selectedIndex];
+        var dosen = selectedOption.getAttribute('data-dosen');
+        var dosenId = selectedOption.getAttribute('data-dosen-id');
+        document.getElementById('dosen').value = dosen;
+        document.getElementById('dosen_id').value = dosenId;
+      });
+
+      document.getElementById('addScheduleForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var hari = document.getElementById('hari').value;
+        var jamMulai = document.getElementById('jam_mulai').value;
+        var matkul = document.getElementById('matkul').value;
+        var dosenId = document.getElementById('dosen_id').value;
+        var kelas = document.getElementById('kelas').value;
+
+        hideAllMatchingButtons(hari, jamMulai, matkul, dosenId, kelas);
+
+        // Hide the specific "Kosong Sementara" button that was clicked
+        var clickedButton = document.querySelector(`.kosong-temporary-btn[data-hari="${hari}"][data-jam="${jamMulai}"][data-matkul="${matkul}"][data-dosen-id="${dosenId}"][data-kelas="${kelas}"]`);
+        if (clickedButton) {
+          clickedButton.style.display = 'none';
+        }
+
+        this.submit();
+      });
+    }
+
+    function populateJamSelesaiOptions(jamMulai, jamSelesaiSelect) {
+      var timeSlotsAdding = ['07.30 - 08.20', '08.20 - 09.10', '09.10 - 10.00', '10.20 - 11.10', '11.10 - 12.00', '13.00 - 13.50', '13.50 - 14.40', '14.40 - 15.30', '16.00 - 16.50', '16.50 - 17.40'];
+
       jamSelesaiSelect.innerHTML = '';
-      <?php
-      $time_slots_adding_js = json_encode($time_slots_adding);
-      echo "var timeSlotsAdding = $time_slots_adding_js;\n";
-      ?>
-
       var startIndex = timeSlotsAdding.indexOf(jamMulai);
       for (var i = startIndex + 1; i < timeSlotsAdding.length; i++) {
         var option = document.createElement('option');
@@ -393,72 +426,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         option.text = timeSlotsAdding[i];
         jamSelesaiSelect.appendChild(option);
       }
-    });
+    }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function loadSubmittedData() {
       var submittedHari = '<?= isset($_SESSION['submitted_hari']) ? $_SESSION['submitted_hari'] : '' ?>';
       var submittedJamMulai = '<?= isset($_SESSION['submitted_jam_mulai']) ? $_SESSION['submitted_jam_mulai'] : '' ?>';
       var submittedMatkul = '<?= isset($_SESSION['submitted_matkul']) ? $_SESSION['submitted_matkul'] : '' ?>';
       var submittedDosenId = '<?= isset($_SESSION['submitted_dosen_id']) ? $_SESSION['submitted_dosen_id'] : '' ?>';
       var submittedKelas = '<?= isset($_SESSION['submitted_kelas']) ? $_SESSION['submitted_kelas'] : '' ?>';
 
-      if (submittedHari && submittedJamMulai && submittedMatkul && submittedDosenId && submittedKelas && submittedClassroom) {
-        hideAllMatchingButtons(submittedHari, submittedJamMulai, submittedMatkul, submittedDosenId, submittedKelas, submittedClassroom);
-        <?php
-        unset($_SESSION['submitted_hari']);
-        unset($_SESSION['submitted_jam_mulai']);
-        unset($_SESSION['submitted_matkul']);
-        unset($_SESSION['submitted_dosen_id']);
-        unset($_SESSION['submitted_kelas']);
-        ?>
-      }
+      if (submittedHari && submittedJamMulai && submittedMatkul && submittedDosenId && submittedKelas) {
+        hideAllMatchingButtons(submittedHari, submittedJamMulai, submittedMatkul, submittedDosenId, submittedKelas);
 
-      // Check localStorage for hidden buttons
+        // Hide the specific "Kosong Sementara" button that was submitted
+        var submittedButton = document.querySelector(`.kosong-temporary-btn[data-hari="${submittedHari}"][data-jam="${submittedJamMulai}"][data-matkul="${submittedMatkul}"][data-dosen-id="${submittedDosenId}"][data-kelas="${submittedKelas}"]`);
+        if (submittedButton) {
+          submittedButton.style.display = 'none';
+        }
+      }
+    }
+
+    function loadHiddenButtonsFromStorage() {
       var hiddenButtons = JSON.parse(localStorage.getItem('hiddenKosongTemporaryButtons') || '[]');
       hiddenButtons.forEach(function (buttonData) {
         hideAllMatchingButtons(buttonData.hari, buttonData.jam, buttonData.matkul, buttonData.dosenId, buttonData.kelas);
       });
-    });
-
-    function hideKosongTemporaryButton(button) {
-      var hari = button.getAttribute('data-hari');
-      var jam = button.getAttribute('data-jam');
-      var matkul = button.getAttribute('data-matkul');
-      var dosenId = button.getAttribute('data-dosen-id');
-      var kelas = button.getAttribute('data-kelas');
-
-      hideAllMatchingButtons(hari, jam, matkul, dosenId, kelas);
-      event.stopPropagation();
-
-      // Store the hidden state in localStorage
-      var hiddenButtons = JSON.parse(localStorage.getItem('hiddenKosongTemporaryButtons') || '[]');
-      var buttonData = { hari: hari, jam: jam, matkul: matkul, dosenId: dosenId, kelas: kelas };
-      if (!hiddenButtons.some(item =>
-        item.hari === hari &&
-        item.matkul === matkul &&
-        item.dosenId === dosenId &&
-        item.kelas === kelas)) {
-        hiddenButtons.push(buttonData);
-        localStorage.setItem('hiddenKosongTemporaryButtons', JSON.stringify(hiddenButtons));
-      }
-
-      // You might want to send an AJAX request here to update the server-side state
     }
 
     function hideAllMatchingButtons(hari, jam, matkul, dosenId, kelas) {
-      var allButtons = document.querySelectorAll('.kosong-temporary-btn');
+      var allButtons = document.querySelectorAll('.kosong-temporary-btn, .kosong-btn');
       allButtons.forEach(function (button) {
         if (button.getAttribute('data-hari') === hari &&
-          button.getAttribute('data-matkul') === matkul &&
-          button.getAttribute('data-dosen-id') === dosenId &&
-          button.getAttribute('data-kelas') === kelas) {
+          button.getAttribute('data-jam') === jam &&
+          (button.getAttribute('data-matkul') === matkul || button.getAttribute('data-matkul') === null) &&
+          (button.getAttribute('data-dosen-id') === dosenId || button.getAttribute('data-dosen-id') === null) &&
+          (button.getAttribute('data-kelas') === kelas || button.getAttribute('data-kelas') === '')) {
+          button.style.display = 'none';
 
-          var buttonJam = button.getAttribute('data-jam');
-          if (isAdjacentTimeSlot(jam, buttonJam)) {
-            button.style.display = 'none';
+          var hiddenButtons = JSON.parse(localStorage.getItem('hiddenKosongTemporaryButtons') || '[]');
+          var buttonData = { hari: hari, jam: jam, matkul: matkul, dosenId: dosenId, kelas: kelas };
+          if (!hiddenButtons.some(item =>
+            item.hari === buttonData.hari &&
+            item.jam === buttonData.jam &&
+            item.matkul === buttonData.matkul &&
+            item.dosenId === buttonData.dosenId &&
+            item.kelas === buttonData.kelas
+          )) {
+            hiddenButtons.push(buttonData);
+            localStorage.setItem('hiddenKosongTemporaryButtons', JSON.stringify(hiddenButtons));
           }
         }
       });
+    }
+
+    function restoreHiddenButtons() {
+      var hiddenButtons = JSON.parse(localStorage.getItem('hiddenKosongTemporaryButtons') || '[]');
+      hiddenButtons.forEach(function (buttonData) {
+        var button = document.querySelector(`.kosong-temporary-btn[data-hari="${buttonData.hari}"][data-jam="${buttonData.jam}"][data-matkul="${buttonData.matkul}"][data-dosen-id="${buttonData.dosenId}"][data-kelas="${buttonData.kelas}"]`);
+        if (button) {
+          button.style.display = 'block';
+        }
+      });
+      localStorage.removeItem('hiddenKosongTemporaryButtons');
     }
 
     function confirmDeleteSchedule(button, isPermanent) {
@@ -473,7 +502,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         "Apakah Anda yakin ingin menghapus semua jadwal yang sama sementara untuk pekan ini?";
 
       if (confirm(message)) {
-        // Buat form baru untuk mengirim data
         var submitForm = document.createElement('form');
         submitForm.method = 'post';
         submitForm.style.display = 'none';
@@ -511,14 +539,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.body.appendChild(submitForm);
         submitForm.submit();
       }
-    }
-
-
-    function isAdjacentTimeSlot(time1, time2) {
-      var slots = ['07.30 - 08.20', '08.20 - 09.10', '09.10 - 10.00', '10.20 - 11.10', '11.10 - 12.00', '13.00 - 13.50', '13.50 - 14.40', '14.40 - 15.30', '16.00 - 16.50', '16.50 - 17.40'];
-      var index1 = slots.indexOf(time1);
-      var index2 = slots.indexOf(time2);
-      return Math.abs(index1 - index2) <= 1 || (index1 !== -1 && index2 !== -1);
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
