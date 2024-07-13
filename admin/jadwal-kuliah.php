@@ -174,7 +174,7 @@ unset($_SESSION['alert_class']);
                             <?php if ($show_edit): ?>
                               <a href="edit-jadwal.php?id=<?= $schedule['id']; ?>" class="btn btn-sm btn-warning mt-2">Edit</a>
                             <?php endif; ?>
-                            <br><br>
+                            <hr>
                           <?php endforeach; ?>
                         <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
                           Istirahat
