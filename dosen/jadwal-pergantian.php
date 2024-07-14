@@ -12,7 +12,7 @@ $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 $time_slots_viewing = get_time_slots_for_viewing();
 $time_slots_adding = get_time_slots_for_adding();
 $user_id = $_SESSION['user_id'];
-$dosen_id = retrieve("SELECT id FROM daftar_dosen WHERE user_id = $user_id");
+$dosen_id = retrieve("SELECT * FROM daftar_dosen WHERE user_id = $user_id")[0]['id'];
 
 $message = '';
 $alert_class = '';
@@ -245,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <?php endif; ?>
                           <?php endif; ?>
                           <?php if (!$schedule['is_temporary'] && !$schedule['is_deleted_temporarily'] && !$is_deleted && $show_buttons): ?>
-                            <?php if ($schedule['dosen_id']): ?>
+                            <?php if ($schedule['dosen_id'] === $dosen_id): ?>
                               <form action="" method="post" class="d-inline delete-schedule-form">
                                 <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
                                 <input type="hidden" name="hari" value="<?= $day; ?>">
