@@ -149,7 +149,6 @@ function loginUser($emailOrId, $password)
         return false;
     }
 }
-
 // end of halaman login functions
 // halaman edit profil mahasiswa functions
 function updateProfile($user_id, $role, $data)
@@ -576,6 +575,18 @@ function fetch_schedules($db, $kelas)
     return $schedules;
 }
 
+function fetch_all_schedules($db)
+{
+    $sql = "SELECT jk.*, dd.nama as dosen FROM jadwal_kuliah jk
+        JOIN daftar_dosen dd ON jk.dosen_id = dd.id
+        ORDER BY jk.kelas, jk.hari, jk.jam";
+    $result = $db->query($sql);
+    $schedules = [];
+    while ($row = $result->fetch_assoc()) {
+        $schedules[$row['hari']][$row['jam']][] = $row;
+    }
+    return $schedules;
+}
 // Akhir kode untuk fungsi halaman jadwal perkuliahan
 
 // Fungsi untuk halaman edit jadwal
@@ -878,24 +889,49 @@ function get_schedule_info($db, $schedule_id)
 
 function restore_temporary_deleted_schedules($db)
 {
-    // Ambil tanggal hari ini
-    $today = date('Y-m-d');
+    $db->begin_transaction();
 
-    // Ambil semua jadwal sementara yang sudah kadaluarsa
-    $expired_schedules = retrieve("SELECT * FROM temporary_deleted_schedules WHERE end_date < ?", [$today]);
+    try {
+        // Ambil tanggal hari ini
+        $today = date('Y-m-d');
 
-    foreach ($expired_schedules as $schedule) {
-        // Kembalikan jadwal ke tabel jadwal_kuliah
-        $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 0, end_date = NULL WHERE id = ?";
+        // Ambil semua jadwal sementara yang sudah kadaluarsa
+        $sql = "SELECT * FROM temporary_deleted_schedules WHERE end_date < ?";
         $stmt = $db->prepare($sql);
-        $stmt->bind_param("i", $schedule['original_id']);
+        if (!$stmt) {
+            throw new Exception($db->error);
+        }
+        $stmt->bind_param("s", $today);
         $stmt->execute();
+        $result = $stmt->get_result();
+        $expired_schedules = $result->fetch_all(MYSQLI_ASSOC);
 
-        // Hapus jadwal dari tabel temporary_deleted_schedules
-        $sql = "DELETE FROM temporary_deleted_schedules WHERE id = ?";
-        $stmt = $db->prepare($sql);
-        $stmt->bind_param("i", $schedule['id']);
-        $stmt->execute();
+        foreach ($expired_schedules as $schedule) {
+            // Kembalikan jadwal ke tabel jadwal_kuliah
+            $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 0, end_date = NULL WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($db->error);
+            }
+            $stmt->bind_param("i", $schedule['original_id']);
+            $stmt->execute();
+
+            // Hapus jadwal dari tabel temporary_deleted_schedules
+            $sql = "DELETE FROM temporary_deleted_schedules WHERE id = ?";
+            $stmt = $db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($db->error);
+            }
+            $stmt->bind_param("i", $schedule['id']);
+            $stmt->execute();
+        }
+
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollback();
+        error_log("Error in restore_temporary_deleted_schedules: " . $e->getMessage());
+        return false;
     }
 }
 
