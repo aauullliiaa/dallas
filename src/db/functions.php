@@ -555,6 +555,17 @@ function delete_schedule_permanently($db, $schedule_id)
     return $result;
 }
 
+function delete_temp_schedule($hari, $matkul, $dosen_id, $kelas)
+{
+    global $db;
+    $sql = "DELETE FROM jadwal_kuliah WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ? AND is_temporary = 1";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("ssss", $hari, $matkul, $dosen_id, $kelas);
+    $result = $stmt->execute();
+    $affected_rows = $stmt->affected_rows;
+    $stmt->close();
+    return $result;
+}
 // Akhir kode untuk menghapus jadwal
 
 // Fungsi untuk menampilkan jadwal sesuai dengan kelas
@@ -746,7 +757,6 @@ function get_current_user_id()
     return null;
 }
 
-
 function fetch_schedule_by_dosen_id($db)
 {
     // Get logged-in user ID (assuming a function exists)
@@ -880,24 +890,75 @@ function delete_schedule_temporarily($db, $hari, $matkul, $dosen_id, $kelas)
 
 function cancel_temporary_delete($db, $hari, $matkul, $dosen_id, $kelas)
 {
-    $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 0 
-            WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param("ssss", $hari, $matkul, $dosen_id, $kelas);
-    $result = $stmt->execute();
-    $affected_rows = $stmt->affected_rows;
-    $stmt->close();
-    return $affected_rows;
+    $db->begin_transaction();
+
+    try {
+        // Update jadwal_kuliah table
+        $sql1 = "UPDATE jadwal_kuliah 
+                 SET is_deleted_temporarily = 0, end_date = NULL 
+                 WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
+        $stmt1 = $db->prepare($sql1);
+        $stmt1->bind_param("ssss", $hari, $matkul, $dosen_id, $kelas);
+        $stmt1->execute();
+        $affected_rows_jadwal = $stmt1->affected_rows;
+        $stmt1->close();
+
+        // Get the IDs of the updated rows in jadwal_kuliah
+        $sql2 = "SELECT id FROM jadwal_kuliah 
+                 WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
+        $stmt2 = $db->prepare($sql2);
+        $stmt2->bind_param("ssss", $hari, $matkul, $dosen_id, $kelas);
+        $stmt2->execute();
+        $result = $stmt2->get_result();
+        $ids = [];
+        while ($row = $result->fetch_assoc()) {
+            $ids[] = $row['id'];
+        }
+        $stmt2->close();
+
+        // Delete from temporary_deleted_schedules table using the collected IDs
+        if (!empty($ids)) {
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            $sql3 = "DELETE FROM temporary_deleted_schedules 
+                     WHERE original_id IN ($placeholders)";
+            $stmt3 = $db->prepare($sql3);
+            $stmt3->bind_param(str_repeat('i', count($ids)), ...$ids);
+            $stmt3->execute();
+            $affected_rows_temp = $stmt3->affected_rows;
+            $stmt3->close();
+        } else {
+            $affected_rows_temp = 0;
+        }
+
+        $db->commit();
+
+        // Return the total number of affected rows from both operations
+        return $affected_rows_temp;
+    } catch (Exception $e) {
+        $db->rollback();
+        error_log("Error in cancel_temporary_delete: " . $e->getMessage());
+        return 0; // Indicating failure
+    }
 }
 
-function get_schedule_info($db, $schedule_id)
+function checkRegularSchedule($db, $hari, $jam_mulai, $jam_selesai, $kelas)
 {
-    $sql = "SELECT hari, jam, matkul, dosen_id, kelas FROM jadwal_kuliah WHERE id = ?";
+    $sql = "SELECT * FROM jadwal_kuliah 
+            WHERE hari = ? 
+            AND kelas = ? 
+            AND is_temporary = 0 
+            AND is_deleted_temporarily = 0
+            AND (
+                (SUBSTRING_INDEX(jam, ' - ', 1) <= ? AND SUBSTRING_INDEX(jam, ' - ', -1) > ?) 
+                OR (SUBSTRING_INDEX(jam, ' - ', 1) < ? AND SUBSTRING_INDEX(jam, ' - ', -1) >= ?)
+            )";
+
     $stmt = $db->prepare($sql);
-    $stmt->bind_param("i", $schedule_id);
+    $stmt->bind_param("ssssss", $hari, $kelas, $jam_mulai, $jam_mulai, $jam_selesai, $jam_selesai);
     $stmt->execute();
     $result = $stmt->get_result();
-    return $result->fetch_assoc();
+
+    return $result->num_rows > 0;
 }
 
 function restore_temporary_deleted_schedules($db)
@@ -1027,27 +1088,64 @@ function uploadFileTugas(
     return '';
 }
 
-function insertTugasKumpul($data)
+function uploadTugas($tugas_id, $matkul_id, $pertemuan_id, $mahasiswa_id, $mahasiswa_nim, $pertemuan_ke, $file)
 {
-    global $db;
-    $sql = "INSERT INTO tugas_kumpul (tugas_id, mahasiswa_id, file_path, tanggal_kumpul, jam_kumpul) VALUES
-                (?, ?, ?, ?, ?)";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param(
-        "iisss",
-        $data['tugas_id'],
-        $data['mahasiswa_id'],
-        $data['file_path'],
-        date('Y-m-d', strtotime($data['tanggal_kumpul'])),
-        date('H:i', strtotime($data['jam_kumpul']))
-    );
-    if ($stmt->execute()) {
-        $stmt->close();
-        return true;
-    } else {
-        $stmt->close();
-        return false;
+    $target_dir = "../src/files/tugas/";
+    $file_extension = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
+    $target_file = $target_dir . $mahasiswa_nim . '_tugas_pertemuan_' . $pertemuan_ke . '.' . $file_extension;
+    $uploadOk = 1;
+    $uploadMessage = "";
+
+    // Allow certain file formats
+    $allowedTypes = ["pdf", "doc", "docx", "pptx", "xls", "jpg", "png", "jpeg"];
+    if (!in_array($file_extension, $allowedTypes)) {
+        $uploadOk = 0;
+        $uploadMessage = "Maaf, hanya file dengan format berikut yang diperbolehkan: " . implode(", ", $allowedTypes) . ".";
     }
+
+    // Check file size
+    if ($file["size"] > 5000000) {
+        $uploadOk = 0;
+        $uploadMessage = "Maaf, ukuran file terlalu besar. Maksimal 5MB.";
+    }
+
+    if ($uploadOk) {
+        if (move_uploaded_file($file["tmp_name"], $target_file)) {
+            // Check if there's already a submission
+            $existingSubmission = retrieve("SELECT * FROM tugas_kumpul WHERE tugas_id = ? AND mahasiswa_id = ?", [$tugas_id, $mahasiswa_id]);
+            if ($existingSubmission) {
+                // Update existing submission
+                retrieve("UPDATE tugas_kumpul SET file_path = ?, tanggal_kumpul = NOW(), jam_kumpul = NOW() WHERE tugas_id = ? AND mahasiswa_id = ?", [$target_file, $tugas_id, $mahasiswa_id]);
+                $uploadMessage = "File berhasil diupdate.";
+            } else {
+                // Insert new submission
+                retrieve("INSERT INTO tugas_kumpul (tugas_id, mahasiswa_id, file_path, tanggal_kumpul, jam_kumpul) VALUES (?, ?, ?, NOW(), NOW())", [$tugas_id, $mahasiswa_id, $target_file]);
+                $uploadMessage = "File berhasil diupload.";
+            }
+        } else {
+            $uploadMessage = "Maaf, terjadi kesalahan saat mengupload file.";
+        }
+    }
+
+    return $uploadMessage;
+}
+
+function getTugasDetail($tugas_id, $mahasiswa_id)
+{
+    return retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_kuliah, dm.nama as mahasiswa, dm.nim, dm.kelas, 
+                     DATE_FORMAT(tp.tanggal_kumpul, '%Y-%m-%d') as tanggal_kumpul, 
+                     DATE_FORMAT(tp.jam_kumpul, '%H:%i') as jam_kumpul 
+                     FROM tugas_kumpul tp 
+                     JOIN tugas_pertemuan t ON tp.tugas_id = t.id 
+                     JOIN pertemuan p ON t.pertemuan_id = p.id 
+                     JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id 
+                     JOIN daftar_mahasiswa dm ON tp.mahasiswa_id = dm.id 
+                     WHERE tp.tugas_id = ? AND tp.mahasiswa_id = ?", [$tugas_id, $mahasiswa_id])[0];
+}
+
+function getPertemuanDetail($pertemuan_id)
+{
+    return retrieve("SELECT pertemuan FROM pertemuan WHERE id = ?", [$pertemuan_id])[0];
 }
 
 function deleteTugasKumpulByPertemuan($pertemuan_id)
@@ -1159,7 +1257,6 @@ function processCourseFormByAdmin($db)
     return [$message, $alert_type];
 }
 
-
 function deleteMataKuliah($db, $id)
 {
     $query = "DELETE FROM mata_kuliah WHERE id = ?";
@@ -1198,67 +1295,5 @@ function get_all_courses($db)
         $courses[] = $row;
     }
     return $courses;
-}
-function deleteUserAndDependencies($db, $delete_id, $role)
-{
-    try {
-        // Mulai transaksi
-        mysqli_begin_transaction($db);
-
-        if ($role == 'dosen') {
-            // Logika penghapusan data terkait dosen
-            $stmt = $db->prepare("SELECT id FROM mata_kuliah WHERE dosen_id = ?");
-            $stmt->bind_param("i", $delete_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $mata_kuliah_ids = $result->fetch_all(MYSQLI_ASSOC);
-
-            foreach ($mata_kuliah_ids as $mata_kuliah_id) {
-                $stmt = $db->prepare("SELECT id FROM pertemuan WHERE mata_kuliah_id = ?");
-                $stmt->bind_param("i", $mata_kuliah_id['id']);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $pertemuan_ids = $result->fetch_all(MYSQLI_ASSOC);
-
-                foreach ($pertemuan_ids as $pertemuan_id) {
-                    $stmt = $db->prepare("DELETE FROM tugas_pertemuan WHERE pertemuan_id = ?");
-                    $stmt->bind_param("i", $pertemuan_id['id']);
-                    $stmt->execute();
-                }
-
-                $stmt = $db->prepare("DELETE FROM pertemuan WHERE mata_kuliah_id = ?");
-                $stmt->bind_param("i", $mata_kuliah_id['id']);
-                $stmt->execute();
-            }
-
-            $stmt = $db->prepare("DELETE FROM jadwal_kuliah WHERE dosen_id = ?");
-            $stmt->bind_param("i", $delete_id);
-            $stmt->execute();
-
-            $stmt = $db->prepare("DELETE FROM mata_kuliah WHERE dosen_id = ?");
-            $stmt->bind_param("i", $delete_id);
-            $stmt->execute();
-        } elseif ($role == 'mahasiswa') {
-            // Logika penghapusan data terkait mahasiswa
-            $stmt = $db->prepare("DELETE FROM tugas_kumpul WHERE mahasiswa_id = ?");
-            $stmt->bind_param("i", $delete_id);
-            $stmt->execute();
-        }
-
-        // Menghapus dari tabel users
-        $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
-        $stmt->bind_param("i", $delete_id);
-        $stmt->execute();
-
-        // Commit transaksi
-        mysqli_commit($db);
-
-        return ["message" => "Data berhasil dihapus", "alert_class" => "success"];
-    } catch (Exception $e) {
-        // Rollback transaksi jika terjadi kesalahan
-        mysqli_rollback($db);
-
-        return ["message" => "Gagal menghapus data: " . $e->getMessage(), "alert_class" => "danger"];
-    }
 }
 ?>

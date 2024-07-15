@@ -7,70 +7,28 @@ $tugas_id = $_GET['tugas_id'] ?? null;
 $matkul_id = $_GET['matkul_id'] ?? null;
 $pertemuan_id = $_GET['pertemuan_id'] ?? null;
 $user_id = $_SESSION['user_id'];
-$mahasiswa = retrieve("SELECT id, nim FROM daftar_mahasiswa WHERE user_id = ?", [$user_id])[0];
-$mahasiswa_id = $mahasiswa['id'];
-$mahasiswa_nim = $mahasiswa['nim'];
 
 if (!$tugas_id || !$matkul_id || !$pertemuan_id) {
     die("ID tugas, mata kuliah, atau pertemuan tidak ditemukan.");
 }
 
-// Ambil data pertemuan
-$pertemuanDetail = retrieve("SELECT pertemuan FROM pertemuan WHERE id = ?", [$pertemuan_id])[0];
+// Retrieve mahasiswa data
+$mahasiswa = retrieve("SELECT id, nim FROM daftar_mahasiswa WHERE user_id = ?", [$user_id])[0];
+$mahasiswa_id = $mahasiswa['id'];
+$mahasiswa_nim = $mahasiswa['nim'];
+
+// Retrieve pertemuan detail
+$pertemuanDetail = getPertemuanDetail($pertemuan_id);
 $pertemuan_ke = $pertemuanDetail['pertemuan'];
 
 $uploadMessage = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $target_dir = "../src/files/tugas/";
-    $file_extension = strtolower(pathinfo($_FILES["file_tugas"]["name"], PATHINFO_EXTENSION));
-    $target_file = $target_dir . $mahasiswa_nim . '_tugas_pertemuan_' . $pertemuan_ke . '.' . $file_extension;
-    $uploadOk = 1;
-
-    // Allow certain file formats
-    $allowedTypes = ["pdf", "doc", "docx", "pptx", "xls", "jpg", "png", "jpeg"];
-    if (!in_array($file_extension, $allowedTypes)) {
-        $uploadOk = 0;
-        $uploadMessage = "Maaf, hanya file dengan format berikut yang diperbolehkan: " . implode(", ", $allowedTypes) . ".";
-    }
-
-    // Check file size
-    if ($_FILES["file_tugas"]["size"] > 5000000) {
-        $uploadOk = 0;
-        $uploadMessage = "Maaf, ukuran file terlalu besar. Maksimal 5MB.";
-    }
-
-    if ($uploadOk) {
-        if (move_uploaded_file($_FILES["file_tugas"]["tmp_name"], $target_file)) {
-            // Check if there's already a submission
-            $existingSubmission = retrieve("SELECT * FROM tugas_kumpul WHERE tugas_id = ? AND mahasiswa_id = ?", [$tugas_id, $mahasiswa_id]);
-            if ($existingSubmission) {
-                // Update existing submission
-                retrieve("UPDATE tugas_kumpul SET file_path = ?, tanggal_kumpul = NOW(), jam_kumpul = NOW() WHERE tugas_id = ? AND mahasiswa_id = ?", [$target_file, $tugas_id, $mahasiswa_id]);
-                $uploadMessage = "File berhasil diupdate.";
-            } else {
-                // Insert new submission
-                retrieve("INSERT INTO tugas_kumpul (tugas_id, mahasiswa_id, file_path, tanggal_kumpul, jam_kumpul) VALUES (?, ?, ?, NOW(), NOW())", [$tugas_id, $mahasiswa_id, $target_file]);
-                $uploadMessage = "File berhasil diupload.";
-            }
-        } else {
-            $uploadMessage = "Maaf, terjadi kesalahan saat mengupload file.";
-        }
-    }
+    $uploadMessage = uploadTugas($tugas_id, $matkul_id, $pertemuan_id, $mahasiswa_id, $mahasiswa_nim, $pertemuan_ke, $_FILES["file_tugas"]);
 }
 
-$tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_kuliah, dm.nama as mahasiswa, dm.nim, dm.kelas, 
-                         DATE_FORMAT(tp.tanggal_kumpul, '%Y-%m-%d') as tanggal_kumpul, 
-                         DATE_FORMAT(tp.jam_kumpul, '%H:%i') as jam_kumpul 
-                         FROM tugas_kumpul tp 
-                         JOIN tugas_pertemuan t ON tp.tugas_id = t.id 
-                         JOIN pertemuan p ON t.pertemuan_id = p.id 
-                         JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id 
-                         JOIN daftar_mahasiswa dm ON tp.mahasiswa_id = dm.id 
-                         WHERE tp.tugas_id = ? AND tp.mahasiswa_id = ?",
-    [$tugas_id, $mahasiswa_id]
-)[0];
-
+// Retrieve tugas detail
+$tugasDetail = getTugasDetail($tugas_id, $mahasiswa_id);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -125,7 +83,7 @@ $tugasDetail = retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_ku
         <?php endif; ?>
         <div class="card p-3">
             <div class="card-header">
-                <h4>Upload Tugas Pertemuan ke-<?= htmlspecialchars($tugasDetail['pertemuan']); ?></h4>
+                <h4>Upload Tugas Pertemuan ke-<?= $pertemuan_ke; ?></h4>
             </div>
             <div class="card-body">
                 <?php if ($tugasDetail): ?>
