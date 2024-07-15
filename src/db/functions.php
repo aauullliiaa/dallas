@@ -877,6 +877,19 @@ function delete_schedule_temporarily($db, $hari, $matkul, $dosen_id, $kelas)
         return false;
     }
 }
+
+function cancel_temporary_delete($db, $hari, $matkul, $dosen_id, $kelas)
+{
+    $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 0 
+            WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("ssss", $hari, $matkul, $dosen_id, $kelas);
+    $result = $stmt->execute();
+    $affected_rows = $stmt->affected_rows;
+    $stmt->close();
+    return $affected_rows;
+}
+
 function get_schedule_info($db, $schedule_id)
 {
     $sql = "SELECT hari, jam, matkul, dosen_id, kelas FROM jadwal_kuliah WHERE id = ?";

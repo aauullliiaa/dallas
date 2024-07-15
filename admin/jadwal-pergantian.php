@@ -27,7 +27,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_schedule_permanently'])) {
+  if (isset($_POST['delete_schedule_permanently'])) {
     $hari = $_POST['hari'];
     $matkul = $_POST['matkul'];
     $dosen_id = $_POST['dosen_id'];
@@ -48,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $_SESSION['message'] = "Gagal menghapus jadwal atau tidak ada jadwal yang dihapus.";
       $_SESSION['alert_class'] = "alert-danger";
     }
-
     header("Location: jadwal-pergantian.php");
     exit;
   } elseif (isset($_POST['delete_schedule_temporarily'])) {
@@ -66,6 +65,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $_SESSION['message'] = "Gagal menghapus jadwal sementara.";
       $_SESSION['alert_class'] = "alert-danger";
     }
+    header("Location: jadwal-pergantian.php");
+    exit;
+  } elseif (isset($_POST['action']) && $_POST['action'] === 'cancel_delete') {
+    $hari = $_POST['hari'];
+    $matkul = $_POST['matkul'];
+    $dosen_id = $_POST['dosen_id'];
+    $kelas = $_POST['kelas'];
+
+    $affected_rows = cancel_temporary_delete($db, $hari, $matkul, $dosen_id, $kelas);
+
+    if ($affected_rows > 0) {
+      $_SESSION['message'] = "Berhasil membatalkan penghapusan $affected_rows jadwal sementara.";
+      $_SESSION['alert_class'] = "alert-success";
+    } else {
+      $_SESSION['message'] = "Tidak ada jadwal sementara yang perlu dibatalkan.";
+      $_SESSION['alert_class'] = "alert-info";
+    }
+    header("Location: jadwal-pergantian.php");
+    exit;
   } elseif (isset($_POST['hari'], $_POST['jam_mulai'], $_POST['jam_selesai'], $_POST['matkul'], $_POST['dosen_id'], $_POST['classroom'], $_POST['kelas'])) {
     $hari = $_POST['hari'];
     $jam_mulai = $_POST['jam_mulai'];
@@ -251,6 +269,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 data-schedule-id="<?= $schedule['id']; ?>">
                                 Kosong
                               </button>
+                              <form action="" method="post" class="d-inline">
+                                <input type="hidden" name="action" value="cancel_delete">
+                                <input type="hidden" name="hari" value="<?= $day; ?>">
+                                <input type="hidden" name="matkul" value="<?= htmlspecialchars($schedule['matkul']); ?>">
+                                <input type="hidden" name="dosen_id" value="<?= htmlspecialchars($schedule['dosen_id']); ?>">
+                                <input type="hidden" name="kelas" value="<?= htmlspecialchars($schedule['kelas']); ?>">
+                                <button type="button" class="btn btn-sm btn-success mt-2 cancel-delete-btn"
+                                  onclick="cancelDeleteSchedule(this)">
+                                  Batal Kosong
+                                </button>
+                              </form>
                             <?php endif; ?>
                           <?php endif; ?>
                           <?php if (!$schedule['is_temporary'] && !$schedule['is_deleted_temporarily'] && !$is_deleted && $show_buttons): ?>
@@ -380,6 +409,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       initializeFormHandlers();
       loadSubmittedData();
       loadHiddenButtonsFromStorage();
+      initializeCancelButtons();
     });
 
     function initializeModalHandlers() {
@@ -437,6 +467,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         hideAllMatchingButtons(hari, jamMulai, matkul, dosenId, kelas);
 
         this.submit();
+      });
+    }
+
+    function initializeCancelButtons() {
+      var cancelButtons = document.querySelectorAll('.cancel-delete-btn').forEach(function (button) {
+        button.removeEventListener('click', cancelDeleteSchedule); // Hapus listener yang mungkin sudah ada
+        button.addEventListener('click', cancelDeleteSchedule);
       });
     }
 
@@ -521,6 +558,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         "Apakah Anda yakin ingin menghapus semua jadwal yang sama sementara untuk pekan ini?";
 
       if (confirm(message)) {
+        if (!isPermanent) {
+          // Menyembunyikan tombol "Hapus Sementara"
+          button.style.display = 'none';
+
+          // Menampilkan tombol "Batal Kosong"
+          var cancelButton = button.parentElement.nextElementSibling;
+          if (cancelButton && cancelButton.classList.contains('cancel-delete-btn')) {
+            cancelButton.style.display = 'inline-block';
+          } else {
+            // Jika tombol "Batal Kosong" belum ada, kita buat baru
+            cancelButton = document.createElement('button');
+            cancelButton.type = 'button';
+            cancelButton.className = 'btn btn-sm btn-success mt-2 cancel-delete-btn';
+            cancelButton.textContent = 'Batal Kosong';
+            cancelButton.onclick = function () { cancelDeleteSchedule(this); };
+            button.parentElement.parentElement.insertBefore(cancelButton, button.parentElement.nextSibling);
+          }
+
+          // Menambahkan badge "Jadwal Dikosongkan Sementara"
+          var badge = document.createElement('span');
+          badge.className = 'badge bg-danger';
+          badge.textContent = 'Jadwal Dikosongkan Sementara';
+          button.parentElement.parentElement.insertBefore(badge, button.parentElement);
+        }
+
         var submitForm = document.createElement('form');
         submitForm.method = 'post';
         submitForm.style.display = 'none';
@@ -559,6 +621,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         submitForm.submit();
       }
     }
+
     function confirmDeletePermanent(button) {
       var hari = button.getAttribute('data-hari');
       var matkul = button.getAttribute('data-matkul');
@@ -605,6 +668,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.body.appendChild(submitForm);
         submitForm.submit();
       }
+    }
+
+    function cancelDeleteSchedule(event) {
+      event.preventDefault(); // Mencegah form submit otomatis
+      var button = event.currentTarget;
+      var form = button.closest('form');
+      if (confirm('Apakah Anda yakin ingin membatalkan pengosongan semua jadwal yang sama?')) {
+        var hari = form.querySelector('input[name="hari"]').value;
+        var matkul = form.querySelector('input[name="matkul"]').value;
+        var dosenId = form.querySelector('input[name="dosen_id"]').value;
+        var kelas = form.querySelector('input[name="kelas"]').value;
+
+        // Hapus semua data yang cocok dari localStorage
+        removeAllMatchingFromStorage(hari, matkul, dosenId, kelas);
+
+        form.submit();
+      }
+    }
+
+    function removeAllMatchingFromStorage(hari, matkul, dosenId, kelas) {
+      var hiddenButtons = JSON.parse(localStorage.getItem('hiddenKosongTemporaryButtons') || '[]');
+      hiddenButtons = hiddenButtons.filter(function (item) {
+        return !(item.hari === hari && item.matkul === matkul &&
+          item.dosenId === dosenId && item.kelas === kelas);
+      });
+      localStorage.setItem('hiddenKosongTemporaryButtons', JSON.stringify(hiddenButtons));
+    }
+
+    function removeHiddenButtonFromStorage(hari, jam, matkul, dosenId, kelas) {
+      var hiddenButtons = JSON.parse(localStorage.getItem('hiddenKosongTemporaryButtons') || '[]');
+      hiddenButtons = hiddenButtons.filter(function (item) {
+        return !(item.hari === hari && item.jam === jam && item.matkul === matkul &&
+          item.dosenId === dosenId && item.kelas === kelas);
+      });
+      localStorage.setItem('hiddenKosongTemporaryButtons', JSON.stringify(hiddenButtons));
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
