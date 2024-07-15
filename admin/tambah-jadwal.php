@@ -136,9 +136,19 @@ unset($_SESSION['alert_type']);
 
                 <form action="" method="get" id="dayForm">
                     <div class="mb-3">
+                        <label for="kelas" class="form-label">Kelas:</label>
+                        <select id="kelas" name="kelas" class="form-select" required onchange="this.form.submit();">
+                            <option value="">--Pilih Kelas--</option>
+                            <option value="1A" <?php if ($kelas == '1A')
+                                echo 'selected'; ?>>1A</option>
+                            <option value="1B" <?php if ($kelas == '1B')
+                                echo 'selected'; ?>>1B</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="hari" class="form-label">Hari:</label>
                         <select id="hari" name="hari" class="form-select" required onchange="this.form.submit();">
-                            <option value="">Pilih Hari</option>
+                            <option value="">--Pilih Hari--</option>
                             <option value="Senin" <?php if (isset($hari) && $hari == 'Senin')
                                 echo 'selected'; ?>>Senin
                             </option>
@@ -154,16 +164,6 @@ unset($_SESSION['alert_type']);
                             <option value="Jumat" <?php if (isset($hari) && $hari == 'Jumat')
                                 echo 'selected'; ?>>Jumat
                             </option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="kelas" class="form-label">Kelas:</label>
-                        <select id="kelas" name="kelas" class="form-select" required onchange="this.form.submit();">
-                            <option value="">--Pilih Kelas--</option>
-                            <option value="1A" <?php if ($kelas == '1A')
-                                echo 'selected'; ?>>1A</option>
-                            <option value="1B" <?php if ($kelas == '1B')
-                                echo 'selected'; ?>>1B</option>
                         </select>
                     </div>
                 </form>

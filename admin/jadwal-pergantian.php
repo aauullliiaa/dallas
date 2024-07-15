@@ -33,15 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dosen_id = $_POST['dosen_id'];
     $kelas = $_POST['kelas'];
 
-    // Hapus semua jadwal pergantian yang sama
-    $sql = "DELETE FROM jadwal_kuliah WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ? AND is_temporary = 1";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param("ssss", $hari, $matkul, $dosen_id, $kelas);
-    $result = $stmt->execute();
-    $affected_rows = $stmt->affected_rows;
-    $stmt->close();
+    $result = delete_temp_schedule($hari, $matkul, $dosen_id, $kelas);
 
-    if ($result && $affected_rows > 0) {
+    if ($result) {
       $_SESSION['message'] = "Berhasil menghapus " . $affected_rows . " jadwal pergantian secara permanen.";
       $_SESSION['alert_class'] = "alert-success";
     } else {
@@ -79,8 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $_SESSION['message'] = "Berhasil membatalkan penghapusan $affected_rows jadwal sementara.";
       $_SESSION['alert_class'] = "alert-success";
     } else {
-      $_SESSION['message'] = "Tidak ada jadwal sementara yang perlu dibatalkan.";
-      $_SESSION['alert_class'] = "alert-info";
+      $_SESSION['message'] = "Tidak ada jadwal sementara yang perlu dibatalkan atau terjadi kesalahan.";
+      $_SESSION['alert_class'] = "alert-danger";
     }
     header("Location: jadwal-pergantian.php");
     exit;
@@ -95,23 +89,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $is_temporary = isset($_POST['is_temporary']) ? 1 : 0;
     $end_date = $is_temporary ? date('Y-m-d', strtotime('next Sunday')) : NULL;
 
-    $start_index = array_search($jam_mulai, $time_slots_adding);
-    $end_index = array_search($jam_selesai, $time_slots_adding);
+    if (checkRegularSchedule($db, $hari, $jam_mulai, $jam_selesai, $kelas)) {
+      $_SESSION['message'] = "Tidak dapat menambahkan jadwal pergantian. Kelas $kelas sudah memiliki jadwal reguler pada waktu tersebut.";
+      $_SESSION['alert_class'] = "alert-danger";
+    } else {
+      $start_index = array_search($jam_mulai, $time_slots_adding);
+      $end_index = array_search($jam_selesai, $time_slots_adding);
 
-    list($message, $alert_class) = insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $time_slots_adding, $start_index, $end_index, $is_temporary, $end_date);
+      list($message, $alert_class) = insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $time_slots_adding, $start_index, $end_index, $is_temporary, $end_date);
 
-    $_SESSION['message'] = $message;
-    $_SESSION['alert_class'] = $alert_class;
-    $_SESSION['submitted_hari'] = $hari;
-    $_SESSION['submitted_jam_mulai'] = $jam_mulai;
-    $_SESSION['submitted_matkul'] = $matkul;
-    $_SESSION['submitted_dosen_id'] = $dosen_id;
-    $_SESSION['submitted_kelas'] = $kelas;
+      $_SESSION['message'] = $message;
+      $_SESSION['alert_class'] = $alert_class;
+    }
+    header("Location: jadwal-pergantian.php");
+    exit;
   }
-  header("Location: jadwal-pergantian.php");
-  exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -259,7 +254,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           <?php if ($schedule['is_deleted_temporarily'] || $is_deleted): ?>
                             <span class="badge bg-danger">Jadwal Dikosongkan Sementara</span><br>
                             <?php if ($show_buttons): ?>
-                              <button class="btn btn-sm btn-warning kosong-temporary-btn mt-1" data-bs-toggle="modal"
+                              <button class="btn btn-sm btn-warning kosong-temporary-btn mt-2" data-bs-toggle="modal"
                                 data-bs-target="#addScheduleModal" data-hari="<?= $day; ?>" data-jam="<?= $slot; ?>"
                                 data-matkul="<?= htmlspecialchars($schedule['matkul']); ?>"
                                 data-dosen="<?= htmlspecialchars($schedule['dosen']); ?>"
@@ -277,7 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="hidden" name="kelas" value="<?= htmlspecialchars($schedule['kelas']); ?>">
                                 <button type="button" class="btn btn-sm btn-success mt-2 cancel-delete-btn"
                                   onclick="cancelDeleteSchedule(this)">
-                                  Batal Kosong
+                                  Batal Kosongkan
                                 </button>
                               </form>
                             <?php endif; ?>
@@ -456,8 +451,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       });
 
       document.getElementById('addScheduleForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-
         var hari = document.getElementById('hari').value;
         var jamMulai = document.getElementById('jam_mulai').value;
         var matkul = document.getElementById('matkul').value;
@@ -465,8 +458,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         var kelas = document.getElementById('kelas').value;
 
         hideAllMatchingButtons(hari, jamMulai, matkul, dosenId, kelas);
-
-        this.submit();
       });
     }
 
