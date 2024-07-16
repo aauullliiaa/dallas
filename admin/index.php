@@ -128,6 +128,22 @@ checkRole('admin');
             </div>
           </div>
         </div>
+        <div class="card m-1 p-2" style="width: 20rem">
+          <img src="../src/images/debby-hudson-TqKFiMR9O6s-unsplash.jpg" alt="" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Request Pergantian Jadwal</h5>
+            <p class="card-text">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum
+              dignissimos sapiente qui! Saepe totam sequi rem, magni
+              perferendis consequatur ex.
+            </p>
+            <div class="card-footer text-end">
+              <small>
+                <a href="list-request.php">Lanjut<i class="bi bi-arrow-right-short"></i></a>
+              </small>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>

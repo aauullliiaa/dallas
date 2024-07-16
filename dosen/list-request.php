@@ -2,7 +2,7 @@
 require '../src/db/functions.php';
 
 // Fetch all requests
-$sql = "SELECT r.id, r.dosen_id, d.nama AS dosen, r.mata_kuliah, r.tanggal_awal, r.jadwal_awal_mulai, r.jadwal_awal_selesai, r.tanggal_baru, r.jadwal_baru_mulai, r.jadwal_baru_selesai, r.alasan
+$sql = "SELECT r.id, r.dosen_id, d.nama AS dosen, r.mata_kuliah, r.tanggal_awal, r.jadwal_awal_mulai, r.jadwal_awal_selesai, r.tanggal_baru, r.jadwal_baru_mulai, r.jadwal_baru_selesai, r.alasan, r.status
         FROM requests r
         JOIN daftar_dosen d ON r.dosen_id = d.id
         ORDER BY r.id DESC";
@@ -108,7 +108,8 @@ $db->close();
                             </p>
                             <p class="card-text">
                                 <strong>Mata Kuliah:</strong> <?php echo $request['mata_kuliah']; ?><br>
-                                <strong>Alasan:</strong> <?php echo $request['alasan']; ?>
+                                <strong>Alasan:</strong> <?php echo $request['alasan']; ?><br>
+                                <strong>Status:</strong> <?= $request['status']; ?>
                             </p>
                         </div>
                         <?php $i++; ?>
