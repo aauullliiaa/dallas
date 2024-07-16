@@ -552,8 +552,66 @@ function insert_schedule(
     return [$message, $alert_class];
 }
 
-
 // Akhir kode untuk fungsi tambah jadwal
+
+function get_jadwal_kuliah($db)
+{
+    $sql = "SELECT 
+        jk.hari,
+        jk.matkul,
+        dd.nama AS dosen,
+        MIN(jk.jam) AS jam_awal,
+        MAX(jk.jam) AS jam_akhir,
+        jk.kelas,
+        jk.classroom,
+        GROUP_CONCAT(jk.id ORDER BY jk.jam) AS id_list
+    FROM jadwal_kuliah jk
+    JOIN daftar_dosen dd ON jk.dosen_id = dd.id
+    WHERE jk.is_deleted_temporarily = 0
+    GROUP BY jk.hari, jk.matkul, dd.nama, jk.kelas, jk.classroom
+    ORDER BY jk.hari, MIN(jk.jam), jk.matkul";
+    $result = $db->query($sql);
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function process_request($db, $jadwal_ids, $tanggal_awal, $tanggal_baru, $jadwal_baru_mulai, $jadwal_baru_selesai, $alasan)
+{
+    $jadwal_ids_array = explode(',', $jadwal_ids);
+    $first_jadwal_id = $jadwal_ids_array[0];
+    $last_jadwal_id = end($jadwal_ids_array);
+
+    // Fetch original schedule details for the first entry
+    $stmt = $db->prepare("SELECT dosen_id, matkul, jam FROM jadwal_kuliah WHERE id = ?");
+    $stmt->bind_param("i", $first_jadwal_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $original_schedule_first = $result->fetch_assoc();
+
+    $dosen_id = $original_schedule_first['dosen_id'];
+    $mata_kuliah = $original_schedule_first['matkul'];
+    $jadwal_awal_mulai = $original_schedule_first['jam'];
+
+    // Fetch original schedule details for the last entry
+    $stmt = $db->prepare("SELECT jam FROM jadwal_kuliah WHERE id = ?");
+    $stmt->bind_param("i", $last_jadwal_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $original_schedule_last = $result->fetch_assoc();
+
+    $jadwal_awal_selesai = $original_schedule_last['jam'];
+
+    // Insert request into the database
+    $sql = "INSERT INTO requests (dosen_id, mata_kuliah, tanggal_awal, jadwal_awal_mulai, jadwal_awal_selesai, tanggal_baru, jadwal_baru_mulai, jadwal_baru_selesai, alasan)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("issssssss", $dosen_id, $mata_kuliah, $tanggal_awal, $jadwal_awal_mulai, $jadwal_awal_selesai, $tanggal_baru, $jadwal_baru_mulai, $jadwal_baru_selesai, $alasan);
+
+    if ($stmt->execute()) {
+        return ["success", "Request pergantian jadwal berhasil dikirim."];
+    } else {
+        return ["danger", "Error: " . $stmt->error];
+    }
+}
 
 // Fungsi untuk menampilkan keseluruhan jadwal
 function get_time_slots_for_viewing()
