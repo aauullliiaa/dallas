@@ -99,30 +99,46 @@ function updateMahasiswaProfile($user_id, $email, $password, $nim)
         return false;
     }
 }
-function isNIP($input)
+
+function updateAdminProfile($user_id, $email, $password, $nip)
 {
-    // Validasi NIP: 18 digit
-    return preg_match('/^[0-9]{18}$/', $input);
+    global $db;
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+    $stmt = $db->prepare("UPDATE daftar_admin SET email = ?, password = ?, user_id = ? WHERE nip = ?");
+    $stmt->bind_param("ssis", $email, $hashed_password, $user_id, $nip);
+    if ($stmt->execute()) {
+        return true;
+    } else {
+        error_log("Error in updateAdminProfile: " . $stmt->error);
+        return false;
+    }
 }
 
-function isNIM($input)
-{
-    // Validasi NIM: 8 digit
-    return preg_match('/^[0-9]{8}$/', $input);
-}
 function loginUser($emailOrId, $password)
 {
     global $db;
 
-    if (filter_var($emailOrId, FILTER_VALIDATE_EMAIL)) {
-        $query = "SELECT id, password, role FROM users WHERE email = ? AND role = 'admin'";
-    } elseif (isNIP($emailOrId)) {
-        $query = "SELECT u.id, u.password, 'dosen' as role FROM users u JOIN daftar_dosen dd ON u.id = dd.user_id WHERE dd.nip = ?";
-        $role = 'dosen';
+    // Cek apakah input adalah NIP atau NIM
+    if (isNIP($emailOrId)) {
+        // Admin atau Dosen menggunakan NIP
+        $query = "SELECT u.id, u.password, 
+                  CASE 
+                      WHEN EXISTS (SELECT 1 FROM daftar_admin da WHERE da.user_id = u.id AND da.nip = ?) THEN 'admin'
+                      WHEN EXISTS (SELECT 1 FROM daftar_dosen dd WHERE dd.user_id = u.id AND dd.nip = ?) THEN 'dosen'
+                      ELSE NULL 
+                  END as role
+                  FROM users u
+                  WHERE u.id IN (SELECT user_id FROM daftar_admin WHERE nip = ? UNION SELECT user_id FROM daftar_dosen WHERE nip = ?)";
+        $role = 'admin/dosen';
     } elseif (isNIM($emailOrId)) {
-        $query = "SELECT u.id, u.password, 'mahasiswa' as role FROM users u JOIN daftar_mahasiswa dm ON u.id = dm.user_id WHERE dm.nim = ?";
+        // Mahasiswa menggunakan NIM
+        $query = "SELECT u.id, u.password, 'mahasiswa' as role
+                  FROM users u
+                  JOIN daftar_mahasiswa dm ON u.id = dm.user_id
+                  WHERE dm.nim = ?";
         $role = 'mahasiswa';
     } else {
+        // Jika bukan NIP atau NIM, return false
         return false;
     }
 
@@ -132,7 +148,12 @@ function loginUser($emailOrId, $password)
         return false;
     }
 
-    $stmt->bind_param("s", $emailOrId);
+    if ($role === 'admin/dosen') {
+        $stmt->bind_param("ssss", $emailOrId, $emailOrId, $emailOrId, $emailOrId);
+    } else {
+        $stmt->bind_param("s", $emailOrId);
+    }
+
     $stmt->execute();
     $stmt->bind_result($user_id, $hashed_password, $role);
     $stmt->fetch();
@@ -149,6 +170,19 @@ function loginUser($emailOrId, $password)
         return false;
     }
 }
+
+// Fungsi untuk mengecek apakah input adalah NIP
+function isNIP($input)
+{
+    return preg_match('/^\d{18}$/', $input);
+}
+
+// Fungsi untuk mengecek apakah input adalah NIM
+function isNIM($input)
+{
+    return preg_match('/^\d+$/', $input); // Sesuaikan dengan format NIM yang benar
+}
+
 // end of halaman login functions
 // halaman edit profil mahasiswa functions
 function updateProfile($user_id, $role, $data)
@@ -1007,6 +1041,16 @@ function restore_temporary_deleted_schedules($db)
         error_log("Error in restore_temporary_deleted_schedules: " . $e->getMessage());
         return false;
     }
+}
+
+function getJadwalKuliah($db)
+{
+    $sql = "SELECT jk.id, jk.hari, jk.matkul, dd.nama as dosen, jk.classroom, jk.kelas, jk.jam
+            FROM jadwal_kuliah jk
+            JOIN daftar_dosen dd ON jk.dosen_id = dd.id
+            WHERE jk.is_temporary = 0 AND jk.is_deleted_temporarily = 0";
+    $result = $db->query($sql);
+    return $result->fetch_all(MYSQLI_ASSOC);
 }
 
 function insertPertemuan($data)

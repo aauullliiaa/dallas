@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         exit;
     } else {
-        $message = "Email, NIP, atau NIM atau password salah, silakan coba lagi";
+        $message = "NIP, NIM, atau password salah, silakan coba lagi";
         $alert_type = 'danger';
     }
 }
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     <?php endif; ?>
                     <div class="mb-3">
-                        <label for="emailOrId" class="form-label">Email, NIP, atau NIM</label>
+                        <label for="emailOrId" class="form-label">NIP atau NIM</label>
                         <input type="text" class="form-control" name="emailOrId" id="emailOrId" required>
                     </div>
                     <div class="mb-3">

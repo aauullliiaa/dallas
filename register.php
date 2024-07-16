@@ -6,27 +6,73 @@ $message = "";
 $alert_type = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $role = $_POST['role'];
     $email = htmlspecialchars($_POST['email']);
     $password = htmlspecialchars($_POST['password']);
+    $nip = htmlspecialchars($_POST['nip']);
+    $nim = htmlspecialchars($_POST['nim']);
 
-    if ($role == 'dosen') {
-        $nip = htmlspecialchars($_POST['nip']);
+    // Validasi NIP dan NIM
+    $role = null;
+    $valid = true;
 
-        // Verifikasi NIP dosen
-        $stmt = $db->prepare("SELECT * FROM daftar_dosen WHERE nip = ?");
-        $stmt->bind_param("s", $nip);
+    if (!empty($nip)) {
+        // Verifikasi NIP di semua tabel dan cek apakah sudah digunakan
+        $stmt = $db->prepare("SELECT 'admin' as role, user_id FROM daftar_admin WHERE nip = ? UNION ALL SELECT 'dosen' as role, user_id FROM daftar_dosen WHERE nip = ?");
+        $stmt->bind_param("ss", $nip, $nip);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($result->num_rows == 0) {
-            $message = 'NIP tidak ditemukan, Anda tidak terdaftar sebagai dosen program studi ini.';
-            $alert_type = 'danger';
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $role = $row['role'];
+            if (!is_null($row['user_id'])) {
+                $message = 'NIP sudah terdaftar. Anda tidak dapat menggunakan NIP ini untuk registrasi, silakan hubungi administrator jika terdapat kendala.';
+                $alert_type = 'danger';
+                $valid = false;
+            }
         } else {
-            // Registrasi user baru
-            $user_id = registerUser($email, $password, $role);
-            if ($user_id !== false) {
-                // Update email, password, dan user_id di tabel daftar_dosen
+            $message = 'NIP tidak ditemukan, Anda tidak terdaftar sebagai dosen atau admin program studi ini.';
+            $alert_type = 'danger';
+            $valid = false;
+        }
+    } elseif (!empty($nim)) {
+        // Verifikasi NIM di tabel mahasiswa dan cek apakah sudah digunakan
+        $stmt = $db->prepare("SELECT 'mahasiswa' as role, user_id FROM daftar_mahasiswa WHERE nim = ?");
+        $stmt->bind_param("s", $nim);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $role = $row['role'];
+            if (!is_null($row['user_id'])) {
+                $message = 'NIM sudah terdaftar. Anda tidak dapat menggunakan NIM ini untuk registrasi, silakan hubungi administrator jika terdapat kendala.';
+                $alert_type = 'danger';
+                $valid = false;
+            }
+        } else {
+            $message = 'NIM tidak ditemukan, Anda tidak terdaftar sebagai mahasiswa program studi ini.';
+            $alert_type = 'danger';
+            $valid = false;
+        }
+    }
+
+    if ($role && $valid) {
+        // Registrasi user baru
+        $user_id = registerUser($email, $password, $role);
+        if ($user_id !== false) {
+            if ($role == 'admin') {
+                // Update profil admin
+                if (updateAdminProfile($user_id, $email, $password, $nip)) {
+                    $message = 'Registrasi Anda berhasil, silakan gunakan kredensial Anda untuk masuk.';
+                    $alert_type = 'success';
+                } else {
+                    $message = 'Gagal memperbarui data admin.';
+                    $alert_type = 'danger';
+                    error_log("Error in updating admin profile for user_id $user_id, email $email, nip $nip");
+                }
+            } elseif ($role == 'dosen') {
+                // Update profil dosen
                 if (updateDosenProfile($user_id, $email, $password, $nip)) {
                     $message = 'Registrasi Anda berhasil, silakan gunakan kredensial Anda untuk masuk.';
                     $alert_type = 'success';
@@ -35,28 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $alert_type = 'danger';
                     error_log("Error in updating dosen profile for user_id $user_id, email $email, nip $nip");
                 }
-            } else {
-                $message = 'Gagal mendaftarkan pengguna.';
-                $alert_type = 'danger';
-            }
-        }
-    } elseif ($role == 'mahasiswa') {
-        $nim = htmlspecialchars($_POST['nim']);
-
-        // Verifikasi NIM mahasiswa
-        $stmt = $db->prepare("SELECT * FROM daftar_mahasiswa WHERE nim = ?");
-        $stmt->bind_param("s", $nim);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows == 0) {
-            $message = 'NIM tidak ditemukan, Anda tidak terdaftar sebagai mahasiswa program studi ini.';
-            $alert_type = 'danger';
-        } else {
-            // Registrasi user baru
-            $user_id = registerUser($email, $password, $role);
-            if ($user_id !== false) {
-                // Update email, password, dan user_id di tabel mahasiswa
+            } elseif ($role == 'mahasiswa') {
+                // Update profil mahasiswa
                 if (updateMahasiswaProfile($user_id, $email, $password, $nim)) {
                     $message = 'Registrasi Anda berhasil, silakan gunakan kredensial Anda untuk masuk.';
                     $alert_type = 'success';
@@ -65,10 +91,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $alert_type = 'danger';
                     error_log("Error in updating mahasiswa profile for user_id $user_id, email $email, nim $nim");
                 }
-            } else {
-                $message = 'Gagal mendaftarkan pengguna.';
-                $alert_type = 'danger';
             }
+        } else {
+            $message = 'Gagal mendaftarkan pengguna.';
+            $alert_type = 'danger';
         }
     }
 }
@@ -89,7 +115,6 @@ if ($alert_type === 'success') {
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>APD Learning Space - Register</title>
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -117,16 +142,6 @@ if ($alert_type === 'success') {
                     </div>
                 <?php endif; ?>
                 <form action="" method="post" id="roleForm">
-                    <div class="mb-3">
-                        <label for="role" class="form-label">Pilih Role:</label>
-                        <select id="role" name="role" class="form-select" required>
-                            <option value="">--Pilih Role--</option>
-                            <option value="mahasiswa" <?php if (isset($_POST['role']) && $_POST['role'] == 'mahasiswa')
-                                echo 'selected'; ?>>Mahasiswa</option>
-                            <option value="dosen" <?php if (isset($_POST['role']) && $_POST['role'] == 'dosen')
-                                echo 'selected'; ?>>Dosen</option>
-                        </select>
-                    </div>
                     <div id="formContainer">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
@@ -136,14 +151,14 @@ if ($alert_type === 'success') {
                             <label for="password" class="form-label">Password:</label>
                             <input type="password" id="password" name="password" class="form-control" required>
                         </div>
-                        <div class="mb-3" id="nimField" style="display: none;">
-                            <label for="nim" class="form-label">NIM:</label>
-                            <input type="text" id="nim" name="nim" class="form-control" required>
-                        </div>
-                        <div class="mb-3" id="nipField" style="display: none;">
+                        <div class="mb-3">
                             <label for="nip" class="form-label">NIP:</label>
-                            <input type="text" id="nip" name="nip" class="form-control" maxlength="18" required>
+                            <input type="text" id="nip" name="nip" class="form-control" maxlength="18">
                             <small id="nipError" style="color: red; display: none;">NIP harus 18 digit</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nim" class="form-label">NIM:</label>
+                            <input type="text" id="nim" name="nim" class="form-control">
                         </div>
                     </div>
                     <div class="row mb-3 text-center justify-content-center">
@@ -160,26 +175,6 @@ if ($alert_type === 'success') {
     </div>
     <script>
         $(document).ready(function () {
-            $('#role').change(function () {
-                var role = $(this).val();
-                if (role == 'mahasiswa') {
-                    $('#nimField').show();
-                    $('#nipField').hide();
-                    $('#nim').attr('required', true);
-                    $('#nip').removeAttr('required');
-                } else if (role == 'dosen') {
-                    $('#nimField').hide();
-                    $('#nipField').show();
-                    $('#nip').attr('required', true);
-                    $('#nim').removeAttr('required');
-                } else {
-                    $('#nimField').hide();
-                    $('#nipField').hide();
-                    $('#nim').removeAttr('required');
-                    $('#nip').removeAttr('required');
-                }
-            });
-
             $('#nip').on('input', function () {
                 var nip = $(this).val();
                 if (nip.length != 18) {
@@ -190,9 +185,6 @@ if ($alert_type === 'success') {
                     $(this).removeClass('is-invalid');
                 }
             });
-
-            // Trigger change event on page load to ensure correct fields are shown
-            $('#role').trigger('change');
         });
     </script>
 </body>
