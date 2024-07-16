@@ -554,7 +554,21 @@ function insert_schedule(
 
 // Akhir kode untuk fungsi tambah jadwal
 
-function get_jadwal_kuliah($db)
+function get_dosen_id_by_user_id($db, $user_id)
+{
+    $sql = "SELECT id FROM daftar_dosen WHERE user_id = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        return $row['id'];
+    } else {
+        return null;
+    }
+}
+
+function get_jadwal_kuliah_for_dosen($db, $dosen_id)
 {
     $sql = "SELECT 
         jk.hari,
@@ -567,12 +581,16 @@ function get_jadwal_kuliah($db)
         GROUP_CONCAT(jk.id ORDER BY jk.jam) AS id_list
     FROM jadwal_kuliah jk
     JOIN daftar_dosen dd ON jk.dosen_id = dd.id
-    WHERE jk.is_deleted_temporarily = 0
+    WHERE jk.is_deleted_temporarily = 0 AND jk.dosen_id = ?
     GROUP BY jk.hari, jk.matkul, dd.nama, jk.kelas, jk.classroom
     ORDER BY jk.hari, MIN(jk.jam), jk.matkul";
-    $result = $db->query($sql);
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("i", $dosen_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
+
 
 function process_request($db, $jadwal_ids, $tanggal_awal, $tanggal_baru, $jadwal_baru_mulai, $jadwal_baru_selesai, $alasan)
 {

@@ -1,8 +1,13 @@
 <?php
+session_start();
 require '../src/db/functions.php';
+checkRole('dosen');
+
+$user_id = $_SESSION['user_id'];
+$dosen_id = get_dosen_id_by_user_id($db, $user_id);
 
 $time_slots = get_time_slots_for_adding();
-$jadwal_kuliah = get_jadwal_kuliah($db);
+$jadwal_kuliah = get_jadwal_kuliah_for_dosen($db, $dosen_id);
 
 $alertMessage = "";
 $alertType = "";
