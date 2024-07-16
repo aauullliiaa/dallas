@@ -166,7 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
         <div class="row">
           <div class="col submit-button">
-            <a href="jadwal-kuliah.php"><button class="btn btn-light">Kembali</button></a>
+            <a href="index.php"><button class="btn btn-light">Kembali</button></a>
           </div>
         </div>
       </div>

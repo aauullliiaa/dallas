@@ -113,7 +113,7 @@ checkRole('dosen');
           </div>
         </div>
         <div class="card m-1 p-2" style="width: 20rem">
-          <img src="../src/images/imagegen1720363796006.png" alt="" style="" />
+          <img src="../src/images/imagegen1720363796006.png" alt="" />
           <div class="card-body">
             <h5 class="card-title text-center">Profil</h5>
             <p class="card-text">
@@ -143,6 +143,22 @@ checkRole('dosen');
             <div class="card-footer text-end">
               <small>
                 <a href="dosen.php">Lanjut<i class="bi bi-arrow-right-short"></i></a>
+              </small>
+            </div>
+          </div>
+        </div>
+        <div class="card m-1 p-2" style="width: 20rem">
+          <img src="../src/images/debby-hudson-TqKFiMR9O6s-unsplash.jpg" alt="" />
+          <div class="card-body">
+            <h5 class="card-title text-center">Request Pergantian Jadwal</h5>
+            <p class="card-text">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum
+              dignissimos sapiente qui! Saepe totam sequi rem, magni
+              perferendis consequatur ex.
+            </p>
+            <div class="card-footer text-end">
+              <small>
+                <a href="list-request.php">Lanjut<i class="bi bi-arrow-right-short"></i></a>
               </small>
             </div>
           </div>
