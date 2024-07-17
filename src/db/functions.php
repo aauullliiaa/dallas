@@ -1119,16 +1119,6 @@ function restore_temporary_deleted_schedules($db)
     }
 }
 
-function getJadwalKuliah($db)
-{
-    $sql = "SELECT jk.id, jk.hari, jk.matkul, dd.nama as dosen, jk.classroom, jk.kelas, jk.jam
-            FROM jadwal_kuliah jk
-            JOIN daftar_dosen dd ON jk.dosen_id = dd.id
-            WHERE jk.is_temporary = 0 AND jk.is_deleted_temporarily = 0";
-    $result = $db->query($sql);
-    return $result->fetch_all(MYSQLI_ASSOC);
-}
-
 function insertPertemuan($data)
 {
     global $db;
@@ -1416,4 +1406,94 @@ function get_all_courses($db)
     }
     return $courses;
 }
+
+function deleteUserAndDependencies($db, $delete_id, $role)
+{
+    try {
+        // Mulai transaksi
+        mysqli_begin_transaction($db);
+
+        if ($role == 'dosen') {
+            // Hapus requests terkait dengan dosen
+            $stmt = $db->prepare("DELETE FROM requests WHERE dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Hapus tugas_kumpul terkait dengan tugas_pertemuan dari mata kuliah dosen
+            $stmt = $db->prepare("DELETE tk FROM tugas_kumpul tk
+                                  INNER JOIN tugas_pertemuan tp ON tk.tugas_id = tp.id
+                                  INNER JOIN pertemuan p ON tp.pertemuan_id = p.id
+                                  INNER JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id
+                                  WHERE mk.dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Hapus tugas_pertemuan
+            $stmt = $db->prepare("DELETE tp FROM tugas_pertemuan tp
+                                  INNER JOIN pertemuan p ON tp.pertemuan_id = p.id
+                                  INNER JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id
+                                  WHERE mk.dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Hapus pertemuan
+            $stmt = $db->prepare("DELETE p FROM pertemuan p
+                                  INNER JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id
+                                  WHERE mk.dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Hapus jadwal_kuliah
+            $stmt = $db->prepare("DELETE FROM jadwal_kuliah WHERE dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Hapus materi terkait dengan mata kuliah dosen
+            $stmt = $db->prepare("DELETE m FROM materi m
+                                  INNER JOIN mata_kuliah mk ON m.mata_kuliah_id = mk.id
+                                  WHERE mk.dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Hapus mata_kuliah
+            $stmt = $db->prepare("DELETE FROM mata_kuliah WHERE dosen_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Hapus dari daftar_dosen
+            $stmt = $db->prepare("DELETE FROM daftar_dosen WHERE id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+        } elseif ($role == 'mahasiswa') {
+            // Hapus tugas_kumpul
+            $stmt = $db->prepare("DELETE FROM tugas_kumpul WHERE mahasiswa_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Hapus dari daftar_mahasiswa
+            $stmt = $db->prepare("DELETE FROM daftar_mahasiswa WHERE id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+        }
+
+        // Hapus dari tabel users
+        $stmt = $db->prepare("DELETE u FROM users u
+                              INNER JOIN " . ($role == 'dosen' ? 'daftar_dosen' : 'daftar_mahasiswa') . " d ON u.id = d.user_id
+                              WHERE d.id = ?");
+        $stmt->bind_param("i", $delete_id);
+        $stmt->execute();
+
+        // Commit transaksi
+        mysqli_commit($db);
+
+        return ["message" => "Data berhasil dihapus", "alert_class" => "success"];
+    } catch (Exception $e) {
+        // Rollback transaksi jika terjadi kesalahan
+        mysqli_rollback($db);
+
+        return ["message" => "Gagal menghapus data: " . $e->getMessage(), "alert_class" => "danger"];
+    }
+}
+
 ?>
