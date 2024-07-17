@@ -1483,6 +1483,7 @@ function deleteUserAndDependencies($db, $delete_id, $role)
                               WHERE d.id = ?");
         $stmt->bind_param("i", $delete_id);
         $stmt->execute();
+        }
 
         // Commit transaksi
         mysqli_commit($db);

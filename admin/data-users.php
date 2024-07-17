@@ -25,19 +25,19 @@ if (isset($_POST['delete_id']) && isset($_POST['delete_role'])) {
     $delete_id = $_POST['delete_id'];
     $delete_role = $_POST['delete_role'];
     $result = deleteUserAndDependencies($db, $delete_id, $delete_role);
+
     $_SESSION['message'] = $result['message'];
     $_SESSION['alert_class'] = $result['alert_class'];
-    header("Location: data-users.php?role=" . $delete_role);
+
+    // Redirect kembali ke halaman yang sama dengan parameter role yang sama
+    header("Location: data-users.php?role=" . urlencode($delete_role));
     exit();
 }
 
-
-// Ambil pesan dan alert dari session jika ada
+// Di awal file, setelah memulai session
 if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
     $message = $_SESSION['message'];
     $alert_class = $_SESSION['alert_class'];
-
-    // Hapus pesan dari session setelah ditampilkan
     unset($_SESSION['message']);
     unset($_SESSION['alert_class']);
 }
@@ -186,7 +186,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                                     class="btn btn-info btn-sm mb-2">Lihat Detail</a>
                                             <?php endif; ?>
                                             <form action="" method="post" style="display: inline;"
-                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');">
+                                                onsubmit="return confirm('PERINGATAN: Menghapus pengguna ini akan menghapus semua data terkait. Apakah Anda yakin ingin melanjutkan?');">
                                                 <input type="hidden" name="delete_id" value="<?= $user['id'] ?>">
                                                 <input type="hidden" name="delete_role" value="<?= $role ?>">
                                                 <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
