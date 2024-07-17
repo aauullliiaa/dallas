@@ -47,25 +47,12 @@ $mahasiswa = retrieve("SELECT * FROM daftar_mahasiswa WHERE id = $id")[0];
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="index.php#about">About</a></li>
-                            <li>
-                                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
-                            </li>
+                            <li><a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a></li>
+                            <li><a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Data Pengguna
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="data-users.php">Data Pengguna</a></li>
-                            <li>
-                                <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
-                            </li>
-                        </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="data-users.php">Data Pengguna</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
@@ -75,8 +62,7 @@ $mahasiswa = retrieve("SELECT * FROM daftar_mahasiswa WHERE id = $id")[0];
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a></li>
                             <li><a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a></li>
-                            <li><a class="dropdown-item" href="tambah-matkul.php">Tambah Mata Kuliah</a></li>
-                            <li><a class="dropdown-item" href="jadwal-pergantian.php">Pergantian</a></li>
+                            <li><a class="dropdown-item" href="list-request.php">Request Pergantian</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">

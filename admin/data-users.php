@@ -21,6 +21,17 @@ if ($role == 'mahasiswa') {
 $message = "";
 $alert_class = "";
 
+if (isset($_POST['delete_id']) && isset($_POST['delete_role'])) {
+    $delete_id = $_POST['delete_id'];
+    $delete_role = $_POST['delete_role'];
+    $result = deleteUserAndDependencies($db, $delete_id, $delete_role);
+    $_SESSION['message'] = $result['message'];
+    $_SESSION['alert_class'] = $result['alert_class'];
+    header("Location: data-users.php?role=" . $delete_role);
+    exit();
+}
+
+
 // Ambil pesan dan alert dari session jika ada
 if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
     $message = $_SESSION['message'];
@@ -72,25 +83,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="index.php#about">About</a></li>
-                            <li>
-                                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
-                            </li>
+                            <li><a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a></li>
+                            <li><a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Data Pengguna
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="data-users.php">Data Pengguna</a></li>
-                            <li>
-                                <a class="dropdown-item" href="input-data-dosen.php">Input Data Dosen</a>
-                            </li>
-                        </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="data-users.php">Data Pengguna</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
@@ -100,8 +98,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a></li>
                             <li><a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a></li>
-                            <li><a class="dropdown-item" href="tambah-matkul.php">Tambah Mata Kuliah</a></li>
-                            <li><a class="dropdown-item" href="jadwal-pergantian.php">Pergantian</a></li>
+                            <li><a class="dropdown-item" href="list-request.php">Request Pergantian</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -183,11 +180,17 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                         <td>
                                             <?php if ($role == 'mahasiswa'): ?>
                                                 <a href="detail-mahasiswa.php?id=<?= $user['id'] ?>&role=<?= $role ?>"
-                                                    class="btn btn-info btn-sm">Lihat Detail</a>
+                                                    class="btn btn-info btn-sm mb-2">Lihat Detail</a>
                                             <?php elseif ($role == 'dosen'): ?>
                                                 <a href="detail-dosen.php?id=<?= $user['id'] ?>&role=<?= $role ?>"
-                                                    class="btn btn-info btn-sm">Lihat Detail</a>
+                                                    class="btn btn-info btn-sm mb-2">Lihat Detail</a>
                                             <?php endif; ?>
+                                            <form action="" method="post" style="display: inline;"
+                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');">
+                                                <input type="hidden" name="delete_id" value="<?= $user['id'] ?>">
+                                                <input type="hidden" name="delete_role" value="<?= $role ?>">
+                                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                            </form>
                                         </td>
                                     </tr>
                                     <?php $i++; ?>
@@ -200,6 +203,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                 </div>
             </div>
         </div>
+
     </div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
