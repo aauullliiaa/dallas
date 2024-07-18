@@ -116,17 +116,19 @@ $mata_kuliah = getAllMataKuliah($db);
                 <th scope="col">Kode</th>
                 <th scope="col">Nama Mata Kuliah</th>
                 <th scope="col">Deskripsi</th>
-                <th scope="col">Dosen Pengampu</th>
+                <th scope="col">Dosen Pengampu 1</th>
+                <th scope="col">Dosen Pengampu 2</th>
                 <th scope="col">Aksi</th>
               </tr>
             </thead>
             <tbody>
               <?php foreach ($mata_kuliah as $mata_kuliah_item): ?>
                 <tr>
-                  <td><?= $mata_kuliah_item['kode']; ?></td>
-                  <td><?= $mata_kuliah_item['nama']; ?></td>
-                  <td><?= $mata_kuliah_item['deskripsi']; ?></td>
-                  <td><?= $mata_kuliah_item['dosen']; ?></td>
+                  <td><?= htmlspecialchars($mata_kuliah_item['kode']); ?></td>
+                  <td><?= htmlspecialchars($mata_kuliah_item['nama']); ?></td>
+                  <td><?= htmlspecialchars($mata_kuliah_item['deskripsi']); ?></td>
+                  <td><?= htmlspecialchars($mata_kuliah_item['dosen_1']); ?></td>
+                  <td><?= htmlspecialchars($mata_kuliah_item['dosen_2']); ?></td>
                   <td>
                     <a href="mata-kuliah.php?delete=<?= $mata_kuliah_item['id']; ?>" class="btn btn-danger btn-sm"
                       onclick="confirmDeletion(event, this.href)">Hapus</a>
