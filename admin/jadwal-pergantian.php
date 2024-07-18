@@ -223,7 +223,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           ?>
                           <div><?= htmlspecialchars($schedule['matkul']); ?></div>
                           <div><small>Dosen 1: <?= htmlspecialchars($schedule['dosen_1']); ?></small></div>
-                          <div><small>Dosen 2: <?= htmlspecialchars($schedule['dosen_2']); ?></small></div>
+                          <?php if ($schedule['dosen_2'] !== null): ?>
+                            <div><small>Dosen 2: <?= htmlspecialchars($schedule['dosen_2']); ?></small></div>
+                          <?php endif; ?>
                           <div><small>Kelas: <?= htmlspecialchars($schedule['kelas']); ?></small></div>
                           <div><small>Ruang: <?= htmlspecialchars($schedule['classroom']); ?></small></div>
                           <?php if ($schedule['is_temporary']): ?>
