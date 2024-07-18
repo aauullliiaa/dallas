@@ -181,36 +181,33 @@ checkRole('mahasiswa');
       <div class="row text-center mb-3">
         <h1>Visi dan Misi Program Studi</h1>
       </div>
-      <div class="row align-items-center justify-content-center">
-        <div class="col-md-6">
-          <div class="card p-3">
-            <div class="card-body">
-              <h5 class="card-title text-center">Visi</h5>
-              <p class="card-text">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut
-                quis accusamus quam dignissimos neque officia amet sequi
-                voluptas error fuga explicabo libero labore laboriosam,
-                consectetur velit? Animi asperiores corporis adipisci, nihil
-                odio sequi nisi rem qui debitis quidem voluptatum iure ea, eum
-                nesciunt dignissimos iste quam ipsam quo fugiat temporibus.
-              </p>
-            </div>
+      <div class="row mb-2 align-items-center justify-content-center">
+        <div class="card p-3">
+          <div class="card-body">
+            <h5 class="card-title text-center">Visi</h5>
+            <p class="card-text">
+              Menjadi program studi yang menghasilkan sarjana terapan berwawasan global dan berdaya saing tinggi
+              dibidang Administrasi Perkantoran Digital secara profesional dan berakhlak mulia.
+            </p>
           </div>
         </div>
-        <div class="col-md-6">
-          <div class="card p-3">
-            <div class="card-body">
-              <h5 class="card-title text-center">Misi</h5>
-              <p class="card-text">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem
-                odit porro temporibus deserunt reprehenderit aliquid delectus,
-                veritatis omnis nisi, praesentium itaque quae atque sed quos.
-                Impedit amet doloremque fuga laudantium expedita laborum
-                ducimus, molestias iure unde molestiae cumque quia nulla
-                temporibus labore, similique harum culpa vitae quos illo qui
-                tenetur.
-              </p>
-            </div>
+      </div>
+      <div class="row align-items-center justify-content-center">
+        <div class="card p-3">
+          <div class="card-body">
+            <h5 class="card-title text-center">Misi</h5>
+            <p class="card-text">
+              1. Menyelenggarakan tridarma perguruan tinggi untuk menyiapkan tenaga kerja sarjana terapan dibidang
+              Administrasi Perkantoran Digital dengan penerapan metode pembelajaran yang terpadu, berkualitas,
+              selaras, dan berkesinambungan.<br> <br>
+              2. Menyelenggarakan penelitian terapan dan pengabdian masyarakat untuk membantu pembangunan dan
+              penyelesaian masalah dalam bidang Administrasi Perkantoran Digital.<br><br>
+              3. Mengembangkan kegiatan kerjasama yang saling menguntungkan dengan pemerintah, institusi pendidikan,
+              praktisi industri, dan segenap stakeholder untuk pengembangan kompetensi keilmuan dibidang Administrasi
+              Perkantoran Digital, dan <br><br>
+              4. Menghasilkan lulusan sarjana terapan yang unggul, profesional, berintegrasi tinggi, dan siap diserap
+              di dunia kerja.
+            </p>
           </div>
         </div>
       </div>
@@ -270,9 +267,6 @@ checkRole('mahasiswa');
   </svg>
   <!-- End of Alamat -->
   <!-- Footer -->
-  <footer class="text-center pb-1" style="background-color: #c6ac8f">
-    <p>Created with <i class="bi bi-heart-fill"></i>, Aulia Kinanah</p>
-  </footer>
   <!-- End of Footer-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

@@ -81,7 +81,7 @@ checkRole('dosen');
         <h1>Menu APD Learning Space</h1>
       </div>
       <div class="row justify-content-center">
-        <div class="card m-1 p-3" style="width: 20rem">
+        <div class="card m-1 p-3" style="width: 25rem">
           <img src="../src/images/eric-rothermel-FoKO4DpXamQ-unsplash.jpg" alt="" class="img-fluid rounded" />
           <div class="card-body">
             <h5 class="card-title text-center">Jadwal Perkuliahan</h5>
@@ -96,7 +96,7 @@ checkRole('dosen');
             </div>
           </div>
         </div>
-        <div class="card m-1 p-2" style="width: 20rem">
+        <div class="card m-1 p-2" style="width: 25rem">
           <img src="../src/images/patrick-tomasso-Oaqk7qqNh_c-unsplash.jpg" alt="" />
           <div class="card-body">
             <h5 class="card-title text-center">Mata Kuliah</h5>
@@ -112,7 +112,7 @@ checkRole('dosen');
             </div>
           </div>
         </div>
-        <div class="card m-1 p-2" style="width: 20rem">
+        <div class="card m-1 p-2" style="width: 25rem">
           <img src="../src/images/imagegen1720363796006.png" alt="" />
           <div class="card-body">
             <h5 class="card-title text-center">Profil</h5>
@@ -129,7 +129,7 @@ checkRole('dosen');
             </div>
           </div>
         </div>
-        <div class="card m-1 p-2" style="width: 20rem">
+        <div class="card m-1 p-2" style="width: 25rem">
           <img
             src="../src/images/education-concept-student-studying-brainstorming-campus-concept-close-up-students-discussing-their-subject-books-textbooks-selective-focus_1418-627.avif"
             alt="" />
@@ -147,7 +147,7 @@ checkRole('dosen');
             </div>
           </div>
         </div>
-        <div class="card m-1 p-2" style="width: 20rem">
+        <div class="card m-1 p-2" style="width: 25rem">
           <img src="../src/images/debby-hudson-TqKFiMR9O6s-unsplash.jpg" alt="" />
           <div class="card-body">
             <h5 class="card-title text-center">Request Pergantian Jadwal</h5>
@@ -187,6 +187,43 @@ checkRole('dosen');
         </div>
         <div class="col-md-6 text-center">
           <img src="../src/images/foto kampus.jpg" class="img-fluid" alt="Foto Kampus" />
+        </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="container">
+      <div class="row text-center mb-3">
+        <h1>Visi dan Misi Program Studi</h1>
+      </div>
+      <div class="row mb-2 align-items-center justify-content-center">
+        <div class="card p-3">
+          <div class="card-body">
+            <h5 class="card-title text-center">Visi</h5>
+            <p class="card-text">
+              Menjadi program studi yang menghasilkan sarjana terapan berwawasan global dan berdaya saing tinggi
+              dibidang Administrasi Perkantoran Digital secara profesional dan berakhlak mulia.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="row align-items-center justify-content-center">
+        <div class="card p-3">
+          <div class="card-body">
+            <h5 class="card-title text-center">Misi</h5>
+            <p class="card-text">
+              1. Menyelenggarakan tridarma perguruan tinggi untuk menyiapkan tenaga kerja sarjana terapan dibidang
+              Administrasi Perkantoran Digital dengan penerapan metode pembelajaran yang terpadu, berkualitas,
+              selaras, dan berkesinambungan.<br> <br>
+              2. Menyelenggarakan penelitian terapan dan pengabdian masyarakat untuk membantu pembangunan dan
+              penyelesaian masalah dalam bidang Administrasi Perkantoran Digital.<br><br>
+              3. Mengembangkan kegiatan kerjasama yang saling menguntungkan dengan pemerintah, institusi pendidikan,
+              praktisi industri, dan segenap stakeholder untuk pengembangan kompetensi keilmuan dibidang Administrasi
+              Perkantoran Digital, dan <br><br>
+              4. Menghasilkan lulusan sarjana terapan yang unggul, profesional, berintegrasi tinggi, dan siap diserap
+              di dunia kerja.
+            </p>
+          </div>
         </div>
       </div>
     </div>
