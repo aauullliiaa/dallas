@@ -1145,14 +1145,15 @@ function restore_temporary_deleted_schedules($db)
 function insertPertemuan($data)
 {
     global $db;
-    $sql = "INSERT INTO pertemuan (mata_kuliah_id, pertemuan, deskripsi, tanggal) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO pertemuan (mata_kuliah_id, pertemuan, deskripsi, tanggal, dosen_id) VALUES (?, ?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
     $stmt->bind_param(
-        "iiss",
+        "iissi",
         $data['mata_kuliah_id'],
         $data['pertemuan'],
         $data['deskripsi'],
-        $data['tanggal']
+        $data['tanggal'],
+        $data['dosen_id']  // New parameter
     );
     if ($stmt->execute()) {
         $id = $stmt->insert_id;
@@ -1168,16 +1169,17 @@ function insertTugasPertemuan($data)
 {
     global $db;
     $sql = "INSERT INTO tugas_pertemuan (pertemuan_id, judul, deskripsi, tanggal_deadline, jam_deadline,
-                file_tugas) VALUES (?, ?, ?, ?, ?, ?)";
+                file_tugas, dosen_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
     $stmt->bind_param(
-        "isssss",
+        "isssssi",
         $data['pertemuan_id'],
         $data['judul'],
         $data['deskripsi'],
         $data['tanggal_deadline'],
         $data['jam_deadline'],
-        $data['file_tugas']
+        $data['file_tugas'],
+        $data['dosen_id']  // New parameter
     );
     if ($stmt->execute()) {
         $stmt->close();
@@ -1424,10 +1426,31 @@ function processCourseFormByAdmin($db)
 
 function deleteMataKuliah($db, $id)
 {
-    $query = "DELETE FROM mata_kuliah WHERE id = ?";
-    $stmt = $db->prepare($query);
-    $stmt->bind_param("i", $id);
-    return $stmt->execute();
+    // Start transaction
+    $db->begin_transaction();
+
+    try {
+        // Then, delete the mata_kuliah entry
+        $query = "DELETE FROM mata_kuliah WHERE id = ?";
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed for mata_kuliah: " . $db->error);
+        }
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed for mata_kuliah: " . $stmt->error);
+        }
+        $stmt->close();
+
+        // If we get here, both operations were successful
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        // An error occurred, rollback the transaction
+        $db->rollback();
+        error_log("Failed to delete mata kuliah: " . $e->getMessage());
+        return false;
+    }
 }
 
 function getDosenName($dosen_id)
