@@ -24,7 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $hari = $_POST['hari'];
         $matkul = $_POST['matkul'];
-        $dosen_id = $_POST['dosen_id'];
+        $dosen_id_1 = $_POST['dosen_id_1'];
+        $dosen_id_2 = $_POST['dosen_id_2'] ?? null;  // Optional second lecturer
         $classroom = htmlspecialchars($_POST['classroom']);
         $kelas = $_POST['kelas'];
         $jam_mulai = $_POST['jam_mulai'];
@@ -33,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $old_jam_mulai = $_POST['old_jam_mulai'] ?? null;
         $old_jam_selesai = $_POST['old_jam_selesai'] ?? null;
 
-        list($message, $alert_class) = update_or_insert_schedule($db, $hari, $matkul, $dosen_id, $classroom, $kelas, $jam_mulai, $jam_selesai, $time_slots, 0, NULL, $old_hari, $old_jam_mulai, $old_jam_selesai);
+        list($message, $alert_class) = update_or_insert_schedule($db, $hari, $matkul, $dosen_id_1, $dosen_id_2, $classroom, $kelas, $jam_mulai, $jam_selesai, $time_slots, 0, NULL, $old_hari, $old_jam_mulai, $old_jam_selesai);
 
         if ($alert_class == "alert-success") {
             $_SESSION['message'] = $message;
@@ -47,12 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $schedule = fetch_schedule_by_id($db, $schedule_id);
     $hari = $schedule['hari'];
     $matkul = $schedule['matkul'];
-    $dosen_id = $schedule['dosen_id'];
+    $dosen_id_1 = $schedule['dosen_id_1'];
+    $dosen_id_2 = $schedule['dosen_id_2'];
     $classroom = $schedule['classroom'];
     $kelas = $schedule['kelas'];
     $jam_mulai = $schedule['jam'];
     $jam_selesai = end(fetch_schedules_by_details($db, $hari, $matkul, $kelas))['jam'];
-    $dosen_name = getDosenName($dosen_id);  // Get the name of the lecturer
+    $dosen_name_1 = getDosenName($dosen_id_1);
+    $dosen_name_2 = $dosen_id_2 ? getDosenName($dosen_id_2) : '';
 } else {
     die("ID jadwal tidak ditemukan.");
 }
@@ -161,8 +164,10 @@ unset($_SESSION['alert_type']);
                         <select id="matkul" name="matkul" class="form-select" required>
                             <?php foreach ($courses as $course): ?>
                                 <option value="<?= htmlspecialchars($course['nama']); ?>"
-                                    data-dosen-id="<?= htmlspecialchars($course['dosen_id']); ?>"
-                                    data-dosen-name="<?= htmlspecialchars(getDosenName($course['dosen_id'])); ?>"
+                                    data-dosen-id-1="<?= htmlspecialchars($course['dosen_id_1']); ?>"
+                                    data-dosen-id-2="<?= htmlspecialchars($course['dosen_id_2']); ?>"
+                                    data-dosen-name-1="<?= htmlspecialchars(getDosenName($course['dosen_id_1'])); ?>"
+                                    data-dosen-name-2="<?= htmlspecialchars(getDosenName($course['dosen_id_2'])); ?>"
                                     <?= ($course['nama'] == $matkul) ? 'selected' : ''; ?>>
                                     <?= htmlspecialchars($course['nama']); ?>
                                 </option>
@@ -171,11 +176,19 @@ unset($_SESSION['alert_type']);
                     </div>
 
                     <div class="mb-3">
-                        <label for="dosen_name" class="form-label">Nama Dosen:</label>
-                        <input type="text" id="dosen_name" name="dosen_name" class="form-control"
-                            value="<?= htmlspecialchars($dosen_name); ?>" readonly>
-                        <input type="hidden" id="dosen_id" name="dosen_id" class="form-control"
-                            value="<?= htmlspecialchars($dosen_id); ?>" readonly>
+                        <label for="dosen_name_1" class="form-label">Dosen Pengampu 1:</label>
+                        <input type="text" id="dosen_name_1" name="dosen_name_1" class="form-control"
+                            value="<?= htmlspecialchars($dosen_name_1); ?>" readonly>
+                        <input type="hidden" id="dosen_id_1" name="dosen_id_1" class="form-control"
+                            value="<?= htmlspecialchars($dosen_id_1); ?>" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="dosen_name_2" class="form-label">Dosen Pengampu 2:</label>
+                        <input type="text" id="dosen_name_2" name="dosen_name_2" class="form-control"
+                            value="<?= htmlspecialchars($dosen_name_2); ?>" readonly>
+                        <input type="hidden" id="dosen_id_2" name="dosen_id_2" class="form-control"
+                            value="<?= htmlspecialchars($dosen_id_2); ?>" readonly>
                     </div>
 
                     <div class="mb-3">
@@ -233,10 +246,14 @@ unset($_SESSION['alert_type']);
     <script>
         document.getElementById('matkul').addEventListener('change', function () {
             var selectedOption = this.options[this.selectedIndex];
-            var dosenId = selectedOption.getAttribute('data-dosen-id');
-            var dosenName = selectedOption.getAttribute('data-dosen-name');
-            document.getElementById('dosen_id').value = dosenId;
-            document.getElementById('dosen_name').value = dosenName;
+            var dosenId1 = selectedOption.getAttribute('data-dosen-id-1');
+            var dosenName1 = selectedOption.getAttribute('data-dosen-name-1');
+            var dosenId2 = selectedOption.getAttribute('data-dosen-id-2');
+            var dosenName2 = selectedOption.getAttribute('data-dosen-name-2');
+            document.getElementById('dosen_id_1').value = dosenId1;
+            document.getElementById('dosen_name_1').value = dosenName1;
+            document.getElementById('dosen_id_2').value = dosenId2 || '';
+            document.getElementById('dosen_name_2').value = dosenName2 || '';
         });
 
         var timeSlots = <?= json_encode($time_slots); ?>;

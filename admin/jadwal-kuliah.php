@@ -6,12 +6,14 @@ checkRole('admin');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_schedule'])) {
   $schedule_id = $_POST['schedule_id'];
   if (delete_schedule_permanently($db, $schedule_id)) {
-    $message = "Jadwal berhasil dihapus.";
-    $alert_class = "alert-success";
+    $_SESSION['message'] = "Jadwal berhasil dihapus.";
+    $_SESSION['alert_class'] = "alert-success";
   } else {
-    $message = "Error: Gagal menghapus jadwal.";
-    $alert_class = "alert-danger";
+    $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
+    $_SESSION['alert_class'] = "alert-danger";
   }
+  header('Location: jadwal-kuliah.php');
+  exit;
 }
 
 // Ambil semua jadwal
@@ -149,7 +151,10 @@ unset($_SESSION['alert_class']);
                             ?>
                             <strong>Kelas <?= htmlspecialchars($schedule['kelas']); ?></strong><br>
                             <?= htmlspecialchars($schedule['matkul']); ?><br>
-                            <small><?= htmlspecialchars($schedule['dosen']); ?></small> -
+                            <small><?= htmlspecialchars($schedule['dosen_1']); ?></small>
+                            <?php if ($schedule['dosen_2']): ?>
+                              - <small><?= htmlspecialchars($schedule['dosen_2']); ?></small>
+                            <?php endif; ?><br>
                             <small><?= htmlspecialchars($schedule['classroom']); ?></small>
                             <br>
                             <?php if ($schedule['is_temporary']): ?>

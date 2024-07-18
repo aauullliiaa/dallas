@@ -461,7 +461,8 @@ function insert_schedule(
     $db,
     $hari,
     $matkul,
-    $dosen_id,
+    $dosen_id_1,
+    $dosen_id_2,
     $classroom,
     $kelas,
     $time_slots,
@@ -475,37 +476,56 @@ function insert_schedule(
 
     // Validate required parameters
     if (
-        empty($hari) || empty($matkul) || empty($dosen_id) || empty($classroom) || empty($kelas) || $start_index === false || $end_index === false || $start_index > $end_index
+        empty($hari) || empty($matkul) || empty($dosen_id_1) || empty($classroom) || empty($kelas) || $start_index === false || $end_index === false || $start_index > $end_index
     ) {
         return ["Error: Invalid input data", "alert-danger"];
     }
 
-    // Validate dosen_id exists in daftar_dosen
+    // Validate dosen_id_1 exists in daftar_dosen
     $stmt = $db->prepare("SELECT 1 FROM daftar_dosen WHERE id = ?");
-    $stmt->bind_param("i", $dosen_id);
+    $stmt->bind_param("i", $dosen_id_1);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows == 0) {
         $stmt->close();
-        return ["Error: Invalid dosen_id", "alert-danger"];
+        return ["Error: Invalid dosen_id_1", "alert-danger"];
     }
     $stmt->close();
 
-    // Validate matkul exists in mata_kuliah and is assigned to dosen_id
-    $stmt = $db->prepare("SELECT 1 FROM mata_kuliah WHERE nama = ? AND dosen_id = ?");
-    $stmt->bind_param("si", $matkul, $dosen_id);
+    // Validate dosen_id_2 exists in daftar_dosen if provided
+    if (!empty($dosen_id_2)) {
+        $stmt = $db->prepare("SELECT 1 FROM daftar_dosen WHERE id = ?");
+        $stmt->bind_param("i", $dosen_id_2);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows == 0) {
+            $stmt->close();
+            return ["Error: Invalid dosen_id_2", "alert-danger"];
+        }
+        $stmt->close();
+    }
+
+    // Validate matkul exists in mata_kuliah and is assigned to dosen_id_1 or dosen_id_2
+    if (!empty($dosen_id_2)) {
+        $stmt = $db->prepare("SELECT 1 FROM mata_kuliah WHERE nama = ? AND (dosen_id_1 = ? OR dosen_id_2 = ?)");
+        $stmt->bind_param("sii", $matkul, $dosen_id_1, $dosen_id_2);
+    } else {
+        $stmt = $db->prepare("SELECT 1 FROM mata_kuliah WHERE nama = ? AND dosen_id_1 = ?");
+        $stmt->bind_param("si", $matkul, $dosen_id_1);
+    }
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows == 0) {
         $stmt->close();
-        return ["Error: Invalid matkul or matkul not assigned to dosen_id", "alert-danger"];
+        return ["Error: Invalid matkul or matkul not assigned to dosen_id_1 or dosen_id_2", "alert-danger"];
     }
     $stmt->close();
 
     // Prepare the SQL statement
-    $stmt = $db->prepare("INSERT INTO jadwal_kuliah (hari, matkul, dosen_id, classroom, kelas, jam, is_temporary, end_date, is_deleted_temporarily) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)");
+    $stmt = $db->prepare("INSERT INTO jadwal_kuliah (hari, matkul, dosen_id_1, dosen_id_2, classroom, kelas, jam, is_temporary, end_date, is_deleted_temporarily) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)");
 
     if (!$stmt) {
         return ["Error: " . $db->error, "alert-danger"];
@@ -518,10 +538,11 @@ function insert_schedule(
         for ($i = $start_index; $i <= $end_index; $i++) {
             $current_time = $time_slots[$i];
             $stmt->bind_param(
-                "ssisssis",
+                "ssiisssis",
                 $hari,
                 $matkul,
-                $dosen_id,
+                $dosen_id_1,
+                $dosen_id_2,
                 $classroom,
                 $kelas,
                 $current_time,
@@ -698,16 +719,22 @@ function fetch_schedules($db, $kelas)
 
 function fetch_all_schedules($db)
 {
-    $sql = "SELECT jk.*, dd.nama as dosen FROM jadwal_kuliah jk
-        JOIN daftar_dosen dd ON jk.dosen_id = dd.id
-        ORDER BY jk.kelas, jk.hari, jk.jam";
+    $sql = "SELECT jk.*, dd1.nama as dosen_1, dd2.nama as dosen_2 
+            FROM jadwal_kuliah jk
+            LEFT JOIN daftar_dosen dd1 ON jk.dosen_id_1 = dd1.id
+            LEFT JOIN daftar_dosen dd2 ON jk.dosen_id_2 = dd2.id
+            ORDER BY jk.kelas, jk.hari, jk.jam";
     $result = $db->query($sql);
+    if (!$result) {
+        die('Error: ' . $db->error);
+    }
     $schedules = [];
     while ($row = $result->fetch_assoc()) {
         $schedules[$row['hari']][$row['jam']][] = $row;
     }
     return $schedules;
 }
+
 // Akhir kode untuk fungsi halaman jadwal perkuliahan
 
 // Fungsi untuk halaman edit jadwal
@@ -747,7 +774,8 @@ function update_or_insert_schedule(
     $db,
     $hari,
     $matkul,
-    $dosen_id,
+    $dosen_id_1,
+    $dosen_id_2,
     $classroom,
     $kelas,
     $jam_mulai,
@@ -757,8 +785,7 @@ function update_or_insert_schedule(
     $end_date = NULL,
     $old_hari = NULL,
     $old_jam_mulai = NULL,
-    $old_jam_selesai =
-    NULL
+    $old_jam_selesai = NULL
 ) {
     $message = "";
     $alert_class = "";
@@ -797,15 +824,15 @@ function update_or_insert_schedule(
 
     for ($i = $start_index; $i <= $end_index; $i++) {
         $current_time = $time_slots[$i];
-        if
-        (isset($existing_schedules[$current_time])) {
-            $sql = "UPDATE jadwal_kuliah SET matkul = ?, dosen_id = ?, classroom = ?, is_temporary = ?, end_date = ? WHERE id = ?"
-            ;
+        if (isset($existing_schedules[$current_time])) {
+            $sql = "UPDATE jadwal_kuliah SET matkul = ?, dosen_id_1 = ?, dosen_id_2 = ?, classroom = ?, is_temporary = ?, end_date = ? WHERE id = ?";
             $stmt = $db->prepare($sql);
+            $dosen_id_2 = empty($dosen_id_2) ? NULL : $dosen_id_2;
             $stmt->bind_param(
-                "sisssi",
+                "siisssi",
                 $matkul,
-                $dosen_id,
+                $dosen_id_1,
+                $dosen_id_2,
                 $classroom,
                 $is_temporary,
                 $end_date,
@@ -813,14 +840,15 @@ function update_or_insert_schedule(
             );
             unset($existing_schedules[$current_time]);
         } else {
-            $sql = "INSERT INTO jadwal_kuliah (hari, matkul, dosen_id, classroom, kelas, jam, is_temporary, end_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO jadwal_kuliah (hari, matkul, dosen_id_1, dosen_id_2, classroom, kelas, jam, is_temporary, end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $db->prepare($sql);
+            $dosen_id_2 = empty($dosen_id_2) ? NULL : $dosen_id_2;
             $stmt->bind_param(
-                "ssisssis",
+                "ssiisssis",
                 $hari,
                 $matkul,
-                $dosen_id,
+                $dosen_id_1,
+                $dosen_id_2,
                 $classroom,
                 $kelas,
                 $current_time,
@@ -851,6 +879,7 @@ function update_or_insert_schedule(
 
     return [$message, $alert_class];
 }
+
 function get_current_user_id()
 {
     // Check if session is started
@@ -1296,29 +1325,37 @@ function deletePertemuan($pertemuan_id)
 
 function getAllMataKuliah($db)
 {
-    $sql = "SELECT mk.id, mk.kode, mk.nama, mk.deskripsi, dd.nama as dosen
+    $sql = "SELECT mk.id, mk.kode, mk.nama, mk.deskripsi,
+                   dd1.nama as dosen_1,
+                   dd2.nama as dosen_2
             FROM mata_kuliah mk
-            JOIN daftar_dosen dd ON mk.dosen_id = dd.id";
+            LEFT JOIN daftar_dosen dd1 ON mk.dosen_id_1 = dd1.id
+            LEFT JOIN daftar_dosen dd2 ON mk.dosen_id_2 = dd2.id";
     $result = $db->query($sql);
+    if (!$result) {
+        die('Error: ' . $db->error);
+    }
     $mata_kuliah = [];
     while ($row = $result->fetch_assoc()) {
         $mata_kuliah[] = $row;
     }
     return $mata_kuliah;
 }
+
 function processCourseFormByAdmin($db)
 {
     $message = '';
     $alert_type = '';
 
-    if (isset($_POST['kode'], $_POST['nama'], $_POST['deskripsi'], $_POST['dosen_id'])) {
+    if (isset($_POST['kode'], $_POST['nama'], $_POST['deskripsi'], $_POST['dosen_id_1'])) {
         // Escape special characters to prevent XSS
         $kode = htmlspecialchars($_POST['kode']);
         $nama = htmlspecialchars($_POST['nama']);
         $deskripsi = htmlspecialchars($_POST['deskripsi']);
-        $dosen_id = (int) $_POST['dosen_id'];
+        $dosen_id_1 = (int) $_POST['dosen_id_1'];
+        $dosen_id_2 = !empty($_POST['dosen_id_2']) ? (int) $_POST['dosen_id_2'] : NULL;
 
-        // Cek apakah dosen_id ada di daftar_dosen berdasarkan kolom id
+        // Cek apakah dosen_id_1 ada di daftar_dosen berdasarkan kolom id
         $query = "SELECT id FROM daftar_dosen WHERE id = ?";
         $stmt = $db->prepare($query);
         if (!$stmt) {
@@ -1327,7 +1364,7 @@ function processCourseFormByAdmin($db)
             return [$message, $alert_type];
         }
 
-        $stmt->bind_param("i", $dosen_id);
+        $stmt->bind_param("i", $dosen_id_1);
         $stmt->execute();
         $stmt->store_result();
 
@@ -1340,8 +1377,31 @@ function processCourseFormByAdmin($db)
 
         $stmt->close();
 
+        // Cek apakah dosen_id_2 ada di daftar_dosen (jika ada)
+        if ($dosen_id_2 !== NULL) {
+            $stmt = $db->prepare($query);
+            if (!$stmt) {
+                $message = "Terjadi kesalahan pada persiapan statement: " . $db->error;
+                $alert_type = "danger";
+                return [$message, $alert_type];
+            }
+
+            $stmt->bind_param("i", $dosen_id_2);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ($stmt->num_rows == 0) {
+                $message = "Dosen kedua dengan ID tersebut tidak ditemukan.";
+                $alert_type = "danger";
+                $stmt->close();
+                return [$message, $alert_type];
+            }
+
+            $stmt->close();
+        }
+
         // Lanjutkan dengan insert jika dosen_id valid
-        $sql = "INSERT INTO mata_kuliah (kode, nama, deskripsi, dosen_id) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO mata_kuliah (kode, nama, deskripsi, dosen_id_1, dosen_id_2) VALUES (?, ?, ?, ?, ?)";
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             $message = "Terjadi kesalahan pada persiapan statement: " . $db->error;
@@ -1349,7 +1409,7 @@ function processCourseFormByAdmin($db)
             return [$message, $alert_type];
         }
 
-        $stmt->bind_param("sssi", $kode, $nama, $deskripsi, $dosen_id);
+        $stmt->bind_param("sssii", $kode, $nama, $deskripsi, $dosen_id_1, $dosen_id_2);
 
         if ($stmt->execute()) {
             $message = "Mata Kuliah berhasil ditambahkan.";
@@ -1366,6 +1426,7 @@ function processCourseFormByAdmin($db)
 
     return [$message, $alert_type];
 }
+
 
 function deleteMataKuliah($db, $id)
 {
@@ -1398,7 +1459,7 @@ function deleteMateri($materi_id)
 
 function get_all_courses($db)
 {
-    $sql = "SELECT id, nama, dosen_id FROM mata_kuliah";
+    $sql = "SELECT id, nama, dosen_id_1, dosen_id_2 FROM mata_kuliah";
     $result = $db->query($sql);
     $courses = [];
     while ($row = $result->fetch_assoc()) {
@@ -1407,11 +1468,24 @@ function get_all_courses($db)
     return $courses;
 }
 
+
 function deleteUserAndDependencies($db, $delete_id, $role)
 {
     try {
         // Mulai transaksi
         mysqli_begin_transaction($db);
+        $table = ($role == 'dosen') ? 'daftar_dosen' : 'daftar_mahasiswa';
+        $stmt = $db->prepare("SELECT user_id FROM $table WHERE id = ?");
+        $stmt->bind_param("i", $delete_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        if (!$user) {
+            throw new Exception(ucfirst($role) . " tidak ditemukan.");
+        }
+
+        $user_id = $user['user_id'];
 
         if ($role == 'dosen') {
             // Hapus requests terkait dengan dosen
@@ -1466,7 +1540,20 @@ function deleteUserAndDependencies($db, $delete_id, $role)
             $stmt->execute();
 
         } elseif ($role == 'mahasiswa') {
-            // Hapus tugas_kumpul
+            // Ambil user_id terlebih dahulu
+            $stmt = $db->prepare("SELECT user_id FROM daftar_mahasiswa WHERE id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $user = $result->fetch_assoc();
+
+            if (!$user) {
+                throw new Exception("Mahasiswa tidak ditemukan.");
+            }
+
+            $user_id = $user['user_id'];
+
+            // Hapus dari tugas_kumpul
             $stmt = $db->prepare("DELETE FROM tugas_kumpul WHERE mahasiswa_id = ?");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
@@ -1475,16 +1562,12 @@ function deleteUserAndDependencies($db, $delete_id, $role)
             $stmt = $db->prepare("DELETE FROM daftar_mahasiswa WHERE id = ?");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
-        }
 
-        // Hapus dari tabel users
-        $stmt = $db->prepare("DELETE u FROM users u
-                              INNER JOIN " . ($role == 'dosen' ? 'daftar_dosen' : 'daftar_mahasiswa') . " d ON u.id = d.user_id
-                              WHERE d.id = ?");
-        $stmt->bind_param("i", $delete_id);
-        $stmt->execute();
+            // Hapus dari users
+            $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
         }
-
         // Commit transaksi
         mysqli_commit($db);
 
@@ -1493,8 +1576,10 @@ function deleteUserAndDependencies($db, $delete_id, $role)
         // Rollback transaksi jika terjadi kesalahan
         mysqli_rollback($db);
 
+        // Log error untuk debugging
+        error_log("Error in deleteUserAndDependencies: " . $e->getMessage());
+
         return ["message" => "Gagal menghapus data: " . $e->getMessage(), "alert_class" => "danger"];
     }
 }
-
 ?>

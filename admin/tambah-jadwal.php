@@ -17,7 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
     $jam_mulai = $_POST['jam_mulai'];
     $jam_selesai = $_POST['jam_selesai'];
     $matkul_id = $_POST['matkul'];
-    $dosen_id = $_POST['dosen_id'];
+    $dosen_id_1 = $_POST['dosen_id_1'];
+    $dosen_id_2 = !empty($_POST['dosen_id_2']) ? $_POST['dosen_id_2'] : NULL;
     $classroom = htmlspecialchars($_POST['classroom']);
     $kelas = $_POST['kelas'];
 
@@ -26,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
     $start_index = array_search($jam_mulai, $time_slots);
     $end_index = array_search($jam_selesai, $time_slots);
 
-    list($message, $alert_class) = insert_schedule($db, $hari, $course, $dosen_id, $classroom, $kelas, $time_slots, $start_index, $end_index);
+    list($message, $alert_class) = insert_schedule($db, $hari, $course, $dosen_id_1, $dosen_id_2, $classroom, $kelas, $time_slots, $start_index, $end_index);
 
     if ($alert_class == "alert-success") {
         $_SESSION['message'] = $message;
@@ -36,10 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_form'])) {
     }
 }
 
-$dosen_name = '';
+$dosen_name_1 = '';
+$dosen_name_2 = '';
 if (isset($_POST['matkul'])) {
-    $dosen_id = $_POST['dosen_id'];
-    $dosen_name = getDosenName($db);
+    $dosen_id_1 = $_POST['dosen_id_1'];
+    $dosen_id_2 = $_POST['dosen_id_2'] ?? NULL;
+    $dosen_name_1 = getDosenName($db, $dosen_id_1);
+    $dosen_name_2 = $dosen_id_2 ? getDosenName($db, $dosen_id_2) : '';
 }
 
 unset($_SESSION['message']);
@@ -168,12 +172,12 @@ unset($_SESSION['alert_type']);
                         <select id="matkul" name="matkul" class="form-select" required>
                             <option value="">--Pilih Mata Kuliah--</option>
                             <?php
-                            $sql = "SELECT id, nama, dosen_id FROM mata_kuliah";
+                            $sql = "SELECT id, nama, dosen_id_1, dosen_id_2 FROM mata_kuliah";
                             $result = $db->query($sql);
 
                             if ($result->num_rows > 0) {
                                 while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='" . $row['id'] . "' data-dosen-id='" . $row['dosen_id'] . "'>" . $row['nama'] . "</option>";
+                                    echo "<option value='" . $row['id'] . "' data-dosen-id-1='" . $row['dosen_id_1'] . "' data-dosen-id-2='" . $row['dosen_id_2'] . "'>" . $row['nama'] . "</option>";
                                 }
                             } else {
                                 echo "<option value=''>Tidak ada mata kuliah tersedia</option>";
@@ -182,15 +186,22 @@ unset($_SESSION['alert_type']);
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="dosen" class="form-label">Dosen Pengampu:</label>
-                        <input type="text" id="dosen" name="dosen" class="form-control"
-                            value="<?= htmlspecialchars($dosen_name); ?>" readonly required>
-                        <input type="hidden" id="dosen_id" name="dosen_id">
+                        <label for="dosen_1" class="form-label">Dosen Pengampu 1:</label>
+                        <input type="text" id="dosen_1" name="dosen_1" class="form-control"
+                            value="<?= htmlspecialchars($dosen_name_1); ?>" readonly required>
+                        <input type="hidden" id="dosen_id_1" name="dosen_id_1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="dosen_2" class="form-label">Dosen Pengampu 2:</label>
+                        <input type="text" id="dosen_2" name="dosen_2" class="form-control"
+                            value="<?= htmlspecialchars($dosen_name_2); ?>" readonly>
+                        <input type="hidden" id="dosen_id_2" name="dosen_id_2">
                     </div>
                     <div class="mb-3">
                         <label for="classroom" class="form-label">Ruang Kelas:</label>
                         <input type="text" id="classroom" name="classroom" class="form-control" required>
                     </div>
+
                     <div class="mb-3">
                         <label for="jam_mulai" class="form-label">Jam Mulai:</label>
                         <select id="jam_mulai" name="jam_mulai" class="form-select" required>
@@ -236,11 +247,14 @@ unset($_SESSION['alert_type']);
     <script>
         document.getElementById('matkul').addEventListener('change', function () {
             var selectedOption = this.options[this.selectedIndex];
-            var dosenId = selectedOption.getAttribute('data-dosen-id');
-            document.getElementById('dosen_id').value = dosenId;
+            var dosenId1 = selectedOption.getAttribute('data-dosen-id-1');
+            var dosenId2 = selectedOption.getAttribute('data-dosen-id-2');
+            document.getElementById('dosen_id_1').value = dosenId1;
+            document.getElementById('dosen_id_2').value = dosenId2 ? dosenId2 : '';
 
-            // Find the selected dosen name from the options
-            var dosenName = '';
+            // Find the selected dosen names from the options
+            var dosenName1 = '';
+            var dosenName2 = '';
             <?php
             $sql = "SELECT id, nama FROM daftar_dosen";
             $result = $db->query($sql);
@@ -250,10 +264,14 @@ unset($_SESSION['alert_type']);
             }
             ?>
             var dosenList = <?= json_encode($dosen_list); ?>;
-            if (dosenId in dosenList) {
-                dosenName = dosenList[dosenId];
+            if (dosenId1 in dosenList) {
+                dosenName1 = dosenList[dosenId1];
             }
-            document.getElementById('dosen').value = dosenName;
+            if (dosenId2 && dosenId2 in dosenList) {
+                dosenName2 = dosenList[dosenId2];
+            }
+            document.getElementById('dosen_1').value = dosenName1;
+            document.getElementById('dosen_2').value = dosenName2;
         });
 
         // Filter jam_selesai options based on jam_mulai selection

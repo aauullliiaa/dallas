@@ -121,12 +121,20 @@ if (isset($alert_type) && $alert_type === 'success') {
             <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" required></textarea>
           </div>
           <div class="mb-3">
-            <label for="dosen_id" class="form-label">Dosen Pengampu:</label>
-            <select class="form-control" id="dosen_id" name="dosen_id" required>
+            <label for="dosen_id_1" class="form-label">Dosen Pengampu 1:</label>
+            <select class="form-control" id="dosen_id_1" name="dosen_id_1" required>
               <option value="">Pilih Dosen Pengampu</option>
               <?php foreach ($dosenList as $dosen): ?>
-                <option value="<?= htmlspecialchars($dosen['id']); ?>"><?= htmlspecialchars($dosen['nama']); ?>
-                </option>
+                <option value="<?= htmlspecialchars($dosen['id']); ?>"><?= htmlspecialchars($dosen['nama']); ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="dosen_id_2" class="form-label">Dosen Pengampu 2:</label>
+            <select class="form-control" id="dosen_id_2" name="dosen_id_2">
+              <option value="">Pilih Dosen Pengampu</option>
+              <?php foreach ($dosenList as $dosen): ?>
+                <option value="<?= htmlspecialchars($dosen['id']); ?>"><?= htmlspecialchars($dosen['nama']); ?></option>
               <?php endforeach; ?>
             </select>
           </div>
