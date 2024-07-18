@@ -10,38 +10,25 @@ $courses = get_all_courses($db);
 $kelas = $_GET['kelas'] ?? $_POST['kelas'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['delete_schedule'])) {
-        $schedule_id = $_POST['schedule_id'];
-        if (delete_schedule_permanently($db, $schedule_id)) {
-            $_SESSION['message'] = "Jadwal berhasil dihapus.";
-            $_SESSION['alert_class'] = "alert-success";
-        } else {
-            $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
-            $_SESSION['alert_class'] = "alert-danger";
-        }
+    $hari = $_POST['hari'];
+    $matkul = $_POST['matkul'];
+    $dosen_id_1 = $_POST['dosen_id_1'];
+    $dosen_id_2 = $_POST['dosen_id_2'] ?? null;  // Optional second lecturer
+    $classroom = htmlspecialchars($_POST['classroom']);
+    $kelas = $_POST['kelas'];
+    $jam_mulai = $_POST['jam_mulai'];
+    $jam_selesai = $_POST['jam_selesai'];
+    $old_hari = $_POST['old_hari'] ?? null;
+    $old_jam_mulai = $_POST['old_jam_mulai'] ?? null;
+    $old_jam_selesai = $_POST['old_jam_selesai'] ?? null;
+
+    list($message, $alert_class) = update_or_insert_schedule($db, $hari, $matkul, $dosen_id_1, $dosen_id_2, $classroom, $kelas, $jam_mulai, $jam_selesai, $time_slots, 0, NULL, $old_hari, $old_jam_mulai, $old_jam_selesai);
+
+    if ($alert_class == "alert-success") {
+        $_SESSION['message'] = $message;
+        $_SESSION['alert_class'] = $alert_class;
         header("Location: jadwal-kuliah.php?kelas={$kelas}");
         exit();
-    } else {
-        $hari = $_POST['hari'];
-        $matkul = $_POST['matkul'];
-        $dosen_id_1 = $_POST['dosen_id_1'];
-        $dosen_id_2 = $_POST['dosen_id_2'] ?? null;  // Optional second lecturer
-        $classroom = htmlspecialchars($_POST['classroom']);
-        $kelas = $_POST['kelas'];
-        $jam_mulai = $_POST['jam_mulai'];
-        $jam_selesai = $_POST['jam_selesai'];
-        $old_hari = $_POST['old_hari'] ?? null;
-        $old_jam_mulai = $_POST['old_jam_mulai'] ?? null;
-        $old_jam_selesai = $_POST['old_jam_selesai'] ?? null;
-
-        list($message, $alert_class) = update_or_insert_schedule($db, $hari, $matkul, $dosen_id_1, $dosen_id_2, $classroom, $kelas, $jam_mulai, $jam_selesai, $time_slots, 0, NULL, $old_hari, $old_jam_mulai, $old_jam_selesai);
-
-        if ($alert_class == "alert-success") {
-            $_SESSION['message'] = $message;
-            $_SESSION['alert_class'] = $alert_class;
-            header("Location: jadwal-kuliah.php?kelas={$kelas}");
-            exit();
-        }
     }
 } elseif (isset($_GET['id'])) {
     $schedule_id = $_GET['id'];
@@ -63,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 unset($_SESSION['message']);
 unset($_SESSION['alert_type']);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 

@@ -5,7 +5,7 @@ checkRole('admin');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_schedule'])) {
   $schedule_id = $_POST['schedule_id'];
-  if (delete_schedule_permanently($db, $schedule_id)) {
+  if (delete_schedule_permanently($db, $schedule_id, $hari, $matkul, $dosen_id_1, $dosen_id_2, $classroom, $kelas)) {
     $_SESSION['message'] = "Jadwal berhasil dihapus.";
     $_SESSION['alert_class'] = "alert-success";
   } else {
@@ -164,6 +164,11 @@ unset($_SESSION['alert_class']);
                             <?php endif; ?>
                             <?php if ($show_edit): ?>
                               <a href="edit-jadwal.php?id=<?= $schedule['id']; ?>" class="btn btn-sm btn-warning mt-2">Edit</a>
+                              <form action="jadwal-kuliah.php" method="POST" style="display:inline;">
+                                <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
+                                <button type="submit" name="delete_schedule" class="btn btn-sm btn-danger mt-2"
+                                  onclick="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?')">Hapus</button>
+                              </form>
                             <?php endif; ?>
                             <hr>
                           <?php endforeach; ?>
