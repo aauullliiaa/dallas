@@ -474,32 +474,30 @@ function insert_schedule(
     $message = "";
     $alert_class = "";
 
-    // Validate required parameters
-    if (
-        empty($hari) || empty($matkul) || empty($dosen_id_1) || empty($classroom) || empty($kelas) || $start_index === false || $end_index === false || $start_index > $end_index
-    ) {
+    if (empty($hari) || empty($matkul) || empty($dosen_id_1) || empty($classroom) || empty($kelas) || $start_index === false || $end_index === false || $start_index > $end_index) {
         return ["Error: Invalid input data", "alert-danger"];
     }
 
-    // Validate dosen_id_1 exists in daftar_dosen
+    // Validate presence of dosen_id_1 in daftar_dosen
     $stmt = $db->prepare("SELECT 1 FROM daftar_dosen WHERE id = ?");
     $stmt->bind_param("i", $dosen_id_1);
     $stmt->execute();
     $stmt->store_result();
-
     if ($stmt->num_rows == 0) {
         $stmt->close();
         return ["Error: Invalid dosen_id_1", "alert-danger"];
     }
     $stmt->close();
 
-    // Validate dosen_id_2 exists in daftar_dosen if provided
-    if (!empty($dosen_id_2)) {
+    // If dosen_id_2 is empty, set it to NULL
+    $dosen_id_2 = !empty($dosen_id_2) ? $dosen_id_2 : NULL;
+
+    // Validate dosen_id_2 only if it is not NULL
+    if ($dosen_id_2 !== NULL) {
         $stmt = $db->prepare("SELECT 1 FROM daftar_dosen WHERE id = ?");
         $stmt->bind_param("i", $dosen_id_2);
         $stmt->execute();
         $stmt->store_result();
-
         if ($stmt->num_rows == 0) {
             $stmt->close();
             return ["Error: Invalid dosen_id_2", "alert-danger"];
@@ -507,69 +505,30 @@ function insert_schedule(
         $stmt->close();
     }
 
-    // Validate matkul exists in mata_kuliah and is assigned to dosen_id_1 or dosen_id_2
-    if (!empty($dosen_id_2)) {
-        $stmt = $db->prepare("SELECT 1 FROM mata_kuliah WHERE nama = ? AND (dosen_id_1 = ? OR dosen_id_2 = ?)");
-        $stmt->bind_param("sii", $matkul, $dosen_id_1, $dosen_id_2);
-    } else {
-        $stmt = $db->prepare("SELECT 1 FROM mata_kuliah WHERE nama = ? AND dosen_id_1 = ?");
-        $stmt->bind_param("si", $matkul, $dosen_id_1);
-    }
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows == 0) {
-        $stmt->close();
-        return ["Error: Invalid matkul or matkul not assigned to dosen_id_1 or dosen_id_2", "alert-danger"];
-    }
-    $stmt->close();
-
-    // Prepare the SQL statement
+    // Insert into jadwal_kuliah
     $stmt = $db->prepare("INSERT INTO jadwal_kuliah (hari, matkul, dosen_id_1, dosen_id_2, classroom, kelas, jam, is_temporary, end_date, is_deleted_temporarily) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)");
-
     if (!$stmt) {
         return ["Error: " . $db->error, "alert-danger"];
     }
 
-    // Start a transaction
     $db->begin_transaction();
-
     try {
         for ($i = $start_index; $i <= $end_index; $i++) {
             $current_time = $time_slots[$i];
-            $stmt->bind_param(
-                "ssiisssis",
-                $hari,
-                $matkul,
-                $dosen_id_1,
-                $dosen_id_2,
-                $classroom,
-                $kelas,
-                $current_time,
-                $is_temporary,
-                $end_date
-            );
-
+            $stmt->bind_param("ssiisssis", $hari, $matkul, $dosen_id_1, $dosen_id_2, $classroom, $kelas, $current_time, $is_temporary, $end_date);
             if (!$stmt->execute()) {
                 throw new Exception($stmt->error);
             }
         }
-
-        // Commit the transaction if all inserts were successful
         $db->commit();
         $message = "Jadwal berhasil ditambahkan";
         $alert_class = "alert-success";
     } catch (Exception $e) {
-        // Rollback the transaction in case of error
         $db->rollback();
         $message = "Error: " . $e->getMessage();
         $alert_class = "alert-danger";
     }
-
-    // Close the statement
     $stmt->close();
-
-    // Return the result message and alert class
     return [$message, $alert_class];
 }
 
@@ -676,26 +635,55 @@ function get_time_slots_for_viewing()
 // Akhir kode untuk fungsi menampilkan keseluruhan jadwal
 
 // Fungsi untuk menghapus jadwal
-function delete_schedule_permanently($db, $schedule_id)
+function delete_schedule_permanently($db, $schedule_id, $hari, $matkul, $dosen_id_1, $dosen_id_2, $classroom, $kelas)
 {
-    $sql = "DELETE FROM jadwal_kuliah WHERE id = ?";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param("i", $schedule_id);
-    $result = $stmt->execute();
-    $stmt->close();
+    // Query untuk mendapatkan nilai-nilai yang terkait dengan schedule_id
+    $sql_select = "SELECT hari, matkul, dosen_id_1, dosen_id_2, classroom, kelas FROM jadwal_kuliah WHERE id = ?";
+    $stmt_select = $db->prepare($sql_select);
+    $stmt_select->bind_param("i", $schedule_id);
+    $stmt_select->execute();
+    $stmt_select->bind_result($hari, $matkul, $dosen_id_1, $dosen_id_2, $classroom, $kelas);
+    $stmt_select->fetch();
+    $stmt_select->close();
+
+    // Menyiapkan query DELETE berdasarkan apakah dosen_id_2 NULL atau tidak
+    if ($dosen_id_2 === null) {
+        $sql_delete = "DELETE FROM jadwal_kuliah WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND dosen_id_2 IS NULL AND classroom = ? AND kelas = ?";
+        $stmt_delete = $db->prepare($sql_delete);
+        $stmt_delete->bind_param("ssiss", $hari, $matkul, $dosen_id_1, $classroom, $kelas);
+    } else {
+        $sql_delete = "DELETE FROM jadwal_kuliah WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND dosen_id_2 = ? AND classroom = ? AND kelas = ?";
+        $stmt_delete = $db->prepare($sql_delete);
+        $stmt_delete->bind_param("ssiiss", $hari, $matkul, $dosen_id_1, $dosen_id_2, $classroom, $kelas);
+    }
+
+    $result = $stmt_delete->execute();
+    $stmt_delete->close();
+
     return $result;
 }
 
-function delete_temp_schedule($hari, $matkul, $dosen_id, $kelas)
+function delete_temp_schedule($hari, $matkul, $dosen_id_1, $dosen_id_2, $kelas)
 {
     global $db;
-    $sql = "DELETE FROM jadwal_kuliah WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ? AND is_temporary = 1";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param("ssss", $hari, $matkul, $dosen_id, $kelas);
-    $result = $stmt->execute();
-    $affected_rows = $stmt->affected_rows;
-    $stmt->close();
-    return $result;
+
+    if ($dosen_id_2) {
+        $sql = "DELETE FROM jadwal_kuliah 
+                WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND dosen_id_2 = ? AND kelas = ? 
+                AND (is_temporary = 1 OR is_deleted_temporarily = 1)";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("sssss", $hari, $matkul, $dosen_id_1, $dosen_id_2, $kelas);
+    } else {
+        $sql = "DELETE FROM jadwal_kuliah 
+                WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND (dosen_id_2 IS NULL OR dosen_id_2 = '') AND kelas = ? 
+                AND (is_temporary = 1 OR is_deleted_temporarily = 1)";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ssss", $hari, $matkul, $dosen_id_1, $kelas);
+    }
+
+    $stmt->execute();
+
+    return $stmt->affected_rows;
 }
 // Akhir kode untuk menghapus jadwal
 
@@ -947,9 +935,12 @@ function fetch_all_slots($db)
 
     foreach ($days as $day) {
         foreach ($time_slots as $slot) {
-            $sql = "SELECT jk.*, dd.nama AS dosen, dd.id AS dosen_id FROM jadwal_kuliah jk
-            JOIN daftar_dosen dd ON jk.dosen_id = dd.id
-            WHERE jk.hari = ? AND jk.jam = ? AND (jk.is_temporary = 0 OR (jk.is_temporary = 1 AND jk.end_date >= CURDATE()) OR jk.is_deleted_temporarily = 1)";
+            $sql = "SELECT jk.*, dd1.nama AS dosen_1, dd2.nama AS dosen_2, dd1.id AS dosen_id_1, dd2.id AS dosen_id_2 
+                    FROM jadwal_kuliah jk
+                    LEFT JOIN daftar_dosen dd1 ON jk.dosen_id_1 = dd1.id
+                    LEFT JOIN daftar_dosen dd2 ON jk.dosen_id_2 = dd2.id
+                    WHERE jk.hari = ? AND jk.jam = ? 
+                    AND (jk.is_temporary = 0 OR (jk.is_temporary = 1 AND jk.end_date >= CURDATE()) OR jk.is_deleted_temporarily = 1)";
             $stmt = $db->prepare($sql);
             $stmt->bind_param("ss", $day, $slot);
             $stmt->execute();
@@ -960,8 +951,10 @@ function fetch_all_slots($db)
                 $all_slots[$day][$slot][] = [
                     'id' => $row['id'],
                     'matkul' => $row['matkul'],
-                    'dosen' => $row['dosen'],
-                    'dosen_id' => $row['dosen_id'],  // Menambahkan dosen_id
+                    'dosen_1' => $row['dosen_1'],
+                    'dosen_id_1' => $row['dosen_id_1'],
+                    'dosen_2' => $row['dosen_2'],
+                    'dosen_id_2' => $row['dosen_id_2'],
                     'kelas' => $row['kelas'],
                     'classroom' => $row['classroom'],
                     'is_temporary' => $row['is_temporary'],
@@ -973,6 +966,7 @@ function fetch_all_slots($db)
     }
     return $all_slots;
 }
+
 
 // Menghapus jadwal pergantian mata kuliah secara otomatis jika sudah hari minggu pada minggu tersebut
 function delete_expired_temporary_schedules($db)
@@ -988,7 +982,7 @@ function delete_expired_temporary_schedules($db)
     }
     $stmt->close();
 }
-function delete_schedule_temporarily($db, $hari, $matkul, $dosen_id, $kelas)
+function delete_schedule_temporarily($db, $hari, $matkul, $dosen_id_1, $dosen_id_2, $kelas)
 {
     $db->begin_transaction();
 
@@ -998,24 +992,24 @@ function delete_schedule_temporarily($db, $hari, $matkul, $dosen_id, $kelas)
 
         // Update jadwal_kuliah
         $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 1, end_date = ? 
-                WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
+                WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND (dosen_id_2 = ? OR (dosen_id_2 IS NULL AND ? IS NULL)) AND kelas = ?";
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             throw new Exception($db->error);
         }
-        $stmt->bind_param("sssis", $end_date, $hari, $matkul, $dosen_id, $kelas);
+        $stmt->bind_param("sssssss", $end_date, $hari, $matkul, $dosen_id_1, $dosen_id_2, $dosen_id_2, $kelas);
         $stmt->execute();
 
         // Insert into temporary_deleted_schedules
-        $sql = "INSERT INTO temporary_deleted_schedules (original_id, hari, jam_mulai, jam_selesai, matkul, dosen_id, classroom, kelas, end_date)
-                SELECT id, hari, SUBSTRING_INDEX(jam, ' - ', 1), SUBSTRING_INDEX(jam, ' - ', -1), matkul, dosen_id, classroom, kelas, ?
+        $sql = "INSERT INTO temporary_deleted_schedules (original_id, hari, jam_mulai, jam_selesai, matkul, dosen_id_1, dosen_id_2, classroom, kelas, end_date)
+                SELECT id, hari, SUBSTRING_INDEX(jam, ' - ', 1), SUBSTRING_INDEX(jam, ' - ', -1), matkul, dosen_id_1, dosen_id_2, classroom, kelas, ?
                 FROM jadwal_kuliah 
-                WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
+                WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND (dosen_id_2 = ? OR (dosen_id_2 IS NULL AND ? IS NULL)) AND kelas = ?";
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             throw new Exception($db->error);
         }
-        $stmt->bind_param("sssis", $end_date, $hari, $matkul, $dosen_id, $kelas);
+        $stmt->bind_param("sssssss", $end_date, $hari, $matkul, $dosen_id_1, $dosen_id_2, $dosen_id_2, $kelas);
         $stmt->execute();
 
         $db->commit();
@@ -1027,7 +1021,7 @@ function delete_schedule_temporarily($db, $hari, $matkul, $dosen_id, $kelas)
     }
 }
 
-function cancel_temporary_delete($db, $hari, $matkul, $dosen_id, $kelas)
+function cancel_temporary_delete($db, $hari, $matkul, $dosen_id_1, $dosen_id_2, $kelas)
 {
     $db->begin_transaction();
 
@@ -1035,18 +1029,18 @@ function cancel_temporary_delete($db, $hari, $matkul, $dosen_id, $kelas)
         // Update jadwal_kuliah table
         $sql1 = "UPDATE jadwal_kuliah 
                  SET is_deleted_temporarily = 0, end_date = NULL 
-                 WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
+                 WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND (dosen_id_2 = ? OR (dosen_id_2 IS NULL AND ? IS NULL)) AND kelas = ?";
         $stmt1 = $db->prepare($sql1);
-        $stmt1->bind_param("ssss", $hari, $matkul, $dosen_id, $kelas);
+        $stmt1->bind_param("ssiiss", $hari, $matkul, $dosen_id_1, $dosen_id_2, $dosen_id_2, $kelas);
         $stmt1->execute();
         $affected_rows_jadwal = $stmt1->affected_rows;
         $stmt1->close();
 
         // Get the IDs of the updated rows in jadwal_kuliah
         $sql2 = "SELECT id FROM jadwal_kuliah 
-                 WHERE hari = ? AND matkul = ? AND dosen_id = ? AND kelas = ?";
+                 WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND (dosen_id_2 = ? OR (dosen_id_2 IS NULL AND ? IS NULL)) AND kelas = ?";
         $stmt2 = $db->prepare($sql2);
-        $stmt2->bind_param("ssss", $hari, $matkul, $dosen_id, $kelas);
+        $stmt2->bind_param("ssiiss", $hari, $matkul, $dosen_id_1, $dosen_id_2, $dosen_id_2, $kelas);
         $stmt2->execute();
         $result = $stmt2->get_result();
         $ids = [];
