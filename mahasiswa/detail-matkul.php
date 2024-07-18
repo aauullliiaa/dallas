@@ -6,6 +6,12 @@ checkRole('mahasiswa');
 $id = $_GET["id"];
 $matkul = retrieve("SELECT * FROM mata_kuliah WHERE id = $id")[0];
 $materi = retrieve("SELECT * FROM materi WHERE mata_kuliah_id = $id ORDER BY pertemuan");
+
+$dosen_1_id = $matkul['dosen_id_1'];
+$dosen_2_id = $matkul['dosen_id_2'];
+
+$dosen_1 = retrieve("SELECT nama FROM daftar_dosen WHERE id = ?", [$dosen_1_id])[0]['nama'];
+$dosen_2 = $dosen_2_id ? retrieve("SELECT nama FROM daftar_dosen WHERE id = ?", [$dosen_2_id])[0]['nama'] : null;
 ?>
 
 <!DOCTYPE html>
@@ -91,7 +97,13 @@ $materi = retrieve("SELECT * FROM materi WHERE mata_kuliah_id = $id ORDER BY per
       <h4>Deskripsi</h4>
       <p><?= $matkul["deskripsi"] ?></p>
       <h4>Dosen Pengampu</h4>
-      <p><?= getDosenName($matkul["dosen_id"]) ?></p>
+      <div class="row">
+        <p><?= htmlspecialchars($dosen_1); ?>
+          <?php if ($dosen_2): ?>
+            & <?= htmlspecialchars($dosen_2); ?>
+          <?php endif; ?>
+        </p>
+      </div>
     </div>
     <div class="row">
       <div class="col">

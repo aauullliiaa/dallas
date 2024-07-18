@@ -5,13 +5,29 @@ checkRole('mahasiswa');
 
 $matkul_id = $_GET["id"];
 $detailmk = retrieve("SELECT * FROM mata_kuliah WHERE id =?", [$matkul_id])[0];
-$tugasList = retrieve("SELECT tp.*, p.pertemuan as pertemuan_ke FROM tugas_pertemuan tp JOIN pertemuan p ON tp.pertemuan_id = p.id WHERE p.mata_kuliah_id =?", [$matkul_id]);
+$tugasList = retrieve("SELECT tp.*, p.pertemuan as pertemuan_ke, d.nama as nama_dosen 
+                       FROM tugas_pertemuan tp 
+                       JOIN pertemuan p ON tp.pertemuan_id = p.id 
+                       JOIN daftar_dosen d ON p.dosen_id = d.id
+                       WHERE p.mata_kuliah_id = ?
+                       ORDER BY p.pertemuan",
+    [$matkul_id]
+);
 
 $user_id = $_SESSION['user_id']; // assuming you have the user ID stored in the session
 $mahasiswa_id = retrieve("SELECT id FROM daftar_mahasiswa WHERE user_id = ?", [$user_id])[0]['id'];
 
+$dosen_id = retrieve("SELECT * FROM pertemuan")[0]['dosen_id'];
+$nama_dosen = retrieve("SELECT * FROM daftar_dosen WHERE id = $dosen_id")[0]['nama'];
+
 $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND tugas_id IN (SELECT id FROM tugas_pertemuan WHERE pertemuan_id IN (SELECT id FROM pertemuan WHERE mata_kuliah_id =?))", [$mahasiswa_id, $matkul_id]);
 
+$dosen_pengampu = retrieve("SELECT DISTINCT d.nama 
+                            FROM pertemuan p 
+                            JOIN daftar_dosen d ON p.dosen_id = d.id
+                            WHERE p.mata_kuliah_id = ?",
+    [$matkul_id]
+);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -92,10 +108,7 @@ $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND t
             <div class="row">
                 <h4>Mata Kuliah</h4>
                 <p><?= htmlspecialchars($detailmk['nama']); ?></p>
-            </div>
-            <div class="row">
-                <h4>Dosen Pengampu</h4>
-                <p><?= getDosenName($detailmk['dosen_id']); ?></p>
+                <p>Dosen Pengampu: <?= implode(", ", array_column($dosen_pengampu, 'nama')) ?></p>
             </div>
             <div class="col submit-button mb-2">
                 <a href="detail-matkul.php?id=<?= $matkul_id; ?>"><button class="btn">Kembali</button></a>
@@ -113,11 +126,12 @@ $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND t
                             <div class="row">
                                 <h6><?= htmlspecialchars($tugas['judul']); ?></h6>
                                 <p><?= nl2br(htmlspecialchars($tugas['deskripsi'])); ?></p>
+                                <small>Diberikan oleh: <?= htmlspecialchars($tugas['nama_dosen']) ?></small>
+                                <small>Tenggat: <?= htmlspecialchars($tugas['tanggal_deadline']) ?>,
+                                    <?= htmlspecialchars(date('H:i', strtotime($tugas['jam_deadline']))) ?></small>
+                                </p>
                                 <p><a href="../src/files/tugas/<?= htmlspecialchars($tugas['file_tugas']); ?>">Lihat
                                         Tugas</a><br>
-                                    <small>Tenggat: <?= htmlspecialchars($tugas['tanggal_deadline']) ?>,
-                                        <?= htmlspecialchars(date('H:i', strtotime($tugas['jam_deadline']))) ?></small>
-                                </p>
                                 <div class="col">
                                     <?php
                                     $deadline = strtotime($tugas['tanggal_deadline'] . ' ' . $tugas['jam_deadline']);

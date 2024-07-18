@@ -140,7 +140,10 @@ $time_slots = get_time_slots_for_viewing();
                           <?php if (isset($schedules[$day][$slot])): ?>
                             <?php foreach ($schedules[$day][$slot] as $schedule): ?>
                               <?= htmlspecialchars($schedule['matkul']); ?><br>
-                              <small><?= htmlspecialchars($schedule['dosen']); ?></small> -
+                              <small><?= htmlspecialchars($schedule['dosen1']); ?></small>
+                              <?php if (!empty($schedule['dosen2'])): ?>
+                                & <small><?= htmlspecialchars($schedule['dosen2']); ?></small>
+                              <?php endif; ?> -
                               <small><?= htmlspecialchars($schedule['classroom']); ?></small><br>
                               <?php if ($schedule['is_temporary']): ?>
                                 <span class="badge bg-warning">Jadwal Pergantian</span><br>
