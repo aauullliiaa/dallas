@@ -92,30 +92,39 @@ $db->close();
 <body>
     <div class="container mt-5 pt-5">
         <div class="row">
-            <?php foreach ($requests as $request): ?>
-                <div class="col-md-6 mb-4">
-                    <div class="card">
-                        <?php $i = 1; ?>
-                        <div class="card-body">
-                            <h5 class="card-title">Request #<?php echo $i; ?></h5>
-                            <p class="card-text">
-                                Dosen <strong><?php echo $request['dosen']; ?></strong> meminta pergantian jadwal dari
-                                <strong><?php echo $request['tanggal_awal']; ?></strong> pukul
-                                <strong><?php echo $request['jadwal_awal_mulai'] . " s/d " . $request['jadwal_awal_selesai']; ?></strong>
-                                ke tanggal
-                                <strong><?php echo $request['tanggal_baru']; ?></strong> pukul
-                                <strong><?php echo $request['jadwal_baru_mulai'] . " s/d " . $request['jadwal_baru_selesai']; ?></strong>.
-                            </p>
-                            <p class="card-text">
-                                <strong>Mata Kuliah:</strong> <?php echo $request['mata_kuliah']; ?><br>
-                                <strong>Alasan:</strong> <?php echo $request['alasan']; ?><br>
-                                <strong>Status:</strong> <?= $request['status']; ?>
-                            </p>
-                        </div>
-                        <?php $i++; ?>
-                    </div>
+            <?php if ($message): ?>
+                <div class="alert alert-<?= $alertType ?>">
+                    <?= $alertMessage ?>
                 </div>
-            <?php endforeach; ?>
+            <?php endif; ?>
+            <?php if (empty($requests)): ?>
+                <div class="alert alert-info">Belum ada request pergantian.</div>
+            <?php else: ?>
+                <?php foreach ($requests as $request): ?>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <?php $i = 1; ?>
+                            <div class="card-body">
+                                <h5 class="card-title">Request #<?php echo $i; ?></h5>
+                                <p class="card-text">
+                                    Dosen <strong><?php echo $request['dosen']; ?></strong> meminta pergantian jadwal dari
+                                    <strong><?php echo $request['tanggal_awal']; ?></strong> pukul
+                                    <strong><?php echo $request['jadwal_awal_mulai'] . " s/d " . $request['jadwal_awal_selesai']; ?></strong>
+                                    ke tanggal
+                                    <strong><?php echo $request['tanggal_baru']; ?></strong> pukul
+                                    <strong><?php echo $request['jadwal_baru_mulai'] . " s/d " . $request['jadwal_baru_selesai']; ?></strong>.
+                                </p>
+                                <p class="card-text">
+                                    <strong>Mata Kuliah:</strong> <?php echo $request['mata_kuliah']; ?><br>
+                                    <strong>Alasan:</strong> <?php echo $request['alasan']; ?><br>
+                                    <strong>Status:</strong> <?= $request['status']; ?>
+                                </p>
+                            </div>
+                            <?php $i++; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
         <div class="row">
             <div class="col text-center submit-button">

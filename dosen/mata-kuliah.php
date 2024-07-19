@@ -22,7 +22,7 @@ if ($user_id !== null) {
 
 $courses = [];
 if ($dosen_id !== null) {
-  $courses = retrieve("SELECT * FROM mata_kuliah WHERE dosen_id = $dosen_id");
+  $courses = retrieve("SELECT * FROM mata_kuliah WHERE dosen_id_1 = $dosen_id OR dosen_id_2 = $dosen_id");
 }
 ?>
 

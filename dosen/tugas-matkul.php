@@ -3,9 +3,17 @@ session_start();
 require '../src/db/functions.php';
 checkRole('dosen');
 
+$user_id = $_SESSION['user_id'];
+$dosen_id = get_dosen_id_by_user_id($db, $user_id);
+
 $matkul_id = $_GET["id"];
 $detailmk = retrieve("SELECT nama FROM mata_kuliah WHERE id = ?", [$matkul_id])[0];
-$tugasList = retrieve("SELECT tp.*, p.pertemuan as pertemuan_ke FROM tugas_pertemuan tp JOIN pertemuan p ON tp.pertemuan_id = p.id WHERE p.mata_kuliah_id = ?", [$matkul_id]);
+$tugasList = retrieve("SELECT tp.*, p.pertemuan as pertemuan_ke 
+                       FROM tugas_pertemuan tp 
+                       JOIN pertemuan p ON tp.pertemuan_id = p.id 
+                       WHERE p.mata_kuliah_id = ? AND tp.dosen_id = ?",
+  [$matkul_id, $dosen_id]
+);
 
 $message = $_SESSION['message'] ?? '';
 $alert_type = $_SESSION['alert_type'] ?? '';
@@ -18,11 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_tugas_id']) &&
   $tugas_id = $_POST['delete_tugas_id'];
   $pertemuan_id = $_POST['delete_pertemuan_id'];
 
-  if (deletePertemuan($pertemuan_id)) {
-    $message = "Tugas berhasil dihapus.";
-    $alert_type = "success";
+  $task = retrieve("SELECT * FROM tugas_pertemuan WHERE id = ? AND dosen_id = ?", [$tugas_id, $dosen_id]);
+
+  if (!empty($task)) {
+    if (deletePertemuan($pertemuan_id)) {
+      $message = "Tugas berhasil dihapus.";
+      $alert_type = "success";
+    } else {
+      $message = "Gagal menghapus tugas, silakan coba lagi.";
+      $alert_type = "danger";
+    }
   } else {
-    $message = "Gagal menghapus tugas, silakan coba lagi.";
+    $message = "Anda tidak memiliki izin untuk menghapus tugas ini.";
     $alert_type = "danger";
   }
 

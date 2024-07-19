@@ -3,6 +3,7 @@ session_start();
 require '../src/db/functions.php';
 checkRole('dosen'); // assuming you have a session variable for the lecturer's ID
 
+// Fetch schedule by dosen ID
 list($time_slots, $days, $schedule) = fetch_schedule_by_dosen_id($db);
 ?>
 <!DOCTYPE html>
@@ -16,7 +17,7 @@ list($time_slots, $days, $schedule) = fetch_schedule_by_dosen_id($db);
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
         rel="stylesheet" />
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -108,12 +109,19 @@ list($time_slots, $days, $schedule) = fetch_schedule_by_dosen_id($db);
                                             <?php if (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
                                                 Istirahat
                                             <?php elseif (isset($schedule[$day][$slot])): ?>
-                                                <?= htmlspecialchars($schedule[$day][$slot]['matkul']); ?><br>
-                                                <small><?= htmlspecialchars($schedule[$day][$slot]['classroom']); ?> -
-                                                    <?= htmlspecialchars($schedule[$day][$slot]['kelas']); ?></small><br>
-                                                <?php if ($schedule[$day][$slot]['is_temporary']): ?>
-                                                    <span class="badge bg-warning">Pergantian</span>
-                                                <?php endif; ?>
+                                                <?php foreach ($schedule[$day][$slot] as $item): ?>
+                                                    <?= htmlspecialchars($item['matkul']); ?><br>
+                                                    <small><?= htmlspecialchars($item['dosen1']); ?></small>
+                                                    <?php if (!empty($item['dosen2'])): ?>
+                                                        & <small><?= htmlspecialchars($item['dosen2']); ?></small>
+                                                    <?php endif; ?>
+                                                    <br>
+                                                    <small><?= htmlspecialchars($item['classroom']); ?> -
+                                                        <?= htmlspecialchars($item['kelas']); ?></small><br>
+                                                    <?php if ($item['is_temporary']): ?>
+                                                        <span class="badge bg-warning">Pergantian</span>
+                                                    <?php endif; ?>
+                                                <?php endforeach; ?>
                                             <?php endif; ?>
                                         </td>
                                     <?php endforeach; ?>

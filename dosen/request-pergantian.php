@@ -19,6 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $jadwal_baru_mulai = $_POST['jadwalBaruMulai'];
   $jadwal_baru_selesai = $_POST['jadwalBaruSelesai'];
   $alasan = $_POST['alasan'];
+  header("Location: list-request.php");
+  exit;
 
   list($alertType, $alertMessage) = process_request($db, $jadwal_ids, $tanggal_awal, $tanggal_baru, $jadwal_baru_mulai, $jadwal_baru_selesai, $alasan);
 
@@ -118,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <option value="">Pilih Jadwal</option>
               <?php
               foreach ($jadwal_kuliah as $jadwal) {
-                $jadwal_info = "{$jadwal['hari']} - ({$jadwal['jam_awal']}) - ({$jadwal['jam_akhir']}) - {$jadwal['matkul']} - {$jadwal['dosen']} - Kelas: {$jadwal['kelas']}, Ruang: {$jadwal['classroom']}";
+                $jadwal_info = "{$jadwal['hari']} - ({$jadwal['jam_awal']}) - ({$jadwal['jam_akhir']}) - {$jadwal['matkul']} - {$jadwal['dosen1']} & {$jadwal['dosen2']} - Kelas: {$jadwal['kelas']}, Ruang: {$jadwal['classroom']}";
                 echo "<option value='{$jadwal['id_list']}'>{$jadwal_info}</option>";
               }
               ?>
@@ -218,5 +220,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     crossorigin="anonymous"></script>
 </body>
+
 
 </html>

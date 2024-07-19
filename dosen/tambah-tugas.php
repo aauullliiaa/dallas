@@ -4,16 +4,18 @@ require '../src/db/functions.php';
 checkRole('dosen');
 
 $matkul_id = $_GET['matkul_id'];
+$user_id = $_SESSION['user_id'];
 $message = '';
 $alert_type = '';
+$dosen_id = get_dosen_id_by_user_id($db, $user_id);
 
 // Retrieve mata kuliah detail
 $matkul_detail = retrieve("SELECT nama FROM mata_kuliah WHERE id = ?", [$matkul_id])[0];
 
-// Retrieve pertemuan with existing tugas
+// Retrieve pertemuan with existing tugas for this dosen
 $existing_pertemuan = retrieve("SELECT pertemuan FROM tugas_pertemuan tp
                                 JOIN pertemuan p ON tp.pertemuan_id = p.id
-                                WHERE p.mata_kuliah_id = ?", [$matkul_id]);
+                                WHERE p.mata_kuliah_id = ? AND p.dosen_id = ?", [$matkul_id, $dosen_id]);
 
 // Create an array of existing pertemuan
 $existing_pertemuan_array = array_column($existing_pertemuan, 'pertemuan');
@@ -43,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'mata_kuliah_id' => $matkul_id,
             'pertemuan' => $pertemuan,
             'deskripsi' => $deskripsi,
-            'tanggal' => $tanggal_deadline
+            'tanggal' => $tanggal_deadline,
+            'dosen_id' => $dosen_id
         ];
         $pertemuan_id = insertPertemuan($pertemuan_data);
 
@@ -55,7 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'deskripsi' => $deskripsi,
                 'tanggal_deadline' => $tanggal_deadline,
                 'jam_deadline' => $jam_deadline,
-                'file_tugas' => $file_tugas
+                'file_tugas' => $file_tugas,
+                'dosen_id' => $dosen_id
             ];
 
             if (insertTugasPertemuan($tugas_data)) {
@@ -76,7 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 

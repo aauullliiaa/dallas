@@ -282,9 +282,6 @@ checkRole('dosen');
   </svg>
   <!-- End of Alamat -->
   <!-- Footer -->
-  <footer class="text-center pb-1 pt-4" style="background-color: #c6ac8f">
-    <p>Created with <i class="bi bi-heart-fill"></i>, Aulia Kinanah</p>
-  </footer>
   <!-- End of Footer-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

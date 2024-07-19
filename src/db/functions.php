@@ -352,8 +352,10 @@ function processMaterialUpload($db)
             if (!is_dir($upload_dir)) {
                 mkdir($upload_dir, 0777, true);
             }
-            $materi_file_path = $upload_dir . basename($_FILES['materi_file']['name']);
-            $file_extension = strtolower(pathinfo($materi_file_path, PATHINFO_EXTENSION));
+
+            $file_extension = strtolower(pathinfo($_FILES['materi_file']['name'], PATHINFO_EXTENSION));
+            $unique_file_name = uniqid('materi_', true) . '.' . $file_extension;
+            $materi_file_path = $upload_dir . $unique_file_name;
 
             if (in_array($file_extension, ['pdf', 'doc', 'docx', 'ppt', 'pptx'])) {
                 if (move_uploaded_file($_FILES['materi_file']['tmp_name'], $materi_file_path)) {
@@ -390,6 +392,7 @@ function processMaterialUpload($db)
 
     return [$message, $alert_type];
 }
+
 // Akhir kode untuk fungsi pada halaman upload materi
 
 // Mengambil semua data materi perkuliahan untuk di halaman detail mata kuliah
@@ -553,24 +556,25 @@ function get_jadwal_kuliah_for_dosen($db, $dosen_id)
     $sql = "SELECT 
         jk.hari,
         jk.matkul,
-        dd.nama AS dosen,
+        dd1.nama AS dosen1,
+        dd2.nama AS dosen2,
         MIN(jk.jam) AS jam_awal,
         MAX(jk.jam) AS jam_akhir,
         jk.kelas,
         jk.classroom,
         GROUP_CONCAT(jk.id ORDER BY jk.jam) AS id_list
     FROM jadwal_kuliah jk
-    JOIN daftar_dosen dd ON jk.dosen_id = dd.id
-    WHERE jk.is_deleted_temporarily = 0 AND jk.dosen_id = ?
-    GROUP BY jk.hari, jk.matkul, dd.nama, jk.kelas, jk.classroom
+    LEFT JOIN daftar_dosen dd1 ON jk.dosen_id_1 = dd1.id
+    LEFT JOIN daftar_dosen dd2 ON jk.dosen_id_2 = dd2.id
+    WHERE jk.is_deleted_temporarily = 0 AND (jk.dosen_id_1 = ? OR jk.dosen_id_2 = ?)
+    GROUP BY jk.hari, jk.matkul, dd1.nama, dd2.nama, jk.kelas, jk.classroom
     ORDER BY jk.hari, MIN(jk.jam), jk.matkul";
     $stmt = $db->prepare($sql);
-    $stmt->bind_param("i", $dosen_id);
+    $stmt->bind_param("ii", $dosen_id, $dosen_id);
     $stmt->execute();
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
-
 
 function process_request($db, $jadwal_ids, $tanggal_awal, $tanggal_baru, $jadwal_baru_mulai, $jadwal_baru_selesai, $alasan)
 {
@@ -578,14 +582,29 @@ function process_request($db, $jadwal_ids, $tanggal_awal, $tanggal_baru, $jadwal
     $first_jadwal_id = $jadwal_ids_array[0];
     $last_jadwal_id = end($jadwal_ids_array);
 
+    // Get logged-in user ID (assuming a function exists)
+    $user_id = get_current_user_id();
+
+    // Find dosen data based on user ID (assuming 'daftar_dosen' table has 'user_id')
+    $stmt = $db->prepare('SELECT id FROM daftar_dosen WHERE user_id = ?');
+    $stmt->bind_param('i', $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $dosen = $result->fetch_assoc();
+
+    if (!$dosen) {
+        return ["danger", "Dosen tidak ditemukan untuk ID pengguna ini."];
+    }
+
+    $dosen_id = $dosen['id'];
+
     // Fetch original schedule details for the first entry
-    $stmt = $db->prepare("SELECT dosen_id, matkul, jam FROM jadwal_kuliah WHERE id = ?");
+    $stmt = $db->prepare("SELECT matkul, jam FROM jadwal_kuliah WHERE id = ?");
     $stmt->bind_param("i", $first_jadwal_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $original_schedule_first = $result->fetch_assoc();
 
-    $dosen_id = $original_schedule_first['dosen_id'];
     $mata_kuliah = $original_schedule_first['matkul'];
     $jadwal_awal_mulai = $original_schedule_first['jam'];
 
@@ -610,6 +629,7 @@ function process_request($db, $jadwal_ids, $tanggal_awal, $tanggal_baru, $jadwal
         return ["danger", "Error: " . $stmt->error];
     }
 }
+
 
 // Fungsi untuk menampilkan keseluruhan jadwal
 function get_time_slots_for_viewing()
@@ -690,9 +710,13 @@ function delete_temp_schedule($hari, $matkul, $dosen_id_1, $dosen_id_2, $kelas)
 // Fungsi untuk menampilkan jadwal sesuai dengan kelas
 function fetch_schedules($db, $kelas)
 {
-    $sql = "SELECT jk.*, dd.nama as dosen FROM jadwal_kuliah jk
-        JOIN daftar_dosen dd ON jk.dosen_id = dd.id
-        WHERE jk.kelas = ?";
+    $sql = "SELECT jk.*, 
+                   dd1.nama as dosen1, 
+                   dd2.nama as dosen2 
+            FROM jadwal_kuliah jk
+            LEFT JOIN daftar_dosen dd1 ON jk.dosen_id_1 = dd1.id
+            LEFT JOIN daftar_dosen dd2 ON jk.dosen_id_2 = dd2.id
+            WHERE jk.kelas = ? AND jk.is_deleted_temporarily = 0 AND (jk.end_date IS NULL OR jk.end_date >= CURDATE())";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("s", $kelas);
     $stmt->execute();
@@ -704,6 +728,7 @@ function fetch_schedules($db, $kelas)
     $stmt->close();
     return $schedules;
 }
+
 
 function fetch_all_schedules($db)
 {
@@ -909,8 +934,14 @@ function fetch_schedule_by_dosen_id($db)
     $dosen_id = $dosen['id'];
     $time_slots = get_time_slots_for_viewing();
     $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-    $stmt = $db->prepare('SELECT jk.* FROM jadwal_kuliah jk WHERE jk.dosen_id = ?');
-    $stmt->bind_param('i', $dosen_id);
+    $stmt = $db->prepare('SELECT jk.*, 
+                                 dd1.nama as dosen1, 
+                                 dd2.nama as dosen2 
+                          FROM jadwal_kuliah jk
+                          LEFT JOIN daftar_dosen dd1 ON jk.dosen_id_1 = dd1.id
+                          LEFT JOIN daftar_dosen dd2 ON jk.dosen_id_2 = dd2.id
+                          WHERE jk.dosen_id_1 = ? OR jk.dosen_id_2 = ?');
+    $stmt->bind_param('ii', $dosen_id, $dosen_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $jadwal = $result->fetch_all(MYSQLI_ASSOC);
@@ -919,11 +950,15 @@ function fetch_schedule_by_dosen_id($db)
         if (!isset($schedule[$item['hari']])) {
             $schedule[$item['hari']] = [];
         }
-        $schedule[$item['hari']][$item['jam']] = $item;
+        if (!isset($schedule[$item['hari']][$item['jam']])) {
+            $schedule[$item['hari']][$item['jam']] = [];
+        }
+        $schedule[$item['hari']][$item['jam']][] = $item;
     }
 
     return [$time_slots, $days, $schedule];
 }
+
 
 
 // Fetch all slots (both empty and filled)
@@ -1265,6 +1300,7 @@ function uploadTugas($tugas_id, $matkul_id, $pertemuan_id, $mahasiswa_id, $mahas
     return $uploadMessage;
 }
 
+
 function getTugasDetail($tugas_id, $mahasiswa_id)
 {
     return retrieve("SELECT tp.*, p.pertemuan, p.tanggal, mk.nama as mata_kuliah, dm.nama as mahasiswa, dm.nim, dm.kelas, 
@@ -1489,65 +1525,60 @@ function get_all_courses($db)
 function deleteUserAndDependencies($db, $delete_id, $role)
 {
     try {
-        // Mulai transaksi
         mysqli_begin_transaction($db);
-        $table = ($role == 'dosen') ? 'daftar_dosen' : 'daftar_mahasiswa';
-        $stmt = $db->prepare("SELECT user_id FROM $table WHERE id = ?");
-        $stmt->bind_param("i", $delete_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
-
-        if (!$user) {
-            throw new Exception(ucfirst($role) . " tidak ditemukan.");
-        }
-
-        $user_id = $user['user_id'];
 
         if ($role == 'dosen') {
+            // Ambil user_id dari daftar_dosen
+            $stmt = $db->prepare("SELECT user_id FROM daftar_dosen WHERE id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $dosen = $result->fetch_assoc();
+
+            if (!$dosen) {
+                throw new Exception("Dosen tidak ditemukan.");
+            }
+
+            $user_id = $dosen['user_id'];
+
             // Hapus requests terkait dengan dosen
             $stmt = $db->prepare("DELETE FROM requests WHERE dosen_id = ?");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
 
-            // Hapus tugas_kumpul terkait dengan tugas_pertemuan dari mata kuliah dosen
+            // Update mata_kuliah
+            $stmt = $db->prepare("UPDATE mata_kuliah SET 
+                                  dosen_id_1 = CASE WHEN dosen_id_1 = ? THEN NULL ELSE dosen_id_1 END,
+                                  dosen_id_2 = CASE WHEN dosen_id_2 = ? THEN NULL ELSE dosen_id_2 END
+                                  WHERE dosen_id_1 = ? OR dosen_id_2 = ?");
+            $stmt->bind_param("iiii", $delete_id, $delete_id, $delete_id, $delete_id);
+            $stmt->execute();
+
+            // Update jadwal_kuliah
+            $stmt = $db->prepare("UPDATE jadwal_kuliah SET 
+                                  dosen_id_1 = CASE WHEN dosen_id_1 = ? THEN NULL ELSE dosen_id_1 END,
+                                  dosen_id_2 = CASE WHEN dosen_id_2 = ? THEN NULL ELSE dosen_id_2 END
+                                  WHERE dosen_id_1 = ? OR dosen_id_2 = ?");
+            $stmt->bind_param("iiii", $delete_id, $delete_id, $delete_id, $delete_id);
+            $stmt->execute();
+
+            // Hapus tugas_kumpul terkait dengan tugas_pertemuan dari pertemuan dosen
             $stmt = $db->prepare("DELETE tk FROM tugas_kumpul tk
                                   INNER JOIN tugas_pertemuan tp ON tk.tugas_id = tp.id
                                   INNER JOIN pertemuan p ON tp.pertemuan_id = p.id
-                                  INNER JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id
-                                  WHERE mk.dosen_id = ?");
+                                  WHERE p.dosen_id = ?");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
 
             // Hapus tugas_pertemuan
             $stmt = $db->prepare("DELETE tp FROM tugas_pertemuan tp
                                   INNER JOIN pertemuan p ON tp.pertemuan_id = p.id
-                                  INNER JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id
-                                  WHERE mk.dosen_id = ?");
+                                  WHERE p.dosen_id = ?");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
 
             // Hapus pertemuan
-            $stmt = $db->prepare("DELETE p FROM pertemuan p
-                                  INNER JOIN mata_kuliah mk ON p.mata_kuliah_id = mk.id
-                                  WHERE mk.dosen_id = ?");
-            $stmt->bind_param("i", $delete_id);
-            $stmt->execute();
-
-            // Hapus jadwal_kuliah
-            $stmt = $db->prepare("DELETE FROM jadwal_kuliah WHERE dosen_id = ?");
-            $stmt->bind_param("i", $delete_id);
-            $stmt->execute();
-
-            // Hapus materi terkait dengan mata kuliah dosen
-            $stmt = $db->prepare("DELETE m FROM materi m
-                                  INNER JOIN mata_kuliah mk ON m.mata_kuliah_id = mk.id
-                                  WHERE mk.dosen_id = ?");
-            $stmt->bind_param("i", $delete_id);
-            $stmt->execute();
-
-            // Hapus mata_kuliah
-            $stmt = $db->prepare("DELETE FROM mata_kuliah WHERE dosen_id = ?");
+            $stmt = $db->prepare("DELETE FROM pertemuan WHERE dosen_id = ?");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
 
@@ -1556,19 +1587,24 @@ function deleteUserAndDependencies($db, $delete_id, $role)
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
 
+            // Hapus dari users
+            $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+
         } elseif ($role == 'mahasiswa') {
-            // Ambil user_id terlebih dahulu
+            // Ambil user_id dari daftar_mahasiswa
             $stmt = $db->prepare("SELECT user_id FROM daftar_mahasiswa WHERE id = ?");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
             $result = $stmt->get_result();
-            $user = $result->fetch_assoc();
+            $mahasiswa = $result->fetch_assoc();
 
-            if (!$user) {
+            if (!$mahasiswa) {
                 throw new Exception("Mahasiswa tidak ditemukan.");
             }
 
-            $user_id = $user['user_id'];
+            $user_id = $mahasiswa['user_id'];
 
             // Hapus dari tugas_kumpul
             $stmt = $db->prepare("DELETE FROM tugas_kumpul WHERE mahasiswa_id = ?");
@@ -1585,17 +1621,12 @@ function deleteUserAndDependencies($db, $delete_id, $role)
             $stmt->bind_param("i", $user_id);
             $stmt->execute();
         }
-        // Commit transaksi
-        mysqli_commit($db);
 
+        mysqli_commit($db);
         return ["message" => "Data berhasil dihapus", "alert_class" => "success"];
     } catch (Exception $e) {
-        // Rollback transaksi jika terjadi kesalahan
         mysqli_rollback($db);
-
-        // Log error untuk debugging
         error_log("Error in deleteUserAndDependencies: " . $e->getMessage());
-
         return ["message" => "Gagal menghapus data: " . $e->getMessage(), "alert_class" => "danger"];
     }
 }
