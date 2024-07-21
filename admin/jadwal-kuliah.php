@@ -3,30 +3,42 @@ session_start();
 require '../src/db/functions.php';
 checkRole('admin');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_schedule'])) {
-  $schedule_id = $_POST['schedule_id'];
-  if (delete_schedule_permanently($db, $schedule_id, $hari, $matkul, $dosen_id_1, $dosen_id_2, $classroom, $kelas)) {
-    $_SESSION['message'] = "Jadwal berhasil dihapus.";
-    $_SESSION['alert_class'] = "alert-success";
+$jadwalHtml = '';
+$kelas = '';
+$semester = '';
+$tahun = '';
+$fileType = '';
+$fileData = '';
+$fileOrientation = 'portrait'; // Default orientation
+
+if (isset($_GET['kelas']) && isset($_GET['semester']) && isset($_GET['tahun'])) {
+  $kelas = htmlspecialchars($_GET['kelas']);
+  $semester = htmlspecialchars($_GET['semester']);
+  $tahun = htmlspecialchars($_GET['tahun']);
+
+  $stmt = $db->prepare('SELECT file_jadwal, file_type FROM jadwal_perkuliahan WHERE kelas = ? AND semester = ? AND tahun = ?');
+  $stmt->bind_param('sss', $kelas, $semester, $tahun);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $jadwal = $result->fetch_assoc();
+
+  if ($jadwal) {
+    $fileData = base64_encode($jadwal['file_jadwal']);
+    $fileType = $jadwal['file_type'];
+    if (strpos($fileType, 'image') !== false) {
+      // Determine orientation based on image dimensions
+      list($width, $height) = getimagesizefromstring(base64_decode($fileData));
+      $fileOrientation = $width > $height ? 'landscape' : 'portrait';
+      $jadwalHtml = '<img src="data:' . $fileType . ';base64,' . $fileData . '" class="img-fluid" alt="Jadwal Perkuliahan">';
+    } elseif ($fileType == 'application/pdf') {
+      // Assuming PDF has landscape orientation
+      $fileOrientation = 'landscape';
+      $jadwalHtml = '<embed src="data:' . $fileType . ';base64,' . $fileData . '" type="application/pdf" width="100%" height="600px" />';
+    }
   } else {
-    $_SESSION['message'] = "Error: Gagal menghapus jadwal.";
-    $_SESSION['alert_class'] = "alert-danger";
+    $jadwalHtml = '<p>Jadwal tidak ditemukan!</p>';
   }
-  header('Location: jadwal-kuliah.php');
-  exit;
 }
-
-// Ambil semua jadwal
-$schedules = fetch_all_schedules($db);
-
-$days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-$time_slots = get_time_slots_for_viewing();
-
-$message = $_SESSION['message'] ?? '';
-$alert_class = $_SESSION['alert_class'] ?? '';
-
-unset($_SESSION['message']);
-unset($_SESSION['alert_class']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,11 +55,72 @@ unset($_SESSION['alert_class']);
     rel="stylesheet" />
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <!-- CSS -->
   <link rel="stylesheet" href="../src/css/style.css" />
+  <style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      #jadwalContainer,
+      #jadwalContainer * {
+        visibility: visible;
+      }
+
+      .no-print {
+        display: none;
+      }
+
+      #jadwalContainer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #jadwalContainer img,
+      #jadwalContainer embed {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        page-break-inside: avoid;
+      }
+
+      @page {
+        size:
+          <?= $fileOrientation ?>
+        ;
+        margin: 0;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      .card-body {
+        padding: 0;
+        margin: 0;
+      }
+    }
+  </style>
 </head>
 <header>
   <!-- Navbar -->
@@ -68,9 +141,15 @@ unset($_SESSION['alert_class']);
               Home
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="index.php#about">About</a></li>
-              <li><a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a></li>
-              <li><a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a></li>
+              <li>
+                <a class="dropdown-item" href="index.php#about">About</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item">
@@ -82,9 +161,15 @@ unset($_SESSION['alert_class']);
               Perkuliahan
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a></li>
-              <li><a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a></li>
-              <li><a class="dropdown-item" href="list-request.php">Request Pergantian</a></li>
+              <li>
+                <a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="list-request.php">Request Pergantian</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item">
@@ -102,90 +187,106 @@ unset($_SESSION['alert_class']);
 
 <body>
   <div class="container">
-    <div class="row mb-3">
-      <div class="col-md-5 submit-button">
-        <a href="tambah-jadwal.php"><button class="btn mb-2">Tambah Jadwal</button></a>
-        <a href="jadwal-pergantian.php"><button class="btn mb-2">Tambah Pergantian Kuliah</button></a>
-      </div>
-    </div>
     <div class="card p-3">
       <div class="card-body">
-        <?php if ($message): ?>
-          <div class="alert <?= $alert_class ?> alert-dismissible fade show" role="alert">
-            <?= $message ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <form action="jadwal-kuliah.php" method="GET">
+          <div class="row mb-3">
+            <label for="kelas" class="form-label">Kelas</label>
+            <select name="kelas" id="kelas" class="form-select">
+              <option value="">Pilih Kelas</option>
+              <option value="1A">1A</option>
+              <option value="1B">1B</option>
+            </select>
           </div>
-        <?php endif; ?>
-        <div class="row mb-2">
-          <h3>Jadwal Perkuliahan</h3>
+          <div class="row mb-3">
+            <label for="semester" class="form-label">Semester</label>
+            <select name="semester" id="semester" class="form-select">
+              <option value="">Pilih Semester</option>
+              <option value="Ganjil">Ganjil</option>
+              <option value="Genap">Genap</option>
+            </select>
+          </div>
+          <div class="row mb-3">
+            <label for="tahun" class="form-label">Tahun</label>
+            <select name="tahun" id="tahun" class="form-select">
+              <option value="">Pilih Tahun</option>
+              <option value="2024/2025">2024/2025</option>
+              <option value="2025/2026">2025/2026</option>
+            </select>
+          </div>
+          <div class="row mb-2 text-center">
+            <div class="col submit-button">
+              <button type="submit" class="btn">Tampilkan Jadwal</button>
+            </div>
+          </div>
+        </form>
+        <div class="row">
+          <div class="col submit-button text-center">
+            <a href="index.php"><button class="btn">Kembali</button></a>
+          </div>
         </div>
-        <?php if (empty($schedules)): ?>
-          <div class="alert alert-info">Tidak ada jadwal tersedia.</div>
-        <?php else: ?>
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Jam</th>
-                  <?php foreach ($days as $day): ?>
-                    <th><?= $day; ?></th>
-                  <?php endforeach; ?>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                $displayed_courses = array();
-                foreach ($time_slots as $slot):
-                  ?>
-                  <tr <?= in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"]) ? 'class="table-secondary"' : ''; ?>>
-                    <td><?= $slot; ?></td>
-                    <?php foreach ($days as $day): ?>
-                      <td>
-                        <?php if (isset($schedules[$day][$slot])): ?>
-                          <?php foreach ($schedules[$day][$slot] as $schedule):
-                            $course_key = $day . '-' . $schedule['matkul'] . '-' . $schedule['kelas'];
-                            $show_edit = !in_array($course_key, $displayed_courses);
-                            if ($show_edit) {
-                              $displayed_courses[] = $course_key;
-                            }
-                            ?>
-                            <strong>Kelas <?= htmlspecialchars($schedule['kelas']); ?></strong><br>
-                            <?= htmlspecialchars($schedule['matkul']); ?><br>
-                            <small><?= htmlspecialchars($schedule['dosen_1']); ?></small>
-                            <?php if ($schedule['dosen_2']): ?>
-                              - <small><?= htmlspecialchars($schedule['dosen_2']); ?></small>
-                            <?php endif; ?><br>
-                            <small><?= htmlspecialchars($schedule['classroom']); ?></small>
-                            <br>
-                            <?php if ($schedule['is_temporary']): ?>
-                              <span class="badge bg-warning">Jadwal Pergantian</span><br>
-                            <?php elseif ($schedule['is_deleted_temporarily']): ?>
-                              <span class="badge bg-danger">Jadwal Dikosongkan untuk Pekan ini</span>
-                            <?php endif; ?>
-                            <?php if ($show_edit): ?>
-                              <a href="edit-jadwal.php?id=<?= $schedule['id']; ?>" class="btn btn-sm btn-warning mt-2">Edit</a>
-                              <form action="jadwal-kuliah.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="schedule_id" value="<?= $schedule['id']; ?>">
-                                <button type="submit" name="delete_schedule" class="btn btn-sm btn-danger mt-2"
-                                  onclick="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?')">Hapus</button>
-                              </form>
-                            <?php endif; ?>
-                            <hr>
-                          <?php endforeach; ?>
-                        <?php elseif (in_array($slot, ["10.00 - 10.20", "12.00 - 13.00", "15.30 - 16.00", "17.40 - 18.40"])): ?>
-                          Istirahat
-                        <?php endif; ?>
-                      </td>
-                    <?php endforeach; ?>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-        <?php endif; ?>
       </div>
     </div>
   </div>
+  <div class="container mt-3 mb-5" id="jadwalContainer">
+    <div class="card p-1">
+      <div class="card-body">
+        <?php if ($jadwalHtml): ?>
+          <div class="d-flex justify-content-end mb-3 no-print">
+            <button class="btn btn-secondary me-2 no-print"
+              onclick="downloadJadwal('<?= $kelas ?>', '<?= $semester ?>', '<?= $tahun ?>', '<?= $fileType ?>')">Download</button>
+            <button class="btn btn-secondary no-print" onclick="printJadwal()">Print</button>
+          </div>
+          <script>
+            // Menghapus parameter GET dari URL setelah hasil ditampilkan
+            if (window.history.replaceState) {
+              const url = window.location.origin + window.location.pathname;
+              window.history.replaceState({ path: url }, '', url);
+            }
+          </script>
+        <?php endif; ?>
+        <?php echo $jadwalHtml; ?>
+      </div>
+    </div>
+  </div>
+  <script>
+    function downloadJadwal(kelas, semester, tahun, fileType) {
+      const jadwalContainer = document.getElementById('jadwalContainer');
+      const originalButtons = jadwalContainer.querySelectorAll('.no-print');
+      originalButtons.forEach(button => button.style.display = 'none');
+
+      const content = jadwalContainer.querySelector('img, embed');
+      const dataUrl = content.src || content.getAttribute('src');
+
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `jadwal_${kelas}_${semester}_${tahun}.${fileType.split('/')[1]}`;
+      link.click();
+
+      originalButtons.forEach(button => button.style.display = 'block');
+    }
+
+    function printJadwal() {
+      const content = document.querySelector('#jadwalContainer img, #jadwalContainer embed');
+      const win = window.open('', '_blank');
+      win.document.write('<html><head><title>Print</title>');
+      win.document.write('<style>');
+      win.document.write(`
+    @page { size: ${content.naturalWidth > content.naturalHeight ? 'landscape' : 'portrait'}; margin: 0; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+    img, embed { width: 100%; height: 100%; object-fit: contain; }
+  `);
+      win.document.write('</style></head><body>');
+      win.document.write(content.outerHTML);
+      win.document.write('</body></html>');
+      win.document.close();
+      win.onload = function () {
+        win.focus();
+        win.print();
+        win.close();
+      };
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
