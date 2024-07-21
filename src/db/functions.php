@@ -1630,4 +1630,13 @@ function deleteUserAndDependencies($db, $delete_id, $role)
         return ["message" => "Gagal menghapus data: " . $e->getMessage(), "alert_class" => "danger"];
     }
 }
+
+function add_schedule($kelas, $semester, $tahun, $file_jadwal, $file_type)
+{
+    global $db;
+    $stmt = $db->prepare('INSERT INTO jadwal_perkuliahan (kelas, semester, tahun, file_jadwal, file_type) VALUES (?, ?, ?, ?, ?)');
+    $image = file_get_contents($file_jadwal);
+    $stmt->bind_param('sssss', $kelas, $semester, $tahun, $image, $file_type);
+    $stmt->execute();
+}
 ?>
