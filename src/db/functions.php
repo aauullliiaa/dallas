@@ -1634,9 +1634,60 @@ function deleteUserAndDependencies($db, $delete_id, $role)
 function add_schedule($kelas, $semester, $tahun, $file_jadwal, $file_type)
 {
     global $db;
-    $stmt = $db->prepare('INSERT INTO jadwal_perkuliahan (kelas, semester, tahun, file_jadwal, file_type) VALUES (?, ?, ?, ?, ?)');
-    $image = file_get_contents($file_jadwal);
-    $stmt->bind_param('sssss', $kelas, $semester, $tahun, $image, $file_type);
+
+    $upload_dir = '../src/files/jadwal/';
+    $file_name = uniqid() . '_' . basename($file_jadwal['name']);
+    $file_path = $upload_dir . $file_name;
+
+    if (move_uploaded_file($file_jadwal['tmp_name'], $file_path)) {
+        $stmt = $db->prepare('INSERT INTO jadwal_perkuliahan (kelas, semester, tahun, file_jadwal, file_type) VALUES (?, ?, ?, ?, ?)');
+        $stmt->bind_param('sssss', $kelas, $semester, $tahun, $file_path, $file_type);
+        return $stmt->execute();
+    }
+    return false;
+}
+
+function get_schedule($kelas, $semester, $tahun)
+{
+    global $db;
+    $stmt = $db->prepare('SELECT * FROM jadwal_perkuliahan WHERE kelas = ? AND semester = ? AND tahun = ?');
+    $stmt->bind_param('sss', $kelas, $semester, $tahun);
     $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+}
+
+function update_schedule($kelas, $semester, $tahun, $file_tmp, $file_type)
+{
+    global $db;
+
+    // Tentukan direktori untuk menyimpan file
+    $upload_dir = '../src/files/jadwal/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+
+    // Generate nama file unik
+    $file_name = uniqid() . '_' . basename($file_tmp);
+    $file_path = $upload_dir . $file_name;
+
+    // Pindahkan file yang diunggah
+    if (move_uploaded_file($file_tmp, $file_path)) {
+        // File berhasil dipindahkan, simpan path-nya ke database
+        $stmt = $db->prepare("UPDATE jadwal_perkuliahan 
+                              SET file_jadwal = ?, file_type = ? 
+                              WHERE kelas = ? AND semester = ? AND tahun = ?");
+        $stmt->bind_param("sssss", $file_path, $file_type, $kelas, $semester, $tahun);
+
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            // Jika gagal menyimpan ke database, hapus file yang sudah diunggah
+            unlink($file_path);
+            return false;
+        }
+    } else {
+        return false;
+    }
 }
 ?>
