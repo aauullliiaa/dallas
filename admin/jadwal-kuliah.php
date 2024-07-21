@@ -10,6 +10,8 @@ $tahun = '';
 $fileType = '';
 $fileData = '';
 $fileOrientation = 'portrait'; // Default orientation
+$message = '';
+$alert_class = '';
 
 if (isset($_GET['kelas']) && isset($_GET['semester']) && isset($_GET['tahun'])) {
   $kelas = htmlspecialchars($_GET['kelas']);
@@ -23,22 +25,25 @@ if (isset($_GET['kelas']) && isset($_GET['semester']) && isset($_GET['tahun'])) 
   $jadwal = $result->fetch_assoc();
 
   if ($jadwal) {
-    $fileData = base64_encode($jadwal['file_jadwal']);
+    $filePath = $jadwal['file_jadwal'];
     $fileType = $jadwal['file_type'];
     if (strpos($fileType, 'image') !== false) {
-      // Determine orientation based on image dimensions
-      list($width, $height) = getimagesizefromstring(base64_decode($fileData));
+      list($width, $height) = getimagesize($filePath);
       $fileOrientation = $width > $height ? 'landscape' : 'portrait';
-      $jadwalHtml = '<img src="data:' . $fileType . ';base64,' . $fileData . '" class="img-fluid" alt="Jadwal Perkuliahan">';
+      $jadwalHtml = '<img src="' . $filePath . '" class="img-fluid" alt="Jadwal Perkuliahan">';
     } elseif ($fileType == 'application/pdf') {
-      // Assuming PDF has landscape orientation
       $fileOrientation = 'landscape';
-      $jadwalHtml = '<embed src="data:' . $fileType . ';base64,' . $fileData . '" type="application/pdf" width="100%" height="600px" />';
+      $jadwalHtml = '<embed src="' . $filePath . '" type="application/pdf" width="100%" height="600px" />';
     }
   } else {
-    $jadwalHtml = '<p>Jadwal tidak ditemukan!</p>';
+    $_SESSION['message'] = "Jadwal tidak ditemukan, silakan tambahkan jadwal terlebih dahulu.";
+    $_SESSION['alert_class'] = "alert-warning";
   }
 }
+$message = $_SESSION['message'] ?? '';
+$alert_class = $_SESSION['alert_class'] ?? '';
+unset($_SESSION['message']);
+unset($_SESSION['alert_class']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -189,6 +194,12 @@ if (isset($_GET['kelas']) && isset($_GET['semester']) && isset($_GET['tahun'])) 
   <div class="container">
     <div class="card p-3">
       <div class="card-body">
+        <?php if ($message): ?>
+          <div class="alert <?= $alert_class ?> alert-dismissible fade show" role="alert">
+            <?= $message ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <?php endif; ?>
         <form action="jadwal-kuliah.php" method="GET">
           <div class="row mb-3">
             <label for="kelas" class="form-label">Kelas</label>
@@ -251,19 +262,11 @@ if (isset($_GET['kelas']) && isset($_GET['semester']) && isset($_GET['tahun'])) 
   </div>
   <script>
     function downloadJadwal(kelas, semester, tahun, fileType) {
-      const jadwalContainer = document.getElementById('jadwalContainer');
-      const originalButtons = jadwalContainer.querySelectorAll('.no-print');
-      originalButtons.forEach(button => button.style.display = 'none');
-
-      const content = jadwalContainer.querySelector('img, embed');
-      const dataUrl = content.src || content.getAttribute('src');
-
+      const filePath = document.querySelector('#jadwalContainer img, #jadwalContainer embed').src;
       const link = document.createElement('a');
-      link.href = dataUrl;
+      link.href = filePath;
       link.download = `jadwal_${kelas}_${semester}_${tahun}.${fileType.split('/')[1]}`;
       link.click();
-
-      originalButtons.forEach(button => button.style.display = 'block');
     }
 
     function printJadwal() {
@@ -278,7 +281,6 @@ if (isset($_GET['kelas']) && isset($_GET['semester']) && isset($_GET['tahun'])) 
   `);
       win.document.write('</style></head><body>');
       win.document.write(content.outerHTML);
-      win.document.write('</body></html>');
       win.document.close();
       win.onload = function () {
         win.focus();

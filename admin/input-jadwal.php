@@ -10,21 +10,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $kelas = htmlspecialchars($_POST['kelas']);
   $semester = htmlspecialchars($_POST['semester']);
   $tahun = htmlspecialchars($_POST['tahun']);
-  $file_jadwal = $_FILES['file_jadwal']['tmp_name']; // Mengakses file yang diunggah
-  $file_type = $_FILES['file_jadwal']['type']; // Mengakses tipe file yang diunggah
+  $file_jadwal = $_FILES['file_jadwal'];
+  $file_type = $file_jadwal['type'];
 
-  if (is_uploaded_file($file_jadwal)) {
-    add_schedule($kelas, $semester, $tahun, $file_jadwal, $file_type);
-    $_SESSION['message'] = "Jadwal berhasil ditambahkan";
-    $_SESSION['alert_class'] = 'alert-success';
+  $allowed_types = ['image/jpeg', 'image/png', 'application/pdf'];
+  $max_file_size = 5 * 1024 * 1024; // 5 MB
+
+  if (!in_array($file_type, $allowed_types)) {
+    $_SESSION['message'] = "Tipe file tidak diizinkan. Silakan unggah file JPG, PNG, atau PDF.";
+    $_SESSION['alert_class'] = 'alert-danger';
+  } elseif ($file_jadwal['size'] > $max_file_size) {
+    $_SESSION['message'] = "Ukuran file terlalu besar. Maksimum 5 MB.";
+    $_SESSION['alert_class'] = 'alert-danger';
+  } elseif (is_uploaded_file($file_jadwal['tmp_name'])) {
+    if (add_schedule($kelas, $semester, $tahun, $file_jadwal, $file_type)) {
+      $_SESSION['message'] = "Jadwal berhasil ditambahkan";
+      $_SESSION['alert_class'] = 'alert-success';
+    } else {
+      $_SESSION['message'] = "Jadwal gagal ditambahkan, silakan coba lagi.";
+      $_SESSION['alert_class'] = 'alert-danger';
+    }
   } else {
-    $_SESSION['message'] = "Jadwal gagal ditambahkan, silakan coba lagi.";
+    $_SESSION['message'] = "Gagal mengunggah file, silakan coba lagi.";
     $_SESSION['alert_class'] = 'alert-danger';
   }
   header("Location: input-jadwal.php");
   exit;
 }
 
+$message = $_SESSION['message'] ?? '';
+$alert_class = $_SESSION['alert_class'] ?? '';
 unset($_SESSION['message']);
 unset($_SESSION['alert_class']);
 ?>
@@ -123,7 +138,7 @@ unset($_SESSION['alert_class']);
         <form action="" method="post" enctype="multipart/form-data">
           <div class="row mb-3">
             <label for="kelas" class="form-label">Kelas</label>
-            <select name="kelas" id="kelas" class="form-select">
+            <select name="kelas" id="kelas" class="form-select" required>
               <option value="">Pilih Kelas</option>
               <option value="1A">1A</option>
               <option value="1B">1B</option>
@@ -131,7 +146,7 @@ unset($_SESSION['alert_class']);
           </div>
           <div class="row mb-3">
             <label for="semester" class="form-label">Semester</label>
-            <select name="semester" id="semester" class="form-select">
+            <select name="semester" id="semester" class="form-select" required>
               <option value="">Pilih Semester</option>
               <option value="Ganjil">Ganjil</option>
               <option value="Genap">Genap</option>
@@ -139,7 +154,7 @@ unset($_SESSION['alert_class']);
           </div>
           <div class="row mb-3">
             <label for="tahun" class="form-label">Tahun</label>
-            <select name="tahun" id="tahun" class="form-select">
+            <select name="tahun" id="tahun" class="form-select" required>
               <option value="">Pilih Tahun Ajaran</option>
               <option value="2024/2025">2024/2025</option>
               <option value="2025/2026">2025/2026</option>
@@ -147,7 +162,9 @@ unset($_SESSION['alert_class']);
           </div>
           <div class="row mb-3">
             <label for="file_jadwal" class="form-label">Upload File</label>
-            <input type="file" class="form-control" id="file_jadwal" name="file_jadwal" required />
+            <input type="file" class="form-control" id="file_jadwal" name="file_jadwal" required
+              accept=".jpg,.jpeg,.png,.pdf" />
+            <small class="form-text text-muted">File yang diizinkan: JPG, PNG, PDF. Maksimum 5 MB.</small>
           </div>
           <div class="row text-center">
             <div class="col submit-button">
