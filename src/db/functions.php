@@ -41,7 +41,7 @@ function retrieve($query, $params = [])
 function checkRole($role)
 {
     if (!isset($_SESSION["role"])) {
-        header("Location: ../index.php");
+        header("Location: ../login.php");
         exit;
     }
     $currentRole = $_SESSION["role"];

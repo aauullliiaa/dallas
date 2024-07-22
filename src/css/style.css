@@ -2,41 +2,99 @@
   font-family: "Poppins";
 }
 section {
-  padding-top: 7rem;
-  margin-bottom: 3rem;
+  margin-top: 7rem;
+  margin-bottom: 6rem;
 }
 body {
-  background-color: #eae0d5;
+  background-color: #f0f3fa;
 }
 .bg-navbar {
-  background-color: #c6ac8f;
+  background-color: #638ecb;
 }
-
+.btn {
+  background-color: #638ecb;
+  color: #fff;
+}
+.btn:hover {
+  background-color: #395886;
+}
 /* Index */
 .alamat th,
 .kontak th {
   vertical-align: text-top;
   width: 10rem;
 }
-.jumbotron {
-  background-image: url("../images/thought-catalog-505eectW54k-unsplash.jpg");
-  background-position: center;
-  background-size: cover;
-  min-height: 100vh;
-  color: #fffffe;
-  text-shadow: 3px 3px 4px black;
+.carousel-item {
+  height: 50vh; /* Make carousel full height of viewport */
+  position: relative;
 }
-.jumbotron::after {
+.carousel-item::after {
   content: "";
   position: absolute;
-  display: block;
-  width: 100%;
-  height: 50%;
+  top: 0;
+  left: 0;
   bottom: 0;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    0deg,
+    #f0f3fa 0%,
+    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 50%,
+    /* Very light black in the middle */ rgba(0, 0, 0, 0.1) 100%
+      /* Very light black at the top */
+  );
+}
+.carousel-item img {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+.carousel-caption {
+  z-index: 1;
+  top: 62%;
+  transform: translateY(-50%);
+  bottom: initial;
+  padding: 20px;
+}
+.carousel-caption h5 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #ffffff; /* Ensure text is white for better contrast */
+  text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
+}
+.carousel-caption p {
+  font-size: 1.2rem;
+  color: #fff; /* Ensure text is white for better contrast */
+  text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
 }
 /* End of Index */
-
+/* Visi dan Misi */
+section#visimisi {
+  background-image: url("/src/images/foto kampus.jpg");
+  height: 30vh;
+  background-position: center;
+  color: #fffffe;
+  text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+section#visimisi::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 38%;
+  background: linear-gradient(
+    0deg,
+    #f0f3fa 0%,
+    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 50%,
+    /* Very light black in the middle */ rgba(0, 0, 0, 0.1) 100%
+      /* Very light black at the top */
+  );
+}
 /* Login */
 .login {
   background-image: url("../images/inaki-del-olmo-NIJuEQw0RKg-unsplash.jpg");
@@ -92,7 +150,7 @@ body {
 }
 .hero-matkul::after {
   display: block;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(0deg, #f0f3fa 7%, rgba(255, 255, 255, 0) 50%);
   content: "";
   width: 100%;
   min-height: 19%;
@@ -149,7 +207,7 @@ body {
   display: block;
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(0deg, #f0f3fa 7%, rgba(255, 255, 255, 0) 50%);
   width: 100%;
   height: 19%;
 }
@@ -199,7 +257,7 @@ body {
 .edit-hero::after {
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(0deg, #f0f3fa 7%, rgba(255, 255, 255, 0) 50%);
   width: 100%;
   height: 19%;
 }
@@ -239,7 +297,7 @@ body {
 .mhs-hero::after {
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(0deg, #f0f3fa 7%, rgba(255, 255, 255, 0) 50%);
   width: 100%;
   height: 19%;
 }
@@ -275,7 +333,7 @@ body {
 .tugas-jumbotron::after {
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(0deg, #f0f3fa 7%, rgba(255, 255, 255, 0) 50%);
   width: 100%;
   height: 19%;
 }
@@ -286,7 +344,16 @@ body {
 /* Media Query */
 @media (max-width: 767.98px) {
   html {
-    font-size: 85%;
+    font-size: 75%;
+  }
+  .carousel-item {
+    height: 30vh;
+  }
+  .carousel-caption h5 {
+    font-size: 1.5rem;
+  }
+  .carousel-caption p {
+    font-size: 1rem;
   }
   /* Index */
   iframe {
