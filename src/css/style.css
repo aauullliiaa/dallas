@@ -18,6 +18,23 @@ body {
 .btn:hover {
   background-color: #6e5f4f;
 }
+.jumbotron {
+  background-image: url("../images/thought-catalog-505eectW54k-unsplash.jpg");
+  background-position: center;
+  background-size: cover;
+  min-height: 100vh;
+  color: #fffffe;
+  text-shadow: 3px 3px 4px black;
+}
+.jumbotron::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 50%;
+  bottom: 0;
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+}
 /* Index */
 .alamat th,
 .kontak th {
@@ -25,7 +42,7 @@ body {
   width: 10rem;
 }
 .carousel-item {
-  height: 45vh; /* Make carousel full height of viewport */
+  height: 47vh; /* Make carousel full height of viewport */
   position: relative;
 }
 .carousel-item::after {
@@ -51,7 +68,7 @@ body {
 }
 .carousel-caption {
   z-index: 1;
-  top: 50%;
+  top: 55%;
   transform: translateY(-50%);
   bottom: initial;
   padding: 20px;
@@ -64,7 +81,7 @@ body {
   text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
 }
 .carousel-caption p {
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   color: #fff; /* Ensure text is white for better contrast */
   text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
 }
