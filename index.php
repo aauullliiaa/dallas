@@ -5,27 +5,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>APD Learning Space - Home</title>
+
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     rel="stylesheet" />
+
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-  <!-- CSS -->
+
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="src/css/style.css" />
+
+  <!-- AOS CSS -->
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+  <!-- Slick Carousel CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
 </head>
-<header>
+
+<body id="home">
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
+  <nav class="navbar navbar-expand-lg navbar-light bg-navbar fixed-top shadow-sm">
     <div class="container">
       <a class="navbar-brand" href="index.php#home">
-        <img src="src/images/logo kampus.png" alt="Logo" width="40px" />
+        <img src="src/images/logo kampus.png" alt="Logo" width="40" height="45" class="d-inline-block align-text-top" />
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,18 +41,51 @@
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item dropdown"></li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              About
+              Profil
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="#about">Tentang Program Studi</a>
+                <a class="dropdown-item" href="#about">Tentang Prodi</a>
               </li>
-              <li><a class="dropdown-item" href="visimisi.html">Visi dan Misi</a></li>
               <li>
-                <a class="dropdown-item" href="#">Sarana dan Prasarana</a>
+                <a class="dropdown-item" href="#vision-mission">Visi dan Misi Prodi</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Kurikulum
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="#">Seluruh Mata Kuliah</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">Mata Kuliah Kampus Merdeka</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="facility.php">Fasilitas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#mitra">Mitra</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#alamat">Kontak</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Login
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="login.php">Login Pegawai</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="login.php">Login Mahasiswa</a>
               </li>
             </ul>
           </li>
@@ -52,48 +93,30 @@
       </div>
     </div>
   </nav>
-  <!-- End of Navbar -->
-</header>
 
-<body id="home">
-  <!-- Carousel -->
+  <!-- Hero Carousel -->
   <div id="homeCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="src/images/mahasiswa-jbtrn.jpg" class="d-block w-100" alt="Slide 1" />
-        <div class="carousel-caption d-md-block">
-          <h5>Selamat Datang</h5>
-          <p>
-            Di Website Program Studi Sarjana Terapan Administrasi Perkantoran
-            Digital
-          </p>
+      <div class="carousel-item active" data-bs-interval="10000">
+        <img src="src/images/gedung-ad-carousel.jpg" class="d-block w-100" alt="Slide 1" />
+        <div class="carousel-caption d-none d-md-block">
+          <h2 class="display-4 fw-bold">Selamat Datang!</h2>
+          <p>Di Website Program Studi Sarjana Terapan Administrasi Perkantoran Digital</p>
         </div>
       </div>
-      <div class="carousel-item">
-        <img src="src/images/eric-rothermel-FoKO4DpXamQ-unsplash.jpg" class="d-block w-100" alt="Slide 2" />
-        <div class="carousel-caption d-md-block">
-          <h5>Profil Program Studi</h5>
-          <p>
-            Program Studi ini merupakan Program Studi Terbaru di Jurusan
-            Administrasi Niaga Politeknik Negeri Ujung pandang
-          </p>
-          <button class="btn">More</button>
+      <div class="carousel-item" data-bs-interval="10000">
+        <img src="src/images/promosi-3-carousel.jpeg" class="d-block w-100" alt="Slide 2" />
+        <div class="carousel-caption d-none d-md-block">
+          <h2 class="display-4 fw-bold">Promosi Program Studi</h2>
+          <p>Informasi terkait dengan Program Studi Sarjana Terapan Administrasi Perkantoran Digital</p>
+          <div class="row">
+            <div class="col submit-button">
+              <a href="promotion.html" class="btn btn-light">Selengkapnya</a>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="carousel-item">
-        <img src="src/images/inaki-del-olmo-NIJuEQw0RKg-unsplash.jpg" class="d-block w-100" alt="Slide 3" />
-        <div class="carousel-caption d-md-block">
-          <h5>Kegiatan Program Studi</h5>
-          <p>Be part of a vibrant learning environment.</p>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <img src="src/images/inaki-del-olmo-NIJuEQw0RKg-unsplash.jpg" class="d-block w-100" alt="Slide 4" />
-        <div class="carousel-caption d-md-block">
-          <h5>Promosi Program Studi</h5>
-          <p>Be part of a vibrant learning environment.</p>
-        </div>
-      </div>
+      <!-- Add more carousel items here if needed -->
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -104,119 +127,368 @@
       <span class="visually-hidden">Next</span>
     </button>
   </div>
-  <!-- End of Carousel -->
-  <!-- Tentang Program Studi -->
-  <section id="about">
+
+  <!-- Etalase -->
+  <section id="showcase" class="py-5">
     <div class="container">
-      <div class="row justify-content-between align-items-center">
-        <div class="col-md-6" data-aos="fade-right" data-aos-duration="1000">
-          <div class="card p-2">
-            <div class="card-body">
-              <img src="src/images/foto kampus.jpg" class="img-fluid rounded" alt="..." width="600px" />
+      <h2 class="text-center mb-5">Etalase Program Studi</h2>
+      <div class="row g-4">
+        <!-- Showcase items -->
+        <div class="col-md-4" data-aos="fade-up">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="bi bi-book display-1 text-dark mb-3"></i>
+              <h5 class="card-title">Kurikulum yang Terbaru</h5>
+              <p class="card-text">
+                Kurikulum terkini yang disesuaikan dengan kebutuhan industri dan perkembangan teknologi.
+              </p>
+              <div class="row">
+                <div class="col submit-button">
+                  <a href=""><button class="btn btn-light">Selengkapnya</button></a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-md-6 text-center" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-          <div class="row mb-3 mt-3">
-            <h3>Tentang Program Studi</h3>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="bi bi-laptop display-1 text-dark mb-3"></i>
+              <h5 class="card-title">Fasilitas Modern</h5>
+              <p class="card-text">
+                Nikmati fasilitas belajar terkini yang mendukung pembelajaran digital.
+              </p>
+              <div class="row">
+                <div class="col submit-button">
+                  <a href="facility.php"><button class="btn btn-light">Selengkapnya</button></a>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="row about-paragraph">
-            <p> Program Studi Sarjana Terapan Administrasi Perkantoran Digital
-              memiliki tujuan dan keunggulan. Tujuan Program Studi ini adalah
-              untuk membekali lulusan dengan pengetahuan, keterampilan, dan
-              sikap dalam menyelesaikan pekerjaan-pekerjaan kantor baik
-              organisasi swasta maupun organisasi pemerintah, membantu dan
-              menangani pekerjaan tugas-tugas pimpinan. Sejalan dengan tuntutan
-              pekerjaan administrasi organisasi di era digital.
-              Keunggulan Program Studi Sarjana Terapan Administrasi Perkantoran Digital yakni kemampuan lulusan untuk
-              menyelesaikan pekerjaan kantor dengan menggunakan teknologi digital berbasis ergonomi yang mengacu pada
-              pendidikan vokasi yang terintegrasi dengan Dunia Industri dan Dunia Kerja (DUDIKA) untuk menghasilkan
-              sumber daya manusia unggul.</p>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="bi bi-people display-1 text-dark mb-3"></i>
+              <h5 class="card-title">Kegiatan di Program Studi</h5>
+              <p class="card-text">
+                Berbagai kegiatan menarik untuk mengembangkan soft skills dan hard skills mahasiswa.
+              </p>
+              <div class="row">
+                <div class="col submit-button">
+                  <a href="activity.php"><button class="btn btn-light">Selengkapnya</button></a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    </div>
   </section>
-  <!-- End of Tentang Program Studi -->
-  <section>
 
-  </section>
-  <!-- Alamat -->
-  <section id="alamat">
-    <div class="container justify-content-center">
-      <div class="row text-center pb-3">
-        <h1 data-aos="fade-up" data-aos-duration="800">Alamat dan Kontak</h1>
-      </div>
+  <!-- About Section -->
+  <section id="about" class="py-5">
+    <div class="container">
       <div class="row align-items-center">
-        <div class="col-md-6" data-aos="zoom-in" data-aos-duration="1000">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63581.11650113188!2d119.39864003002323!3d-5.132706847633037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbefcca2887e13f%3A0xf5c059de86dd07!2sPNUP%20Politeknik%20Negeri%20Ujung%20Pandang!5e0!3m2!1sen!2sid!4v1712199819055!5m2!1sen!2sid"
-            width="600" height="450" style="border: 0" allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade" class="ratio ratio-1x1"></iframe>
+        <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-right" data-aos-duration="1000">
+          <div class="card shadow">
+            <img src="src/images/foto kampus.jpg" class="card-img-top" alt="Kampus" />
+          </div>
         </div>
         <div class="col-md-6" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-          <h3 class="pb-2">Alamat</h3>
-          <table class="alamat mb-3">
-            <tr>
-              <th>Kampus 1</th>
-              <td>
-                Jl. Perintis Kemerdekaan KM. 10, Tamalanrea, Kota Makassar,
-                Sulawesi Selatan
-              </td>
-            </tr>
-            <tr>
-              <th>Kampus 2</th>
-              <td>
-                Jl. Tamalanrea Raya, Tamalanrea, Kabupaten Maros, Sulawesi
-                Selatan
-              </td>
-            </tr>
-          </table>
-          <h3 class="pb-2">Kontak</h3>
-          <table class="kontak">
-            <tr>
-              <th>Nomor Telp.</th>
-              <td>+62813456789</td>
-            </tr>
-            <tr>
-              <th>Email</th>
-              <td>lorem@loremipsum.com</td>
-            </tr>
-          </table>
+          <h2 class="mb-4">Tentang Program Studi</h2>
+          <p class="lead">
+            Program Studi Sarjana Terapan Administrasi Perkantoran Digital
+            memiliki tujuan dan keunggulan. Tujuan Program Studi ini adalah
+            untuk membekali lulusan dengan pengetahuan, keterampilan, dan
+            sikap dalam menyelesaikan pekerjaan-pekerjaan kantor baik
+            organisasi swasta maupun organisasi pemerintah, membantu dan
+            menangani pekerjaan tugas-tugas pimpinan. Sejalan dengan tuntutan
+            pekerjaan administrasi organisasi di era digital.
+          </p>
+          <p>
+            Keunggulan Program Studi Sarjana Terapan Administrasi Perkantoran
+            Digital yakni kemampuan lulusan untuk menyelesaikan pekerjaan
+            kantor dengan menggunakan teknologi digital berbasis ergonomi yang
+            mengacu pada pendidikan vokasi yang terintegrasi dengan Dunia
+            Industri dan Dunia Kerja (DUDIKA) untuk menghasilkan sumber daya
+            manusia unggul.
+          </p>
         </div>
       </div>
     </div>
   </section>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-    <path fill="#638ECB" fill-opacity="1"
-      d="M0,64L24,74.7C48,85,96,107,144,144C192,181,240,235,288,229.3C336,224,384,160,432,144C480,128,528,160,576,149.3C624,139,672,85,720,58.7C768,32,816,32,864,64C912,96,960,160,1008,197.3C1056,235,1104,245,1152,250.7C1200,256,1248,256,1296,234.7C1344,213,1392,171,1416,149.3L1440,128L1440,320L1416,320C1392,320,1344,320,1296,320C1248,320,1200,320,1152,320C1104,320,1056,320,1008,320C960,320,912,320,864,320C816,320,768,320,720,320C672,320,624,320,576,320C528,320,480,320,432,320C384,320,336,320,288,320C240,320,192,320,144,320C96,320,48,320,24,320L0,320Z">
-    </path>
-  </svg>
-  <!-- End of Alamat -->
-  <!-- Footer -->
-  <footer>
 
+  <!-- Vision and Mission Section -->
+  <section id="vision-mission" class="py-5">
+    <div class="container">
+      <div class="row mb-5">
+        <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-up">
+          <div class="card h-100 shadow">
+            <div class="card-body">
+              <h3 class="card-title text-center mb-4">Visi</h3>
+              <p class="card-text">
+                Menjadi program studi yang menghasilkan sarjana terapan
+                berwawasan global dan berdaya saing tinggi dibidang
+                Administrasi Perkantoran Digital secara profesional dan
+                berakhlak mulia.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="card h-100 shadow">
+            <div class="card-body">
+              <h3 class="card-title text-center mb-4">Misi</h3>
+              <ol class="card-text">
+                <li>
+                  Menyelenggarakan tridarma perguruan tinggi untuk menyiapkan
+                  tenaga kerja sarjana terapan dibidang Administrasi
+                  Perkantoran Digital dengan penerapan metode pembelajaran
+                  yang terpadu, berkualitas, selaras, dan berkesinambungan.
+                </li>
+                <li>
+                  Menyelenggarakan penelitian terapan dan pengabdian
+                  masyarakat untuk membantu pembangunan dan penyelesaian
+                  masalah dalam bidang Administrasi Perkantoran Digital.
+                </li>
+                <li>
+                  Mengembangkan kegiatan kerjasama yang saling menguntungkan
+                  dengan pemerintah, institusi pendidikan, praktisi industri,
+                  dan segenap stakeholder untuk pengembangan kompetensi
+                  keilmuan dibidang Administrasi Perkantoran Digital.
+                </li>
+                <li>
+                  Menghasilkan lulusan sarjana terapan yang unggul,
+                  profesional, berintegrasi tinggi, dan siap diserap di dunia
+                  kerja.
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Peminat -->
+  <section id="stats-section" class="py-5 text-dark">
+    <div class="container">
+      <h2 class="text-center mb-5">Data Peminat Program Studi</h2>
+      <div class="row text-center">
+        <div class="col-md-4 mb-4" data-aos="fade-up">
+          <h3 class="display-4 fw-bold"><span id="total-pendaftar" class="counter">1500</span>+</h3>
+          <p class="lead">Total Pendaftar</p>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+          <h3 class="display-4 fw-bold"><span id="total-peminat" class="counter">205</span></h3>
+          <p class="lead">Total Peminat</p>
+        </div>
+        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+          <h3 class="display-4 fw-bold"><span id="daya-tampung" class="counter">50</span></h3>
+          <p class="lead">Daya Tampung</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Mitra -->
+  <section id="mitra" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-5">Mitra Kami</h2>
+      <div class="logo-slider" data-aos="fade-up">
+        <div class="logo-item">
+          <img src="src/images/logo-antam.png" alt="Logo 1" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/logo-angkasa-pura.png" alt="Logo 2" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/logo-bsi.png" alt="Logo 3" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/logo-cni.png" alt="Logo 4" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/logo-markija.png" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/logo-PT-KIMA.jpg" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/logo-rekind-daya-mamuju.jpeg" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/Logo-BRI-Bank-Rakyat-Indonesia-PNG-Terbaru.webp" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/Logo_bank_mega_syariah_new.png" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/Logo_PLN.png" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/Vale_logo.svg.png" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/charoen-logo.webp" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/trakindo-logo.jpg" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/huayou-indo-logo.fd7af3e5.svg" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/Semen_Tonasa_logo.png" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/bank-tabungan-negara-logo-png_seeklogo-524115.png" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/BankNegaraIndonesia46-logo.svg.png" alt="Logo 5" />
+        </div>
+        <div class="logo-item">
+          <img src="src/images/Singapore_Polytechnic_logo.png" alt="Logo 5" />
+        </div>
+      </div>
+  </section>
+
+  <!-- Alamat -->
+  <section id="alamat" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5">Alamat dan Kontak</h2>
+      <div class="row align-items-center">
+        <div class="col-md-6 mb-4 mb-md-0">
+          <div class="ratio ratio-16x9">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63581.11650113188!2d119.39864003002323!3d-5.132706847633037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbefcca2887e13f%3A0xf5c059de86dd07!2sPNUP%20Politeknik%20Negeri%20Ujung%20Pandang!5e0!3m2!1sen!2sid!4v1712199819055!5m2!1sen!2sid"
+              allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h3 class="mb-3">Alamat</h3>
+          <address>
+            <strong>Kampus 1:</strong><br />
+            Jl. Perintis Kemerdekaan KM. 10, Tamalanrea, Kota Makassar,
+            Sulawesi Selatan<br /><br />
+            <strong>Kampus 2:</strong><br />
+            Jl. Tamalanrea Raya, Tamalanrea, Kabupaten Maros, Sulawesi Selatan
+          </address>
+          <h3 class="mt-4 mb-3">Kontak</h3>
+          <p>
+            <strong>Telp:</strong> +6281242930330 (Hirman)<br />
+            +6282193655502 (Imasita)
+          </p>
+          <p>
+            <strong>Email:</strong>
+            <a href="mailto:lorem@loremipsum.com">lorem@loremipsum.com</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-4">
+    <div class="container text-center">
+      <small>&copy; APD Learning Space - 2024</small>
+    </div>
   </footer>
-  <!-- End of Footer-->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script>
-    // Initialize AOS
     AOS.init({
       duration: 800,
       once: true,
+      offset: 100,
     });
 
-    // Set carousel interval to 5 seconds
     document.addEventListener("DOMContentLoaded", function () {
       var myCarousel = document.querySelector("#homeCarousel");
       var carousel = new bootstrap.Carousel(myCarousel, {
         interval: 5000,
       });
     });
+
+    $(document).ready(function () {
+      $(".logo-slider").slick({
+        slidesToShow: 6,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 2000,
+        arrows: true,
+        dots: false,
+        pauseOnHover: false,
+        responsive: [
+          {
+            breakpoint: 992,
+            settings: {
+              slidesToShow: 4,
+            },
+          },
+          {
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 3,
+            },
+          },
+          {
+            breakpoint: 576,
+            settings: {
+              slidesToShow: 2,
+            },
+          },
+        ],
+      });
+    });
+  </script>
+  <script>
+    function animateCounter(elementId, end, duration) {
+      let start = 0;
+      const element = document.getElementById(elementId);
+      const range = end - start;
+      const increment = end > start ? 1 : 1;
+      const stepTime = Math.abs(Math.floor(duration / range));
+
+      let current = start;
+      const timer = setInterval(() => {
+        current += increment;
+        element.textContent = current;
+        if (current === end) {
+          clearInterval(timer);
+        }
+      }, stepTime);
+    }
+
+    // Memulai animasi saat elemen masuk ke viewport
+    function startCountersWhenVisible() {
+      const counters = document.querySelectorAll('.counter');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const element = entry.target;
+            const end = parseInt(element.textContent);
+            element.textContent = '0';
+            animateCounter(element.id, end, 2000); // Durasi 2 detik
+            observer.unobserve(element);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      counters.forEach(counter => {
+        observer.observe(counter);
+      });
+    }
+
+    // Jalankan fungsi saat dokumen selesai dimuat
+    document.addEventListener('DOMContentLoaded', startCountersWhenVisible);
+
   </script>
 </body>
 

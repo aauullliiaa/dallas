@@ -2,21 +2,21 @@
   font-family: "Poppins";
 }
 section {
-  margin-top: 7rem;
-  margin-bottom: 6rem;
+  padding-top: 7rem;
+  margin-bottom: 4rem;
 }
 body {
-  background-color: #f0f3fa;
+  background-color: #eae0d5;
 }
 .bg-navbar {
-  background-color: #638ecb;
+  background-color: #c6ac8f;
 }
 .btn {
-  background-color: #638ecb;
+  background-color: #c6ac8f;
   color: #fff;
 }
 .btn:hover {
-  background-color: #395886;
+  background-color: #6e5f4f;
 }
 /* Index */
 .alamat th,
@@ -25,7 +25,7 @@ body {
   width: 10rem;
 }
 .carousel-item {
-  height: 50vh; /* Make carousel full height of viewport */
+  height: 45vh; /* Make carousel full height of viewport */
   position: relative;
 }
 .carousel-item::after {
@@ -38,9 +38,9 @@ body {
   height: 100%;
   background: linear-gradient(
     0deg,
-    #f0f3fa 0%,
-    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 50%,
-    /* Very light black in the middle */ rgba(0, 0, 0, 0.1) 100%
+    #eae0d5 0%,
+    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 80%,
+    /* Very light black in the middle */ #eae0d5 100%
       /* Very light black at the top */
   );
 }
@@ -51,7 +51,7 @@ body {
 }
 .carousel-caption {
   z-index: 1;
-  top: 62%;
+  top: 50%;
   transform: translateY(-50%);
   bottom: initial;
   padding: 20px;
@@ -68,33 +68,153 @@ body {
   color: #fff; /* Ensure text is white for better contrast */
   text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
 }
+footer {
+  background-color: #c6ac8f;
+}
+#logo-carousel {
+  padding: 50px 0;
+  background-color: #f8f9fa;
+}
+
+.logo-slider {
+  padding: 0 50px;
+}
+
+.logo-item {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  height: 100px; /* Sesuaikan dengan tinggi maksimum logo Anda */
+}
+
+.logo-item img {
+  max-width: 80%;
+  max-height: 80%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.slick-track {
+  display: flex !important;
+  align-items: center;
+}
+
+.slick-slide {
+  height: auto;
+}
+#showcase .card {
+  transition: transform 0.3s ease-in-out;
+}
+
+#showcase .card:hover {
+  transform: translateY(-5px);
+}
+
+#showcase .card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+
 /* End of Index */
-/* Visi dan Misi */
-section#visimisi {
-  background-image: url("/src/images/foto kampus.jpg");
-  height: 30vh;
-  background-position: center;
-  color: #fffffe;
-  text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9);
+/* Fasilitas */
+.facility-hero {
+  background-image: url("../images/lab-perkantoran-kp2.jpeg");
   background-repeat: no-repeat;
   background-size: cover;
+  min-height: 40vh;
+  background-position: center;
+  color: #fffffe;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
-section#visimisi::after {
+.facility-hero::after {
   content: "";
+  display: block;
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 38%;
+  height: 40%;
   background: linear-gradient(
     0deg,
-    #f0f3fa 0%,
+    #eae0d5 0%,
     /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 50%,
     /* Very light black in the middle */ rgba(0, 0, 0, 0.1) 100%
       /* Very light black at the top */
   );
 }
+.facility-hero h1 {
+  color: #ffffff;
+}
+/* End of Fasiitas */
+/* Promotion */
+.promotion-hero {
+  background-image: url("../images/promosi-5-hero.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 40vh;
+  background-position: center;
+  color: #fffffe;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+.promotion-hero::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(
+    0deg,
+    #eae0d5 0%,
+    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 50%,
+    /* Very light black in the middle */ rgba(0, 0, 0, 0.1) 100%
+      /* Very light black at the top */
+  );
+}
+.promotion-hero h1 {
+  color: #ffffff;
+}
+.card-img-custom {
+  width: 100%;
+  height: 200px; /* Anda bisa menyesuaikan tinggi ini sesuai kebutuhan */
+  object-fit: cover;
+}
+/* End of Promotion */
+/* Activity */
+.activity-hero {
+  background-image: url("../images/promosi-5-hero.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 40vh;
+  background-position: center;
+  color: #fffffe;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+.activity-hero::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(
+    0deg,
+    #eae0d5 0%,
+    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 50%,
+    /* Very light black in the middle */ rgba(0, 0, 0, 0.1) 100%
+      /* Very light black at the top */
+  );
+}
+.activity-hero h1 {
+  color: #ffffff;
+}
+/* End of Activity */
 /* Login */
 .login {
   background-image: url("../images/inaki-del-olmo-NIJuEQw0RKg-unsplash.jpg");
@@ -150,7 +270,7 @@ section#visimisi::after {
 }
 .hero-matkul::after {
   display: block;
-  background: linear-gradient(0deg, #f0f3fa 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
   content: "";
   width: 100%;
   min-height: 19%;
@@ -207,7 +327,7 @@ section#visimisi::after {
   display: block;
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #f0f3fa 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
   width: 100%;
   height: 19%;
 }
@@ -257,7 +377,7 @@ section#visimisi::after {
 .edit-hero::after {
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #f0f3fa 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
   width: 100%;
   height: 19%;
 }
@@ -297,7 +417,7 @@ section#visimisi::after {
 .mhs-hero::after {
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #f0f3fa 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
   width: 100%;
   height: 19%;
 }
@@ -354,6 +474,12 @@ section#visimisi::after {
   }
   .carousel-caption p {
     font-size: 1rem;
+  }
+  section#visimisi {
+    height: 20vh;
+  }
+  section#visimisi::after {
+    height: 28%;
   }
   /* Index */
   iframe {
