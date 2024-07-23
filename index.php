@@ -99,19 +99,20 @@
     <div class="carousel-inner">
       <div class="carousel-item active" data-bs-interval="10000">
         <img src="src/images/gedung-ad-carousel.jpg" class="d-block w-100" alt="Slide 1" />
-        <div class="carousel-caption d-none d-md-block">
+        <div class="carousel-caption d-md-block">
           <h2 class="display-4 fw-bold">Selamat Datang!</h2>
           <p>Di Website Program Studi Sarjana Terapan Administrasi Perkantoran Digital</p>
         </div>
       </div>
       <div class="carousel-item" data-bs-interval="10000">
         <img src="src/images/promosi-3-carousel.jpeg" class="d-block w-100" alt="Slide 2" />
-        <div class="carousel-caption d-none d-md-block">
+        <div class="carousel-caption d-md-block">
           <h2 class="display-4 fw-bold">Promosi Program Studi</h2>
-          <p>Informasi terkait dengan Program Studi Sarjana Terapan Administrasi Perkantoran Digital</p>
+          <p>Informasi terkait dengan Program Studi Sarjana Terapan Administrasi Perkantoran Digital
+          </p>
           <div class="row">
             <div class="col submit-button">
-              <a href="promotion.html" class="btn btn-light">Selengkapnya</a>
+              <a href="promotion.php" class="btn btn-light">Selengkapnya</a>
             </div>
           </div>
         </div>
@@ -135,49 +136,43 @@
       <div class="row g-4">
         <!-- Showcase items -->
         <div class="col-md-4" data-aos="fade-up">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
+          <div class="card h-100 shadow-sm d-flex flex-column">
+            <div class="card-body text-center flex-grow-1">
               <i class="bi bi-book display-1 text-dark mb-3"></i>
               <h5 class="card-title">Kurikulum yang Terbaru</h5>
               <p class="card-text">
                 Kurikulum terkini yang disesuaikan dengan kebutuhan industri dan perkembangan teknologi.
               </p>
-              <div class="row">
-                <div class="col submit-button">
-                  <a href=""><button class="btn btn-light">Selengkapnya</button></a>
-                </div>
+              <div class="card-footer bg-transparent border-0 submit-button mt-auto">
+                <a href=""><button class="btn btn-light">Selengkapnya</button></a>
               </div>
             </div>
           </div>
         </div>
         <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
+          <div class="card h-100 shadow-sm d-flex flex-column">
+            <div class="card-body text-center flex-grow-1">
               <i class="bi bi-laptop display-1 text-dark mb-3"></i>
               <h5 class="card-title">Fasilitas Modern</h5>
               <p class="card-text">
                 Nikmati fasilitas belajar terkini yang mendukung pembelajaran digital.
               </p>
-              <div class="row">
-                <div class="col submit-button">
-                  <a href="facility.php"><button class="btn btn-light">Selengkapnya</button></a>
-                </div>
+              <div class="card-footer bg-transparent border-0 submit-button mt-auto">
+                <a href="facility.php"><button class="btn btn-light">Selengkapnya</button></a>
               </div>
             </div>
           </div>
         </div>
         <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
+          <div class="card h-100 shadow-sm d-flex flex-column">
+            <div class="card-body text-center flex-grow-1">
               <i class="bi bi-people display-1 text-dark mb-3"></i>
               <h5 class="card-title">Kegiatan di Program Studi</h5>
               <p class="card-text">
                 Berbagai kegiatan menarik untuk mengembangkan soft skills dan hard skills mahasiswa.
               </p>
-              <div class="row">
-                <div class="col submit-button">
-                  <a href="activity.php"><button class="btn btn-light">Selengkapnya</button></a>
-                </div>
+              <div class="card-footer bg-transparent border-0 submit-button mt-auto">
+                <a href="activity.php"><button class="btn btn-light">Selengkapnya</button></a>
               </div>
             </div>
           </div>
@@ -224,8 +219,8 @@
     <div class="container">
       <div class="row mb-5">
         <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-up">
-          <div class="card h-100 shadow">
-            <div class="card-body">
+          <div class="card h-100 shadow p-3">
+            <div class="card-body ">
               <h3 class="card-title text-center mb-4">Visi</h3>
               <p class="card-text">
                 Menjadi program studi yang menghasilkan sarjana terapan
@@ -237,7 +232,7 @@
           </div>
         </div>
         <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 shadow">
+          <div class="card h-100 shadow p-3">
             <div class="card-body">
               <h3 class="card-title text-center mb-4">Misi</h3>
               <ol class="card-text">
@@ -383,7 +378,7 @@
           </p>
           <p>
             <strong>Email:</strong>
-            <a href="mailto:lorem@loremipsum.com">lorem@loremipsum.com</a>
+            <a href="mailto:adm_perkantoran_digital@poliupg.ac.id">adm_perkantoran_digital@poliupg.ac.id</a>
           </p>
         </div>
       </div>
