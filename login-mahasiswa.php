@@ -15,19 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (loginUser($emailOrId, $password)) {
         // Arahkan berdasarkan role
         switch ($_SESSION['role']) {
-            case 'admin':
-                header('Location: admin/index.php');
-                break;
             case 'mahasiswa':
                 header('Location: mahasiswa/index.php');
-                break;
-            case 'dosen':
-                header('Location: dosen/index.php');
                 break;
         }
         exit;
     } else {
-        $message = "NIP, NIM, atau password salah, silakan coba lagi";
+        $message = "NIM atau password anda salah, silakan coba lagi";
         $alert_type = 'danger';
     }
 }
@@ -71,8 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     <?php endif; ?>
                     <div class="mb-3">
-                        <label for="emailOrId" class="form-label">NIP atau NIM</label>
-                        <input type="text" class="form-control" name="emailOrId" id="emailOrId" required maxlength="18">
+                        <label for="emailOrId" class="form-label">NIM</label>
+                        <input type="text" class="form-control" name="emailOrId" id="emailOrId" required maxlength="8">
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
