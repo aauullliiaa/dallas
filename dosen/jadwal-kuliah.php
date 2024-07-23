@@ -150,7 +150,7 @@ unset($_SESSION['alert_class']);
                 <a class="dropdown-item" href="index.php#about">About</a>
               </li>
               <li>
-                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
+                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
               </li>
               <li>
                 <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
@@ -158,24 +158,16 @@ unset($_SESSION['alert_class']);
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="data-users.php">Data Pengguna</a>
+            <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Perkuliahan
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="list-request.php">Request Pergantian</a>
-              </li>
-            </ul>
+          <li class="nav-item">
+            <a class="nav-link" href="dosen.php">Dosen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="profile.php">Profil</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../logout.php">Logout</a>

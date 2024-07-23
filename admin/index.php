@@ -229,47 +229,35 @@ checkRole('admin');
   </section>
 
   <!-- Alamat -->
-  <section id="alamat">
-    <div class="container justify-content-center">
-      <div class="row text-center pb-3" data-aos="fade-up">
-        <h1>Alamat dan Kontak</h1>
-      </div>
+  <section id="alamat" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5" data-aos="fade-up">Alamat dan Kontak</h2>
       <div class="row align-items-center">
-        <div class="col-md-6" data-aos="fade-right" data-aos-delay="100">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63581.11650113188!2d119.39864003002323!3d-5.132706847633037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbefcca2887e13f%3A0xf5c059de86dd07!2sPNUP%20Politeknik%20Negeri%20Ujung%20Pandang!5e0!3m2!1sen!2sid!4v1712199819055!5m2!1sen!2sid"
-            width="600" height="450" style="border: 0" allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade" class="ratio ratio-1x1"></iframe>
+        <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-left" data-aos-delay="100">
+          <div class="ratio ratio-16x9">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63581.11650113188!2d119.39864003002323!3d-5.132706847633037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbefcca2887e13f%3A0xf5c059de86dd07!2sPNUP%20Politeknik%20Negeri%20Ujung%20Pandang!5e0!3m2!1sen!2sid!4v1712199819055!5m2!1sen!2sid"
+              allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
         </div>
-        <div class="col-md-6" data-aos="fade-left" data-aos-delay="200">
-          <h3 class="pb-2">Alamat</h3>
-          <table class="alamat mb-3">
-            <tr>
-              <th>Kampus 1</th>
-              <td>
-                Jl. Perintis Kemerdekaan KM. 10, Tamalanrea, Kota Makassar,
-                Sulawesi Selatan
-              </td>
-            </tr>
-            <tr>
-              <th>Kampus 2</th>
-              <td>
-                Jl. Tamalanrea Raya, Tamalanrea, Kabupaten Maros, Sulawesi
-                Selatan
-              </td>
-            </tr>
-          </table>
-          <h3 class="pb-2">Kontak</h3>
-          <table class="kontak">
-            <tr>
-              <th>Nomor Telp.</th>
-              <td>+62813456789</td>
-            </tr>
-            <tr>
-              <th>Email</th>
-              <td>lorem@loremipsum.com</td>
-            </tr>
-          </table>
+        <div class="col-md-6" data-aos="fade-right" data-aos-delay="200">
+          <h3 class="mb-3">Alamat</h3>
+          <address>
+            <strong>Kampus 1:</strong><br />
+            Jl. Perintis Kemerdekaan KM. 10, Tamalanrea, Kota Makassar,
+            Sulawesi Selatan<br /><br />
+            <strong>Kampus 2:</strong><br />
+            Jl. Tamalanrea Raya, Tamalanrea, Kabupaten Maros, Sulawesi Selatan
+          </address>
+          <h3 class="mt-4 mb-3">Kontak</h3>
+          <p>
+            <strong>Telp:</strong> +6281242930330 (Hirman)<br />
+            +6282193655502 (Imasita)
+          </p>
+          <p>
+            <strong>Email:</strong>
+            <a href="mailto:adm_perkantoran_digital@poliupg.ac.id">adm_perkantoran_digital@poliupg.ac.id</a>
+          </p>
         </div>
       </div>
     </div>
