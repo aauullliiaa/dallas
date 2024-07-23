@@ -11,13 +11,6 @@ body {
 .bg-navbar {
   background-color: #c6ac8f;
 }
-.btn {
-  background-color: #c6ac8f;
-  color: #fff;
-}
-.btn:hover {
-  background-color: #6e5f4f;
-}
 .jumbotron {
   background-image: url("../images/thought-catalog-505eectW54k-unsplash.jpg");
   background-position: center;
