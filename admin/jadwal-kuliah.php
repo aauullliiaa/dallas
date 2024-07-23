@@ -150,7 +150,7 @@ unset($_SESSION['alert_class']);
                 <a class="dropdown-item" href="index.php#about">About</a>
               </li>
               <li>
-                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
+                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
               </li>
               <li>
                 <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
@@ -171,9 +171,6 @@ unset($_SESSION['alert_class']);
               </li>
               <li>
                 <a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="list-request.php">Request Pergantian</a>
               </li>
             </ul>
           </li>
@@ -233,7 +230,9 @@ unset($_SESSION['alert_class']);
         </form>
         <div class="row">
           <div class="col submit-button text-center">
-            <a href="index.php"><button class="btn">Kembali</button></a>
+            <a href="edit-jadwal"><button class="btn btn-light">Edit Jadwal</button></a>
+            <a href="input-jadwal.php"><button class="btn btn-light">Tambah Jadwal</button></a>
+            <a href="index.php"><button class="btn btn-light">Kembali</button></a>
           </div>
         </div>
       </div>
@@ -243,10 +242,10 @@ unset($_SESSION['alert_class']);
     <div class="card p-1">
       <div class="card-body">
         <?php if ($jadwalHtml): ?>
-          <div class="d-flex justify-content-end mb-3 no-print">
-            <button class="btn btn-secondary me-2 no-print"
+          <div class="d-flex justify-content-end mb-3 no-print submit-button">
+            <button class="btn btn-light me-2 no-print"
               onclick="downloadJadwal('<?= $kelas ?>', '<?= $semester ?>', '<?= $tahun ?>', '<?= $fileType ?>')">Download</button>
-            <button class="btn btn-secondary no-print" onclick="printJadwal()">Print</button>
+            <button class="btn btn-light no-print" onclick="printJadwal()">Print</button>
           </div>
           <script>
             // Menghapus parameter GET dari URL setelah hasil ditampilkan

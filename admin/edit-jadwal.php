@@ -119,7 +119,7 @@ unset($_SESSION['alert_class']);
                                     <a class="dropdown-item" href="index.php#about">About</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
+                                    <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
@@ -140,9 +140,6 @@ unset($_SESSION['alert_class']);
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="list-request.php">Request Pergantian</a>
                                 </li>
                             </ul>
                         </li>

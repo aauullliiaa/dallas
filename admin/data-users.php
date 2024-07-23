@@ -82,9 +82,15 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                             Home
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="index.php#about">About</a></li>
-                            <li><a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a></li>
-                            <li><a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a></li>
+                            <li>
+                                <a class="dropdown-item" href="index.php#about">About</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -96,9 +102,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                             Perkuliahan
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a></li>
-                            <li><a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a></li>
-                            <li><a class="dropdown-item" href="list-request.php">Request Pergantian</a></li>
+                            <li>
+                                <a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item">
@@ -153,7 +162,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                         <h3>Data Pengguna dengan role <?= htmlspecialchars(ucwords($role)) ?></h3>
                         <table class="table">
                             <thead>
-                                <tr>
+                                <tr class="align-middle text-center">
                                     <th>No</th>
                                     <th>Nama</th>
                                     <th>Email</th>
@@ -168,7 +177,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                             <tbody>
                                 <?php $i = 1; ?>
                                 <?php foreach ($users as $user): ?>
-                                    <tr>
+                                    <tr class="align-middle text-center">
                                         <td><?= $i ?></td>
                                         <td><?= htmlspecialchars($user['nama']) ?></td>
                                         <td><?= htmlspecialchars($user['email']) ?></td>

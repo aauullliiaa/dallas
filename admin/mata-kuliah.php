@@ -68,9 +68,15 @@ $mata_kuliah = getAllMataKuliah($db);
               Home
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="index.php#about">About</a></li>
-              <li><a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a></li>
-              <li><a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a></li>
+              <li>
+                <a class="dropdown-item" href="index.php#about">About</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item">
@@ -82,9 +88,12 @@ $mata_kuliah = getAllMataKuliah($db);
               Perkuliahan
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a></li>
-              <li><a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a></li>
-              <li><a class="dropdown-item" href="list-request.php">Request Pergantian</a></li>
+              <li>
+                <a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item">
@@ -113,6 +122,7 @@ $mata_kuliah = getAllMataKuliah($db);
           <table class="table table-striped">
             <thead style="vertical-align: middle; text-align: center;">
               <tr>
+                <th scope="col">No</th>
                 <th scope="col">Kode</th>
                 <th scope="col">Nama Mata Kuliah</th>
                 <th scope="col">Deskripsi</th>
@@ -122,8 +132,10 @@ $mata_kuliah = getAllMataKuliah($db);
               </tr>
             </thead>
             <tbody>
+              <?php $i = 1; ?>
               <?php foreach ($mata_kuliah as $mata_kuliah_item): ?>
-                <tr>
+                <tr class="text-center">
+                  <td><?= $i; ?></td>
                   <td><?= htmlspecialchars($mata_kuliah_item['kode']); ?></td>
                   <td><?= htmlspecialchars($mata_kuliah_item['nama']); ?></td>
                   <td><?= htmlspecialchars($mata_kuliah_item['deskripsi']); ?></td>
@@ -134,6 +146,7 @@ $mata_kuliah = getAllMataKuliah($db);
                       onclick="confirmDeletion(event, this.href)">Hapus</a>
                   </td>
                 </tr>
+                <?php $i++; ?>
               <?php endforeach; ?>
             </tbody>
           </table>
