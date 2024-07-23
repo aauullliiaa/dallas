@@ -82,10 +82,10 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="login.php">Login Pegawai</a>
+                <a class="dropdown-item" href="login-pegawai.php">Login Pegawai</a>
               </li>
               <li>
-                <a class="dropdown-item" href="login.php">Login Mahasiswa</a>
+                <a class="dropdown-item" href="login-mahasiswa.php">Login Mahasiswa</a>
               </li>
             </ul>
           </li>
