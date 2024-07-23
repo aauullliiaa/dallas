@@ -31,7 +31,7 @@ $dosen = retrieve("SELECT * FROM daftar_dosen");
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
     <div class="container">
-      <a class="navbar-brand" href="index.php#home">
+      <a class="navbar-brand" href="../mahasiswa/index.php#home">
         <img src="../src/images/logo kampus.png" alt="Logo" width="40px" />
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -48,7 +48,7 @@ $dosen = retrieve("SELECT * FROM daftar_dosen");
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="index.php#about">About</a></li>
               <li>
-                <a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a>
+                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
               </li>
               <li>
                 <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>

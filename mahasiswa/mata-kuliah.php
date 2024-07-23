@@ -47,7 +47,7 @@ $id = $_GET["id"];
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="index.php#about">About</a></li>
             <li>
-              <a class="dropdown-item" href=".index.php#kata-sambutan">Kata Sambutan</a>
+              <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
             </li>
             <li>
               <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>

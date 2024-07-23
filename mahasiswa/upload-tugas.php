@@ -51,7 +51,7 @@ $tugasDetail = getTugasDetail($tugas_id, $mahasiswa_id);
 <header>
     <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
         <div class="container">
-            <a class="navbar-brand" href="index.php#home">
+            <a class="navbar-brand" href="../mahasiswa/index.php#home">
                 <img src="../src/images/logo kampus.png" alt="Logo" width="40px" />
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -60,11 +60,36 @@ $tugasDetail = getTugasDetail($tugas_id, $mahasiswa_id);
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a></li>
-                    <li class="nav-item"><a class="nav-link" href="dosen.php">Dosen</a></li>
-                    <li class="nav-item"><a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.php">Profil</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../logout.php">Logout</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="index.php#home" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Home
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="index.php#about">About</a></li>
+                            <li>
+                                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="dosen.php">Dosen</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.php">Profil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../logout.php">Logout</a>
+                    </li>
                 </ul>
             </div>
         </div>

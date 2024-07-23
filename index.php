@@ -68,6 +68,9 @@
             </ul>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="dosen.php">Dosen</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="facility.php">Fasilitas</a>
           </li>
           <li class="nav-item">
