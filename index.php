@@ -139,43 +139,43 @@
       <div class="row g-4">
         <!-- Showcase items -->
         <div class="col-md-4" data-aos="fade-up">
-          <div class="card h-100 shadow-sm d-flex flex-column">
+          <div class="card h-100 shadow-sm d-flex flex-column" style="background-color: #E6F3FF;">
             <div class="card-body text-center flex-grow-1">
-              <i class="bi bi-book display-1 text-dark mb-3"></i>
+              <i class="bi bi-book display-1 text-primary mb-3"></i>
               <h5 class="card-title">Kurikulum yang Terbaru</h5>
               <p class="card-text">
                 Kurikulum terkini yang disesuaikan dengan kebutuhan industri dan perkembangan teknologi.
               </p>
-              <div class="card-footer bg-transparent border-0 submit-button mt-auto">
-                <a href=""><button class="btn btn-light">Selengkapnya</button></a>
+              <div class="card-footer bg-transparent border-0 mt-auto">
+                <a href=""><button class="btn btn-primary">Selengkapnya</button></a>
               </div>
             </div>
           </div>
         </div>
         <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="card h-100 shadow-sm d-flex flex-column">
+          <div class="card h-100 shadow-sm d-flex flex-column" style="background-color: #CCE5FF;">
             <div class="card-body text-center flex-grow-1">
-              <i class="bi bi-laptop display-1 text-dark mb-3"></i>
+              <i class="bi bi-laptop display-1 text-info mb-3"></i>
               <h5 class="card-title">Fasilitas Modern</h5>
               <p class="card-text">
                 Nikmati fasilitas belajar terkini yang mendukung pembelajaran digital.
               </p>
-              <div class="card-footer bg-transparent border-0 submit-button mt-auto">
-                <a href="facility.php"><button class="btn btn-light">Selengkapnya</button></a>
+              <div class="card-footer bg-transparent border-0 mt-auto">
+                <a href="facility.php"><button class="btn btn-info text-white">Selengkapnya</button></a>
               </div>
             </div>
           </div>
         </div>
         <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 shadow-sm d-flex flex-column">
+          <div class="card h-100 shadow-sm d-flex flex-column" style="background-color: #B3D9FF;">
             <div class="card-body text-center flex-grow-1">
-              <i class="bi bi-people display-1 text-dark mb-3"></i>
+              <i class="bi bi-people display-1 text-primary mb-3"></i>
               <h5 class="card-title">Kegiatan di Program Studi</h5>
               <p class="card-text">
                 Berbagai kegiatan menarik untuk mengembangkan soft skills dan hard skills mahasiswa.
               </p>
-              <div class="card-footer bg-transparent border-0 submit-button mt-auto">
-                <a href="activity.php"><button class="btn btn-light">Selengkapnya</button></a>
+              <div class="card-footer bg-transparent border-0 mt-auto">
+                <a href="activity.php"><button class="btn btn-primary">Selengkapnya</button></a>
               </div>
             </div>
           </div>
@@ -194,7 +194,7 @@
           </div>
         </div>
         <div class="col-md-6" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-          <h2 class="mb-4">Tentang Program Studi</h2>
+          <h1 class="mb-4">Tentang Program Studi</h1>
           <p class="lead">
             Program Studi Sarjana Terapan Administrasi Perkantoran Digital
             memiliki tujuan dan keunggulan. Tujuan Program Studi ini adalah
@@ -222,10 +222,10 @@
     <div class="container">
       <div class="row mb-5">
         <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-up">
-          <div class="card h-100 shadow p-3">
-            <div class="card-body ">
+          <div class="card h-100 shadow p-3" style="background-color: #E6F3FF;">
+            <div class="card-body">
               <h3 class="card-title text-center mb-4">Visi</h3>
-              <p class="card-text">
+              <p class="card-text text-center" style="font-size: 1.1rem;">
                 Menjadi program studi yang menghasilkan sarjana terapan
                 berwawasan global dan berdaya saing tinggi dibidang
                 Administrasi Perkantoran Digital secara profesional dan
@@ -235,27 +235,27 @@
           </div>
         </div>
         <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 shadow p-3">
+          <div class="card h-100 shadow p-3" style="background-color: #E6F3FF;">
             <div class="card-body">
               <h3 class="card-title text-center mb-4">Misi</h3>
-              <ol class="card-text">
+              <ol class="card-text" style="font-size: 1.1rem">
                 <li>
                   Menyelenggarakan tridarma perguruan tinggi untuk menyiapkan
                   tenaga kerja sarjana terapan dibidang Administrasi
                   Perkantoran Digital dengan penerapan metode pembelajaran
                   yang terpadu, berkualitas, selaras, dan berkesinambungan.
-                </li>
+                </li><br>
                 <li>
                   Menyelenggarakan penelitian terapan dan pengabdian
                   masyarakat untuk membantu pembangunan dan penyelesaian
                   masalah dalam bidang Administrasi Perkantoran Digital.
-                </li>
+                </li><br>
                 <li>
                   Mengembangkan kegiatan kerjasama yang saling menguntungkan
                   dengan pemerintah, institusi pendidikan, praktisi industri,
                   dan segenap stakeholder untuk pengembangan kompetensi
                   keilmuan dibidang Administrasi Perkantoran Digital.
-                </li>
+                </li><br>
                 <li>
                   Menghasilkan lulusan sarjana terapan yang unggul,
                   profesional, berintegrasi tinggi, dan siap diserap di dunia

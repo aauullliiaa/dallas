@@ -35,7 +35,7 @@ body {
   width: 10rem;
 }
 .carousel-item {
-  height: 47vh; /* Make carousel full height of viewport */
+  height: 50vh; /* Make carousel full height of viewport */
   position: relative;
 }
 .carousel-item::after {
@@ -67,14 +67,14 @@ body {
   padding: 20px;
 }
 .carousel-caption h5 {
-  font-size: 2.5rem;
+  font-size: 2.6rem;
   font-weight: bold;
   margin-bottom: 1rem;
   color: #ffffff; /* Ensure text is white for better contrast */
   text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
 }
 .carousel-caption p {
-  font-size: 1.8rem;
+  font-size: 2.1rem;
   color: #fff; /* Ensure text is white for better contrast */
   text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
 }
