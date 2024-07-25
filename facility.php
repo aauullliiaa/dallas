@@ -139,7 +139,7 @@
               <img class="img-fluid rounded" src="src/images/lab-typing-kp1.jpg" alt="Lab Typing Kampus 1" />
             </div>
             <div class="col-md-6">
-              <h3 class="card-title mb-3">Lab Typing (Kampus 1)</h3>
+              <h3 class="card-title mb-3">Lab Typing Tutor (Kampus 1)</h3>
               <p class="card-text lead">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
@@ -158,7 +158,7 @@
               <img class="img-fluid rounded" src="src/images/lab-typing-kp2.jpeg" alt="Lab Komputer Kampus 2" />
             </div>
             <div class="col-md-6 order-md-1">
-              <h3 class="card-title mb-3">Lab Typing (Kampus 2)</h3>
+              <h3 class="card-title mb-3">Lab Typing Speed (Kampus 2)</h3>
               <p class="card-text lead">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
@@ -177,7 +177,7 @@
               <img class="img-fluid rounded" src="src/images/lab-perkantoran-kp1.jpg" alt="Lab Typing Kampus 1" />
             </div>
             <div class="col-md-6">
-              <h3 class="card-title mb-3">Lab Perkantoran (Kampus 1)</h3>
+              <h3 class="card-title mb-3">Lab Otomatisasi dan Simulasi Bisnis (Kampus 1)</h3>
               <p class="card-text lead">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
