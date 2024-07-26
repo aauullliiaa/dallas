@@ -54,12 +54,12 @@ checkRole('admin');
 
 <body id="home">
   <!-- Jumbotron -->
-  <section class="jumbotron admin d-flex align-items-center">
+  <section class="jumbotron admin d-flex align-items-center" data-aos="fade-up">
     <div class="container">
-      <div class="row p-2">
+      <div class="row p-2" data-aos="fade-up" data-aos-delay="100">
         <h1>Selamat Datang, Admin!</h1>
       </div>
-      <div class="row p-2">
+      <div class="row p-2" data-aos="fade-up" data-aos-delay="200">
         <div class="col-md-8">
           <h2>
             Di Portal Web Learning Space Program Studi Administrasi
@@ -67,7 +67,7 @@ checkRole('admin');
           </h2>
         </div>
       </div>
-      <div class="row p-2">
+      <div class="row p-2" data-aos="fade-up" data-aos-delay="300">
         <div class="col-md-8">
           <p>
             Website ini hadir untuk membantu Anda mengatur jadwal perkuliahan
@@ -79,65 +79,68 @@ checkRole('admin');
     </div>
   </section>
   <!-- End of Jumbotron -->
-  <section>
+  <section class="py-5">
     <div class="container">
-      <div class="row text-center mb-4">
-        <h1 data-aos="fade-up">Menu Admin APD Learning Space</h1>
+      <div class="row text-center mb-5">
+        <h1 class="display-4 fw-bold" data-aos="fade-down">Menu Administrasi Perkantoran Digital Learning Space</h1>
       </div>
       <div class="row justify-content-center">
-        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="card h-100 d-flex flex-column p-3">
-            <div class="card-body text-center flex-grow-1">
-              <i class="fas fa-calendar-alt fa-4x mb-3 text-primary"></i>
-              <h5 class="card-title">Jadwal Perkuliahan</h5>
+        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card h-100 shadow-sm hover-card p-3"
+            style="border-radius: 15px; border: none; transition: all 0.3s;">
+            <div class="card-body text-center">
+              <div class="icon-circle mb-4 mx-auto d-flex align-items-center justify-content-center"
+                style="width: 80px; height: 80px; background-color: #E6F3FF; border-radius: 50%;">
+                <i class="bi bi-calendar-week text-primary" style="font-size: 2.5rem;"></i>
+              </div>
+              <h5 class="card-title mt-4 fw-bold">Jadwal Perkuliahan</h5>
               <p class="card-text">
-                Atur dan kelola jadwal perkuliahan dengan mudah dan efisien.
+                Akses jadwal kuliah Anda dengan mudah dan cepat. Pantau kelas dan waktu perkuliahan Anda di sini.
               </p>
             </div>
-            <div class="card-footer bg-transparent border-0 text-end mt-auto submit-button">
-              <a href="jadwal-kuliah.php" class="btn btn-light">Lanjut <i class="bi bi-arrow-right-short"></i></a>
+            <div class="card-footer bg-transparent border-0 text-end">
+              <a href="jadwal-kuliah.php" class="btn btn-primary btn-sm rounded-pill">Lanjut <i
+                  class="bi bi-arrow-right-short"></i></a>
             </div>
           </div>
         </div>
-        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 d-flex flex-column p-3">
-            <div class="card-body text-center flex-grow-1">
-              <i class="fas fa-book fa-4x mb-3 text-success"></i>
-              <h5 class="card-title">Mata Kuliah</h5>
+
+        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="card h-100 shadow hover-card p-3"
+            style="border-radius: 15px; border: none; transition: all 0.3s;">
+            <div class="card-body text-center">
+              <div class="icon-circle mb-4 mx-auto d-flex align-items-center justify-content-center"
+                style="width: 80px; height: 80px; background-color: #E6FFE6; border-radius: 50%;">
+                <i class="bi bi-book text-success" style="font-size: 2.5rem;"></i>
+              </div>
+              <h5 class="card-title mt-4 fw-bold">Mata Kuliah</h5>
               <p class="card-text">
-                Kelola informasi dan detail mata kuliah dengan praktis.
+                Jelajahi daftar mata kuliah yang tersedia. Temukan informasi tentang setiap mata kuliah di sini.
               </p>
             </div>
-            <div class="card-footer bg-transparent border-0 text-end mt-auto submit-button">
-              <a href="mata-kuliah.php" class="btn btn-light">Lanjut <i class="bi bi-arrow-right-short"></i></a>
+            <div class="card-footer bg-transparent border-0 text-end">
+              <a href="mata-kuliah.php" class="btn btn-success btn-sm rounded-pill">Lanjut <i
+                  class="bi bi-arrow-right-short"></i></a>
             </div>
           </div>
         </div>
-        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
-          <div class="card h-100 d-flex flex-column p-3">
-            <div class="card-body text-center flex-grow-1">
-              <i class="fas fa-users fa-4x mb-3 text-info"></i>
-              <h5 class="card-title">Data Pengguna</h5>
+
+        <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="card h-100 shadow hover-card p-3"
+            style="border-radius: 15px; border: none; transition: all 0.3s;">
+            <div class="card-body text-center">
+              <div class="icon-circle mb-4 mx-auto d-flex align-items-center justify-content-center"
+                style="width: 80px; height: 80px; background-color: #FFE6E6; border-radius: 50%;">
+                <i class="bi bi-people text-danger" style="font-size: 2.5rem;"></i>
+              </div>
+              <h5 class="card-title mt-4 fw-bold">Data Pengguna</h5>
               <p class="card-text">
-                Akses dan kelola informasi pengguna sistem dengan aman.
+                Kelola informasi pengguna sistem. Akses dan perbarui data mahasiswa, dosen, dan staf di sini.
               </p>
             </div>
-            <div class="card-footer bg-transparent border-0 text-end mt-auto submit-button">
-              <a href="data-users.php" class="btn btn-light">Lanjut <i class="bi bi-arrow-right-short"></i></a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
-          <div class="card h-100 d-flex flex-column p-3">
-            <div class="card-body text-center flex-grow-1">
-              <i class="fas fa-exchange-alt fa-4x mb-3 text-warning"></i>
-              <h5 class="card-title">Request Pergantian Jadwal</h5>
-              <p class="card-text">
-                Kelola permintaan perubahan jadwal dengan cepat dan efektif.
-              </p>
-            </div>
-            <div class="card-footer bg-transparent border-0 text-end mt-auto submit-button">
-              <a href="list-request.php" class="btn btn-light">Lanjut <i class="bi bi-arrow-right-short"></i></a>
+            <div class="card-footer bg-transparent border-0 text-end">
+              <a href="data-users.php" class="btn btn-danger btn-sm rounded-pill">Lanjut <i
+                  class="bi bi-arrow-right-short"></i></a>
             </div>
           </div>
         </div>
@@ -181,9 +184,9 @@ checkRole('admin');
     <div class="container">
       <div class="row mb-5">
         <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-up">
-          <div class="card h-100 shadow p-3">
+          <div class="card h-100 shadow p-3" style="background-color: #E6F3FF">
             <div class="card-body">
-              <h3 class="card-title text-center mb-4">Visi</h3>
+              <h3 class="card-title text-center mb-4">VISI</h3>
               <p class="card-text">
                 Menjadi program studi yang menghasilkan sarjana terapan
                 berwawasan global dan berdaya saing tinggi dibidang
@@ -194,27 +197,27 @@ checkRole('admin');
           </div>
         </div>
         <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 shadow p-3">
+          <div class="card h-100 shadow p-3" style="background-color: #E6F3FF">
             <div class="card-body">
-              <h3 class="card-title text-center mb-4">Misi</h3>
-              <ol class="card-text">
+              <h3 class="card-title text-center mb-4">MISI</h3>
+              <ol class="card-text" style="font-size: 1.2rem">
                 <li>
                   Menyelenggarakan tridarma perguruan tinggi untuk menyiapkan
                   tenaga kerja sarjana terapan dibidang Administrasi
                   Perkantoran Digital dengan penerapan metode pembelajaran
                   yang terpadu, berkualitas, selaras, dan berkesinambungan.
-                </li>
+                </li><br>
                 <li>
                   Menyelenggarakan penelitian terapan dan pengabdian
                   masyarakat untuk membantu pembangunan dan penyelesaian
                   masalah dalam bidang Administrasi Perkantoran Digital.
-                </li>
+                </li><br>
                 <li>
                   Mengembangkan kegiatan kerjasama yang saling menguntungkan
                   dengan pemerintah, institusi pendidikan, praktisi industri,
                   dan segenap stakeholder untuk pengembangan kompetensi
                   keilmuan dibidang Administrasi Perkantoran Digital.
-                </li>
+                </li><br>
                 <li>
                   Menghasilkan lulusan sarjana terapan yang unggul,
                   profesional, berintegrasi tinggi, dan siap diserap di dunia

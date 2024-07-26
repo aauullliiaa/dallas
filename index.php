@@ -104,18 +104,20 @@
         <img src="src/images/gedung-ad-carousel.jpg" class="d-block w-100" alt="Slide 1" />
         <div class="carousel-caption d-md-block">
           <h2 class="display-4 fw-bold">Selamat Datang!</h2>
-          <p>Di Website Program Studi Sarjana Terapan Administrasi Perkantoran Digital</p>
+          <p style="font-weight: 600;">DI WEBSITE PROGRAM STUDI SARJANA TERAPAN <br> ADMINISTRASI
+            PERKANTORAN DIGITAL</p>
         </div>
       </div>
       <div class="carousel-item" data-bs-interval="10000">
         <img src="src/images/promosi-3-carousel.jpeg" class="d-block w-100" alt="Slide 2" />
         <div class="carousel-caption d-md-block">
           <h2 class="display-4 fw-bold">Promosi Program Studi</h2>
-          <p>Informasi terkait dengan Program Studi Sarjana Terapan Administrasi Perkantoran Digital
+          <p style="font-weight: 600;">INFORMASI TERKAIT DENGAN PROGRAM STUDI SARJANA TERAPAN
+            ADMINISTRASI PERKANTORAN DIGITAL
           </p>
           <div class="row">
-            <div class="col submit-button">
-              <a href="promotion.php" class="btn btn-light">Selengkapnya</a>
+            <div class="col">
+              <a href="promotion.php" class="btn btn-primary">Selengkapnya</a>
             </div>
           </div>
         </div>
@@ -139,7 +141,8 @@
       <div class="row g-4">
         <!-- Showcase items -->
         <div class="col-md-4" data-aos="fade-up">
-          <div class="card h-100 shadow-sm d-flex flex-column" style="background-color: #E6F3FF;">
+          <div class="card h-100 shadow hover-card p-3 d-flex flex-column"
+            style="background-color: #E6F3FF; border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center flex-grow-1">
               <i class="bi bi-book display-1 text-primary mb-3"></i>
               <h5 class="card-title">Kurikulum yang Terbaru</h5>
@@ -153,7 +156,8 @@
           </div>
         </div>
         <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="card h-100 shadow-sm d-flex flex-column" style="background-color: #CCE5FF;">
+          <div class="card h-100 shadow hover-card p-3  d-flex flex-column"
+            style="background-color: #CCE5FF; border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center flex-grow-1">
               <i class="bi bi-laptop display-1 text-info mb-3"></i>
               <h5 class="card-title">Fasilitas Modern</h5>
@@ -167,7 +171,8 @@
           </div>
         </div>
         <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 shadow-sm d-flex flex-column" style="background-color: #B3D9FF;">
+          <div class="card h-100 shadow hover-card p-3  d-flex flex-column"
+            style="background-color: #B3D9FF; border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center flex-grow-1">
               <i class="bi bi-people display-1 text-primary mb-3"></i>
               <h5 class="card-title">Kegiatan di Program Studi</h5>
@@ -224,7 +229,7 @@
         <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-up">
           <div class="card h-100 shadow p-3" style="background-color: #E6F3FF;">
             <div class="card-body">
-              <h3 class="card-title text-center mb-4">Visi</h3>
+              <h3 class="card-title text-center mb-4">VISI</h3>
               <p class="card-text text-center" style="font-size: 1.1rem;">
                 Menjadi program studi yang menghasilkan sarjana terapan
                 berwawasan global dan berdaya saing tinggi dibidang
@@ -237,7 +242,7 @@
         <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
           <div class="card h-100 shadow p-3" style="background-color: #E6F3FF;">
             <div class="card-body">
-              <h3 class="card-title text-center mb-4">Misi</h3>
+              <h3 class="card-title text-center mb-4">MISI</h3>
               <ol class="card-text" style="font-size: 1.1rem">
                 <li>
                   Menyelenggarakan tridarma perguruan tinggi untuk menyiapkan

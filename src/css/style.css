@@ -74,7 +74,7 @@ body {
   text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
 }
 .carousel-caption p {
-  font-size: 2.1rem;
+  font-size: 1.8rem;
   color: #fff; /* Ensure text is white for better contrast */
   text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
 }
@@ -192,6 +192,10 @@ footer {
   width: 100%;
   height: 200px; /* Anda bisa menyesuaikan tinggi ini sesuai kebutuhan */
   object-fit: cover;
+}
+.thumbnail-custom {
+  max-width: 300px; /* atau ukuran yang Anda inginkan */
+  margin: 0 auto; /* untuk memposisikan gambar di tengah */
 }
 /* End of Promotion */
 /* Activity */

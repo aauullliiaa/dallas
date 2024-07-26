@@ -79,71 +79,87 @@ checkRole('mahasiswa');
     </div>
   </section>
   <!-- End of Jumbotron -->
-  <section>
+  <section class="py-5">
     <div class="container">
       <div class="row text-center mb-5">
-        <h1 class="display-4" data-aos="fade-down">Menu APD Learning Space</h1>
+        <h1 class="display-4 fw-bold" data-aos="fade-down">Menu Administrasi Perkantoran Digital Learning Space</h1>
       </div>
       <div class="row justify-content-center">
         <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="card h-100 shadow-sm hover-card p-3">
+          <div class="card h-100 shadow hover-card p-3"
+            style="border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center">
-              <i class="bi bi-calendar-week text-primary" style="font-size: 4rem;"></i>
-              <h5 class="card-title mt-4">Jadwal Perkuliahan</h5>
+              <div class="icon-circle mb-4 mx-auto d-flex align-items-center justify-content-center"
+                style="width: 80px; height: 80px; background-color: #E6F3FF; border-radius: 50%;">
+                <i class="bi bi-calendar-week text-primary" style="font-size: 2.5rem;"></i>
+              </div>
+              <h5 class="card-title mt-4 fw-bold">Jadwal Perkuliahan</h5>
               <p class="card-text">
                 Akses jadwal kuliah Anda dengan mudah dan cepat. Pantau kelas dan waktu perkuliahan Anda di sini.
               </p>
             </div>
             <div class="card-footer bg-transparent border-0 text-end">
-              <a href="jadwal-kuliah.php" class="btn btn-outline-primary btn-sm">Lanjut <i
+              <a href="jadwal-kuliah.php" class="btn btn-primary btn-sm rounded-pill">Lanjut <i
                   class="bi bi-arrow-right-short"></i></a>
             </div>
           </div>
         </div>
 
         <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 shadow-sm hover-card p-3">
+          <div class="card h-100 shadow hover-card p-3"
+            style="border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center">
-              <i class="bi bi-book text-success" style="font-size: 4rem;"></i>
-              <h5 class="card-title mt-4">Mata Kuliah</h5>
+              <div class="icon-circle mb-4 mx-auto d-flex align-items-center justify-content-center"
+                style="width: 80px; height: 80px; background-color: #E6FFE6; border-radius: 50%;">
+                <i class="bi bi-book text-success" style="font-size: 2.5rem;"></i>
+              </div>
+              <h5 class="card-title mt-4 fw-bold">Mata Kuliah</h5>
               <p class="card-text">
                 Jelajahi daftar mata kuliah yang tersedia. Temukan informasi tentang setiap mata kuliah di sini.
               </p>
             </div>
             <div class="card-footer bg-transparent border-0 text-end">
-              <a href="mata-kuliah.php" class="btn btn-outline-success btn-sm">Lanjut <i
+              <a href="mata-kuliah.php" class="btn btn-success btn-sm rounded-pill">Lanjut <i
                   class="bi bi-arrow-right-short"></i></a>
             </div>
           </div>
         </div>
 
         <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="300">
-          <div class="card h-100 shadow-sm hover-card p-3">
+          <div class="card h-100 shadow hover-card p-3"
+            style="border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center">
-              <i class="bi bi-person-circle text-info" style="font-size: 4rem;"></i>
-              <h5 class="card-title mt-4">Profil</h5>
+              <div class="icon-circle mb-4 mx-auto d-flex align-items-center justify-content-center"
+                style="width: 80px; height: 80px; background-color: #E6F9FF; border-radius: 50%;">
+                <i class="bi bi-person-circle text-info" style="font-size: 2.5rem;"></i>
+              </div>
+              <h5 class="card-title mt-4 fw-bold">Profil</h5>
               <p class="card-text">
                 Kelola informasi profil Anda. Perbarui data pribadi dan akademik Anda di sini.
               </p>
             </div>
             <div class="card-footer bg-transparent border-0 text-end">
-              <a href="profile.php" class="btn btn-outline-info btn-sm">Lanjut <i
+              <a href="profile.php" class="btn btn-info btn-sm rounded-pill text-white">Lanjut <i
                   class="bi bi-arrow-right-short"></i></a>
             </div>
           </div>
         </div>
 
         <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="400">
-          <div class="card h-100 shadow-sm hover-card p-3">
+          <div class="card h-100 shadow hover-card p-3"
+            style="border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center">
-              <i class="bi bi-people text-warning" style="font-size: 4rem;"></i>
-              <h5 class="card-title mt-4">Dosen</h5>
+              <div class="icon-circle mb-4 mx-auto d-flex align-items-center justify-content-center"
+                style="width: 80px; height: 80px; background-color: #FFF9E6; border-radius: 50%;">
+                <i class="bi bi-people text-warning" style="font-size: 2.5rem;"></i>
+              </div>
+              <h5 class="card-title mt-4 fw-bold">Dosen</h5>
               <p class="card-text">
                 Lihat daftar dosen dan informasi kontak mereka. Hubungi dosen Anda dengan mudah.
               </p>
             </div>
             <div class="card-footer bg-transparent border-0 text-end">
-              <a href="dosen.php" class="btn btn-outline-warning btn-sm">Lanjut <i
+              <a href="dosen.php" class="btn btn-warning btn-sm rounded-pill text-white">Lanjut <i
                   class="bi bi-arrow-right-short"></i></a>
             </div>
           </div>
@@ -188,10 +204,10 @@ checkRole('mahasiswa');
     <div class="container">
       <div class="row mb-5">
         <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-up">
-          <div class="card h-100 shadow p-3">
+          <div class="card h-100 shadow p-3" style="background-color: #E6F3FF;">
             <div class="card-body">
-              <h3 class="card-title text-center mb-4">Visi</h3>
-              <p class="card-text">
+              <h3 class="card-title text-center mb-4">VISI</h3>
+              <p class="card-text text-center" style="font-size: 1.2rem">
                 Menjadi program studi yang menghasilkan sarjana terapan
                 berwawasan global dan berdaya saing tinggi dibidang
                 Administrasi Perkantoran Digital secara profesional dan
@@ -201,27 +217,27 @@ checkRole('mahasiswa');
           </div>
         </div>
         <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 shadow p-3">
+          <div class="card h-100 shadow p-3" style="background-color: #E6F3FF;">
             <div class="card-body">
-              <h3 class="card-title text-center mb-4">Misi</h3>
-              <ol class="card-text">
+              <h3 class="card-title text-center mb-4">MISI</h3>
+              <ol class="card-text" style="font-size: 1.2rem;">
                 <li>
                   Menyelenggarakan tridarma perguruan tinggi untuk menyiapkan
                   tenaga kerja sarjana terapan dibidang Administrasi
                   Perkantoran Digital dengan penerapan metode pembelajaran
                   yang terpadu, berkualitas, selaras, dan berkesinambungan.
-                </li>
+                </li><br>
                 <li>
                   Menyelenggarakan penelitian terapan dan pengabdian
                   masyarakat untuk membantu pembangunan dan penyelesaian
                   masalah dalam bidang Administrasi Perkantoran Digital.
-                </li>
+                </li><br>
                 <li>
                   Mengembangkan kegiatan kerjasama yang saling menguntungkan
                   dengan pemerintah, institusi pendidikan, praktisi industri,
                   dan segenap stakeholder untuk pengembangan kompetensi
                   keilmuan dibidang Administrasi Perkantoran Digital.
-                </li>
+                </li><br>
                 <li>
                   Menghasilkan lulusan sarjana terapan yang unggul,
                   profesional, berintegrasi tinggi, dan siap diserap di dunia
