@@ -15,13 +15,7 @@ $tugasList = retrieve("SELECT tp.*, p.pertemuan as pertemuan_ke
   [$matkul_id, $dosen_id]
 );
 
-$message = $_SESSION['message'] ?? '';
-$alert_type = $_SESSION['alert_type'] ?? '';
-
-// Hapus pesan dari sesi setelah ditampilkan
-unset($_SESSION['message']);
-unset($_SESSION['alert_type']);
-
+// Pindahkan logika POST ke sini
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_tugas_id']) && isset($_POST['delete_pertemuan_id'])) {
   $tugas_id = $_POST['delete_tugas_id'];
   $pertemuan_id = $_POST['delete_pertemuan_id'];
@@ -30,20 +24,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_tugas_id']) &&
 
   if (!empty($task)) {
     if (deletePertemuan($pertemuan_id)) {
-      $message = "Tugas berhasil dihapus.";
-      $alert_type = "success";
+      $_SESSION['message'] = "Tugas berhasil dihapus.";
+      $_SESSION['alert_type'] = "success";
     } else {
-      $message = "Gagal menghapus tugas, silakan coba lagi.";
-      $alert_type = "danger";
+      $_SESSION['message'] = "Gagal menghapus tugas, silakan coba lagi.";
+      $_SESSION['alert_type'] = "danger";
     }
   } else {
-    $message = "Anda tidak memiliki izin untuk menghapus tugas ini.";
-    $alert_type = "danger";
+    $_SESSION['message'] = "Anda tidak memiliki izin untuk menghapus tugas ini.";
+    $_SESSION['alert_type'] = "danger";
   }
 
-  header("Location: tugas-matkul.php?id=$matkul_id&message=$message&alert_type=$alert_type");
+  header("Location: tugas-matkul.php?id=$matkul_id");
   exit;
 }
+
+// Ambil pesan dari session
+$message = $_SESSION['message'] ?? '';
+$alert_type = $_SESSION['alert_type'] ?? '';
+
+// Hapus pesan dari session setelah diambil
+unset($_SESSION['message']);
+unset($_SESSION['alert_type']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_tugas_id']) &&
             <a class="nav-link" href="profile.php">Profil</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../logout.php">Logout</a>
+            <a class="nav-link" href="#" onclick="confirmLogout()">Logout</a>
           </li>
         </ul>
       </div>
@@ -121,8 +123,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_tugas_id']) &&
 <body>
   <div class="container mt-5">
     <?php if ($message): ?>
-      <div class="alert alert-<?= $alert_type; ?>">
+      <div class="alert alert-<?= $alert_type; ?> alert-dismissible fade show" role="alert">
         <?= htmlspecialchars($message); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     <?php endif; ?>
     <div class="row mb-3">
@@ -184,6 +187,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_tugas_id']) &&
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+  <script>
+    function confirmLogout() {
+      if (confirm("Apakah Anda yakin ingin keluar?")) {
+        window.location.href = "../logout.php";
+      }
+    }
+  </script>
 </body>
 
 </html>

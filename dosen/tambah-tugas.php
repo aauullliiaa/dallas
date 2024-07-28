@@ -15,10 +15,18 @@ $matkul_detail = retrieve("SELECT nama FROM mata_kuliah WHERE id = ?", [$matkul_
 // Retrieve pertemuan with existing tugas for this dosen
 $existing_pertemuan = retrieve("SELECT pertemuan FROM tugas_pertemuan tp
                                 JOIN pertemuan p ON tp.pertemuan_id = p.id
-                                WHERE p.mata_kuliah_id = ? AND p.dosen_id = ?", [$matkul_id, $dosen_id]);
+                                WHERE p.mata_kuliah_id = ? AND tp.dosen_id = ?", [$matkul_id, $dosen_id]);
 
 // Create an array of existing pertemuan
 $existing_pertemuan_array = array_column($existing_pertemuan, 'pertemuan');
+
+// Retrieve pertemuan with existing tugas for dosen pengampu 2
+$dosen_pengampu_2_tugas = retrieve("SELECT pertemuan FROM tugas_pertemuan tp
+                                    JOIN pertemuan p ON tp.pertemuan_id = p.id
+                                    WHERE p.mata_kuliah_id = ? AND tp.dosen_id != ?", [$matkul_id, $dosen_id]);
+
+// Create an array of pertemuan with tugas from dosen pengampu 2
+$dosen_pengampu_2_pertemuan = array_column($dosen_pengampu_2_tugas, 'pertemuan');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pertemuan = $_POST['pertemuan'];
@@ -29,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Upload file
     $file_tugas = '';
-    if (isset($_FILES['file_tugas'])) {
+    if (isset($_FILES['file_tugas']) && $_FILES['file_tugas']['error'] === UPLOAD_ERR_OK) {
         $upload_result = uploadFileTugas($_FILES['file_tugas']);
         if (is_array($upload_result) && isset($upload_result['error'])) {
             $message = $upload_result['error'];
@@ -78,6 +86,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: tugas-matkul.php?id=$matkul_id");
         exit;
     }
+}
+
+// Ambil pesan dari session jika ada
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    $alert_type = $_SESSION['alert_type'];
+    unset($_SESSION['message']);
+    unset($_SESSION['alert_type']);
 }
 ?>
 <!DOCTYPE html>
@@ -140,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a class="nav-link" href="profile.php">Profil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../logout.php">Logout</a>
+                        <a class="nav-link" href="#" onclick="confirmLogout()">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -173,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <select class="form-select" id="pertemuan" name="pertemuan" required>
                             <?php
                             for ($i = 1; $i <= 16; $i++) {
-                                if (!in_array($i, $existing_pertemuan_array)) {
+                                if (!in_array($i, $existing_pertemuan_array) && !in_array($i, $dosen_pengampu_2_pertemuan)) {
                                     echo "<option value='$i'>Pertemuan $i</option>";
                                 }
                             }
@@ -217,6 +233,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmLogout() {
+            if (confirm("Apakah Anda yakin ingin keluar?")) {
+                window.location.href = "../logout.php";
+            }
+        }
+    </script>
+
 </body>
 
 </html>

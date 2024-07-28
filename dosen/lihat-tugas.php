@@ -87,7 +87,7 @@ $deadline = strtotime($tugasDetail[0]['tanggal_deadline'] . ' ' . $tugasDetail[0
                         <a class="nav-link" href="profile.php">Profil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../logout.php">Logout</a>
+                        <a class="nav-link" href="#" onclick="confirmLogout()">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -156,6 +156,13 @@ $deadline = strtotime($tugasDetail[0]['tanggal_deadline'] . ' ' . $tugasDetail[0
     <?php endif; ?>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmLogout() {
+            if (confirm("Apakah anda yakin ingin keluar?")) {
+                window.location.href = "../logout.php";
+            }
+        }
+    </script>
 </body>
 
 </html>
