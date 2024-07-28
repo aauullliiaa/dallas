@@ -210,6 +210,25 @@
     <div class="row mb-5" data-aos="fade-up" data-aos-delay="600">
       <div class="card p-3 shadow-sm">
         <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <img class="img-fluid rounded" src="src/images/studio-bahasa.jpeg" alt="Lab Typing Kampus 1" />
+            </div>
+            <div class="col-md-6">
+              <h3 class="card-title mb-3">Studio Bahasa (Kampus 1)</h3>
+              <p class="card-text lead">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
+                itaque eum soluta atque?
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="700">
+      <div class="card p-3 shadow-sm">
+        <div class="card-body">
           <div class="row mb-2 align-items-center text-center">
             <h3 class="card-title mb-3">Ruang Kelas</h3>
             <p class="card-text lead">

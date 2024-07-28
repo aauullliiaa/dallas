@@ -1510,18 +1510,6 @@ function deleteMateri($materi_id)
     return $stmt->execute();
 }
 
-function get_all_courses($db)
-{
-    $sql = "SELECT id, nama, dosen_id_1, dosen_id_2 FROM mata_kuliah";
-    $result = $db->query($sql);
-    $courses = [];
-    while ($row = $result->fetch_assoc()) {
-        $courses[] = $row;
-    }
-    return $courses;
-}
-
-
 function deleteUserAndDependencies($db, $delete_id, $role)
 {
     try {
