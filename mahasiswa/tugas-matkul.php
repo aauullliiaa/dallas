@@ -128,8 +128,12 @@ $dosen_pengampu = retrieve("SELECT DISTINCT d.nama
                 <small>Tenggat: <?= htmlspecialchars($tugas['tanggal_deadline']) ?>,
                   <?= htmlspecialchars(date('H:i', strtotime($tugas['jam_deadline']))) ?></small>
                 </p>
-                <p><a href="../src/files/assignment/<?= htmlspecialchars($tugas['file_tugas']); ?>">Lihat
-                    Tugas</a><br>
+                <?php if (!empty($tugas['file_tugas'])): ?>
+                  <p><a href="../src/files/assignment/<?= htmlspecialchars($tugas['file_tugas']); ?>" target="_blank">Lihat
+                      Tugas</a></p>
+                <?php else: ?>
+                  <p><span class="badge rounded-pill text-bg-danger">File tugas tidak tersedia</span></p>
+                <?php endif; ?>
                 <div class="col">
                   <?php
                   $deadline = strtotime($tugas['tanggal_deadline'] . ' ' . $tugas['jam_deadline']);
@@ -178,13 +182,13 @@ $dosen_pengampu = retrieve("SELECT DISTINCT d.nama
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
-    <script>
-      function confirmLogout(){
-        if (confirm("Apakah anda yakin ingin keluar?")){
-          window.location.href = "../logout.php"
-        }
+  <script>
+    function confirmLogout() {
+      if (confirm("Apakah anda yakin ingin keluar?")) {
+        window.location.href = "../logout.php"
       }
-    </script>
+    }
+  </script>
 </body>
 
 </html>
