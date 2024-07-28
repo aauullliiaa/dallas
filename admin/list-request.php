@@ -106,7 +106,8 @@ $db->close();
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../logout.php">Logout</a>
+                        <a class="nav-link" href="../logout.php"
+                            onclick="confirm('Apakah anda yakin ingin keluar?')">Logout</a>
                     </li>
                 </ul>
             </div>
