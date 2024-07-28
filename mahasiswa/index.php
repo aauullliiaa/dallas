@@ -42,7 +42,7 @@ checkRole('mahasiswa');
         <ul class="navbar-nav">
           <li class="nav-item dropdown"></li>
           <li class="nav-item">
-            <a class="nav-link" href="../logout.php">Logout</a>
+            <a class="nav-link" href="#" onclick="confirmLogout()">Logout</a>
           </li>
         </ul>
       </div>
@@ -302,6 +302,12 @@ checkRole('mahasiswa');
       duration: 1000,
       once: true
     });
+
+    function confirmLogout() {
+      if (confirm("Apakah anda yakin ingin keluar?")) {
+        window.location.href = "../logout.php"
+      }
+    }
   </script>
 </body>
 
