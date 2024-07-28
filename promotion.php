@@ -89,7 +89,7 @@
 
   <body>
     <section class="promotion-hero d-flex justify-content-center align-items-center">
-      <h1 data-aos="fade-up">Promosi Program Studi</h1>
+      <h1 data-aos="fade-up" style="font-weight: 600;">PROMOSI PROGRAM STUDI</h1>
     </section>
     <div class="container py-5">
       <div class="row" data-aos="fade-up" data-aos-delay="100">
