@@ -1,7 +1,7 @@
 <?php
+require 'config.php';
 // koneksi ke database
 date_default_timezone_set('Asia/Makassar');
-$db = mysqli_connect("localhost", "root", "", "db_learning_space");
 
 // query fetch data
 // src/db/functions.php
