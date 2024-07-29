@@ -303,7 +303,7 @@ checkRole('dosen');
     });
 
     function confirmLogout() {
-      if (confirm("Apakah anda yakin ingin keluar")) {
+      if (confirm("Apakah anda yakin ingin keluar?")) {
         window.location.href = "../logout.php";
       }
     }
