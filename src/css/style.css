@@ -458,7 +458,7 @@ footer {
   background-image: url("../images/tugas-jumbotron.jpg");
   background-repeat: no-repeat;
   background-size: cover;
-  min-height: 30vh;
+  height: 30vh;
   background-position: center;
   color: #fffffe;
   text-shadow: 4px 6px 6px rgba(0, 0, 0, 0.7);
