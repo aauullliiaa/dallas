@@ -32,9 +32,14 @@ if (isset($_GET['kelas']) && isset($_GET['semester']) && isset($_GET['tahun'])) 
       $fileOrientation = $width > $height ? 'landscape' : 'portrait';
       $jadwalHtml = '<img src="' . $filePath . '" class="img-fluid" alt="Jadwal Perkuliahan">';
     } elseif ($fileType == 'application/pdf') {
-      $fileOrientation = 'landscape';
-      $jadwalHtml = '<embed src="' . $filePath . '" type="application/pdf" width="100%" height="600px" />';
+      $fileOrientation = 'landscape'; // You might want to detect PDF orientation dynamically
+      $jadwalHtml = '<iframe src="' . $filePath . '" width="100%" height="600px" style="border: none;"></iframe>';
     }
+    $jadwalHtml .= '
+      <div class="d-flex justify-content-end mt-3 mb-3 no-print submit-button">
+        <button class="btn btn-light me-2 no-print" onclick="downloadJadwal(\'' . $kelas . '\', \'' . $semester . '\', \'' . $tahun . '\', \'' . $fileType . '\', \'' . $filePath . '\')">Download</button>
+        <button class="btn btn-light no-print" onclick="printJadwal()">Print</button>
+      </div>';
   } else {
     $_SESSION['message'] = "Jadwal tidak ditemukan, silakan tambahkan jadwal terlebih dahulu.";
     $_SESSION['alert_class'] = "alert-warning";
@@ -91,7 +96,7 @@ unset($_SESSION['alert_class']);
       }
 
       #jadwalContainer img,
-      #jadwalContainer embed {
+      #jadwalContainer iframe {
         width: 100%;
         height: 100%;
         object-fit: contain;
@@ -175,7 +180,7 @@ unset($_SESSION['alert_class']);
             </ul>
           </li>
           <li class="nav-item">
-          <a class="nav-link" href="../logout.php" onclick="confirm('Apakah anda yakin ingin keluar?')">Logout</a>
+            <a class="nav-link" href="../logout.php" onclick="confirm('Apakah anda yakin ingin keluar?')">Logout</a>
           </li>
         </ul>
       </div>
@@ -241,51 +246,56 @@ unset($_SESSION['alert_class']);
   <div class="container mt-3 mb-5" id="jadwalContainer">
     <div class="card p-1">
       <div class="card-body">
-        <?php if ($jadwalHtml): ?>
-          <div class="d-flex justify-content-end mb-3 no-print submit-button">
-            <button class="btn btn-light me-2 no-print"
-              onclick="downloadJadwal('<?= $kelas ?>', '<?= $semester ?>', '<?= $tahun ?>', '<?= $fileType ?>')">Download</button>
-            <button class="btn btn-light no-print" onclick="printJadwal()">Print</button>
-          </div>
-          <script>
-            // Menghapus parameter GET dari URL setelah hasil ditampilkan
-            if (window.history.replaceState) {
-              const url = window.location.origin + window.location.pathname;
-              window.history.replaceState({ path: url }, '', url);
-            }
-          </script>
-        <?php endif; ?>
         <?php echo $jadwalHtml; ?>
       </div>
     </div>
   </div>
   <script>
-    function downloadJadwal(kelas, semester, tahun, fileType) {
-      const filePath = document.querySelector('#jadwalContainer img, #jadwalContainer embed').src;
-      const link = document.createElement('a');
-      link.href = filePath;
-      link.download = `jadwal_${kelas}_${semester}_${tahun}.${fileType.split('/')[1]}`;
-      link.click();
+    function downloadJadwal(kelas, semester, tahun, fileType, filePath) {
+      if (fileType === 'application/pdf') {
+        // Untuk PDF, buka di tab baru
+        window.open(filePath, '_blank');
+      } else {
+        // Untuk file lain (seperti gambar), unduh langsung
+        const link = document.createElement('a');
+        link.href = filePath;
+        link.download = `jadwal_${kelas}_${semester}_${tahun}.${fileType.split('/')[1]}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     }
 
     function printJadwal() {
-      const content = document.querySelector('#jadwalContainer img, #jadwalContainer embed');
-      const win = window.open('', '_blank');
-      win.document.write('<html><head><title>Print</title>');
-      win.document.write('<style>');
-      win.document.write(`
-    @page { size: ${content.naturalWidth > content.naturalHeight ? 'landscape' : 'portrait'}; margin: 0; }
-    html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
-    img, embed { width: 100%; height: 100%; object-fit: contain; }
-  `);
-      win.document.write('</style></head><body>');
-      win.document.write(content.outerHTML);
-      win.document.close();
-      win.onload = function () {
-        win.focus();
-        win.print();
-        win.close();
-      };
+      const content = document.querySelector('#jadwalContainer iframe, #jadwalContainer img');
+      if (content.tagName.toLowerCase() === 'iframe') {
+        // Untuk PDF
+        content.contentWindow.print();
+      } else {
+        // Untuk gambar
+        const win = window.open('', '_blank');
+        win.document.write('<html><head><title>Print</title>');
+        win.document.write('<style>');
+        win.document.write(`
+          @page { size: ${content.naturalWidth > content.naturalHeight ? 'landscape' : 'portrait'}; margin: 0; }
+          html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+          img { width: 100%; height: 100%; object-fit: contain; }
+        `);
+        win.document.write('</style></head><body>');
+        win.document.write(content.outerHTML);
+        win.document.close();
+        win.onload = function () {
+          win.focus();
+          win.print();
+          win.close();
+        };
+      }
+    }
+
+    // Menghapus parameter GET dari URL setelah hasil ditampilkan
+    if (window.history.replaceState) {
+      const url = window.location.origin + window.location.pathname;
+      window.history.replaceState({ path: url }, '', url);
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

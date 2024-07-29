@@ -92,12 +92,10 @@
               </li>
             </ul>
           </li>
-
         </ul>
       </div>
     </div>
   </nav>
-
   <!-- Hero Carousel -->
   <div id="homeCarousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
