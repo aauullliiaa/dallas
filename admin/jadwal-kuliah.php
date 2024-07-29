@@ -31,15 +31,23 @@ if (isset($_GET['kelas']) && isset($_GET['semester']) && isset($_GET['tahun'])) 
       list($width, $height) = getimagesize($filePath);
       $fileOrientation = $width > $height ? 'landscape' : 'portrait';
       $jadwalHtml = '<img src="' . $filePath . '" class="img-fluid" alt="Jadwal Perkuliahan">';
+      $jadwalHtml .= '
+        <div class="d-flex justify-content-end mt-3 mb-3 no-print submit-button">
+          <button class="btn btn-light me-2 no-print" onclick="downloadJadwal(\'' . $kelas . '\', \'' . $semester . '\', \'' . $tahun . '\', \'' . $fileType . '\', \'' . $filePath . '\')">Download</button>
+          <button class="btn btn-light no-print" onclick="printJadwal()">Print</button>
+        </div>';
     } elseif ($fileType == 'application/pdf') {
       $fileOrientation = 'landscape'; // You might want to detect PDF orientation dynamically
       $jadwalHtml = '<iframe src="' . $filePath . '" width="100%" height="600px" style="border: none;"></iframe>';
+    } else {
+      // For other file types
+      $jadwalHtml = '<p>File jadwal tersedia. Klik tombol di bawah untuk mengunduh.</p>';
+      $jadwalHtml .= '
+        <div class="d-flex justify-content-end mt-3 mb-3 no-print submit-button">
+          <button class="btn btn-light me-2 no-print" onclick="downloadJadwal(\'' . $kelas . '\', \'' . $semester . '\', \'' . $tahun . '\', \'' . $fileType . '\', \'' . $filePath . '\')">Download</button>
+          <button class="btn btn-light no-print" onclick="printJadwal()">Print</button>
+        </div>';
     }
-    $jadwalHtml .= '
-      <div class="d-flex justify-content-end mt-3 mb-3 no-print submit-button">
-        <button class="btn btn-light me-2 no-print" onclick="downloadJadwal(\'' . $kelas . '\', \'' . $semester . '\', \'' . $tahun . '\', \'' . $fileType . '\', \'' . $filePath . '\')">Download</button>
-        <button class="btn btn-light no-print" onclick="printJadwal()">Print</button>
-      </div>';
   } else {
     $_SESSION['message'] = "Jadwal tidak ditemukan, silakan tambahkan jadwal terlebih dahulu.";
     $_SESSION['alert_class'] = "alert-warning";
@@ -252,35 +260,25 @@ unset($_SESSION['alert_class']);
   </div>
   <script>
     function downloadJadwal(kelas, semester, tahun, fileType, filePath) {
-      if (fileType === 'application/pdf') {
-        // Untuk PDF, buka di tab baru
-        window.open(filePath, '_blank');
-      } else {
-        // Untuk file lain (seperti gambar), unduh langsung
-        const link = document.createElement('a');
-        link.href = filePath;
-        link.download = `jadwal_${kelas}_${semester}_${tahun}.${fileType.split('/')[1]}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
+      const link = document.createElement('a');
+      link.href = filePath;
+      link.download = `jadwal_${kelas}_${semester}_${tahun}.${fileType.split('/')[1]}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     function printJadwal() {
-      const content = document.querySelector('#jadwalContainer iframe, #jadwalContainer img');
-      if (content.tagName.toLowerCase() === 'iframe') {
-        // Untuk PDF
-        content.contentWindow.print();
-      } else {
-        // Untuk gambar
+      const content = document.querySelector('#jadwalContainer img');
+      if (content) {
         const win = window.open('', '_blank');
         win.document.write('<html><head><title>Print</title>');
         win.document.write('<style>');
         win.document.write(`
-          @page { size: ${content.naturalWidth > content.naturalHeight ? 'landscape' : 'portrait'}; margin: 0; }
-          html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
-          img { width: 100%; height: 100%; object-fit: contain; }
-        `);
+      @page { size: ${content.naturalWidth > content.naturalHeight ? 'landscape' : 'portrait'}; margin: 0; }
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+      img { width: 100%; height: 100%; object-fit: contain; }
+    `);
         win.document.write('</style></head><body>');
         win.document.write(content.outerHTML);
         win.document.close();
@@ -289,6 +287,8 @@ unset($_SESSION['alert_class']);
           win.print();
           win.close();
         };
+      } else {
+        window.print();
       }
     }
 
