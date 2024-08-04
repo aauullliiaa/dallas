@@ -182,15 +182,17 @@ if ($alert_type === 'success') {
                             <small id="nipError" style="color: red; display: none;">NIP harus 18 digit</small>
                         </div>
                     </div>
-                    <div class="row mb-3 text-center justify-content-center">
+                    <div class="row mb-2 text-center justify-content-center">
                         <div class="col-md-3 submit-button">
                             <button type="submit" name="register" class="btn btn-light">Register</button>
                         </div>
                     </div>
-                    <div class="row text-center">
-                        <small>Sudah memiliki akun? Silakan <a href="login.php">login</a> disini </small>
-                    </div>
                 </form>
+                <div class="row text-center">
+                    <div class="col submit-button">
+                        <a href="index.php"><button class="btn btn-light">Kembali</button></a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
