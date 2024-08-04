@@ -78,7 +78,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                     <div class="row text-center">
-                        <small>Belum memiliki akun? Silakan <a href="register.php">register</a> disini</small>
+                        <small style="font-size: 0.7rem;">Lupa <a href="reset-password-mhs.php">
+                                password?</a></small>
+                        <small style="font-size: 0.7rem;">Belum memiliki akun? Silakan <a
+                                href="register.php">register</a>
+                            disini</small>
                     </div>
                 </form>
             </div>

@@ -8,11 +8,11 @@ $alert_type = "";
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = htmlspecialchars($_POST['email']);
     $password = htmlspecialchars($_POST['password']);
+    $role = htmlspecialchars($_POST['role']);
     $nip = htmlspecialchars($_POST['nip']);
     $nim = htmlspecialchars($_POST['nim']);
 
     // Validasi NIP dan NIM
-    $role = null;
     $valid = true;
 
     if (!empty($nip)) {
@@ -102,7 +102,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 if ($alert_type === 'success') {
     $_SESSION['message'] = $message;
     $_SESSION['alert_type'] = $alert_type;
-    header("Location: index.php");
+
+    switch ($role) {
+        case 'dosen':
+        case 'admin':
+            header("Location: login-pegawai.php");
+            break;
+        case 'mahasiswa':
+            header("Location: login-mahasiswa.php");
+            break;
+        default:
+            header("Location: index.php");
+            break;
+    }
     exit;
 }
 ?>
@@ -152,13 +164,22 @@ if ($alert_type === 'success') {
                             <input type="password" id="password" name="password" class="form-control" required>
                         </div>
                         <div class="mb-3">
+                            <label for="role" class="form-label">Role:</label>
+                            <select id="role" name="role" class="form-select" required>
+                                <option value="">Pilih Role</option>
+                                <option value="mahasiswa">Mahasiswa</option>
+                                <option value="dosen">Dosen</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div id="nimField" class="mb-3" style="display: none;">
+                            <label for="nim" class="form-label">NIM:</label>
+                            <input type="text" id="nim" name="nim" class="form-control">
+                        </div>
+                        <div id="nipField" class="mb-3" style="display: none;">
                             <label for="nip" class="form-label">NIP:</label>
                             <input type="text" id="nip" name="nip" class="form-control" maxlength="18">
                             <small id="nipError" style="color: red; display: none;">NIP harus 18 digit</small>
-                        </div>
-                        <div class="mb-3">
-                            <label for="nim" class="form-label">NIM:</label>
-                            <input type="text" id="nim" name="nim" class="form-control">
                         </div>
                     </div>
                     <div class="row mb-3 text-center justify-content-center">
@@ -167,7 +188,7 @@ if ($alert_type === 'success') {
                         </div>
                     </div>
                     <div class="row text-center">
-                        <small>Sudah memiliki akun? Silakan <a href="index.php">login</a> disini </small>
+                        <small>Sudah memiliki akun? Silakan <a href="login.php">login</a> disini </small>
                     </div>
                 </form>
             </div>
@@ -175,6 +196,20 @@ if ($alert_type === 'success') {
     </div>
     <script>
         $(document).ready(function () {
+            $('#role').on('change', function () {
+                var selectedRole = $(this).val();
+                if (selectedRole === 'mahasiswa') {
+                    $('#nimField').show();
+                    $('#nipField').hide();
+                } else if (selectedRole === 'dosen' || selectedRole === 'admin') {
+                    $('#nipField').show();
+                    $('#nimField').hide();
+                } else {
+                    $('#nimField').hide();
+                    $('#nipField').hide();
+                }
+            });
+
             $('#nip').on('input', function () {
                 var nip = $(this).val();
                 if (nip.length != 18) {
@@ -186,6 +221,7 @@ if ($alert_type === 'success') {
                 }
             });
         });
+
     </script>
 </body>
 

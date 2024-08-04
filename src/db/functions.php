@@ -184,6 +184,84 @@ function isNIM($input)
 }
 
 // end of halaman login functions
+
+// Reset Password
+function resetPasswordStaff($db, $nip, $password1, $password2)
+{
+    if (empty($nip) || empty($password1) || empty($password2)) {
+        return array("Semua field harus diisi.", "danger");
+    } elseif ($password1 !== $password2) {
+        return array("Password baru dan konfirmasi password tidak cocok.", "danger");
+    }
+
+    $stmt = $db->prepare("SELECT user_id, 'dosen' as role FROM daftar_dosen WHERE nip = ?
+                          UNION
+                          SELECT user_id, 'admin' as role FROM daftar_admin WHERE nip = ?");
+    $stmt->bind_param("ss", $nip, $nip);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+        $user_id = $user['user_id'];
+        $role = $user['role'];
+
+        $hashed_password = password_hash($password1, PASSWORD_DEFAULT);
+
+        $update_stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
+        $update_stmt->bind_param("si", $hashed_password, $user_id);
+
+        if ($update_stmt->execute()) {
+            $table = ($role === 'dosen') ? 'daftar_dosen' : 'daftar_admin';
+            $update_role_stmt = $db->prepare("UPDATE $table SET password = ? WHERE nip = ?");
+            $update_role_stmt->bind_param("ss", $hashed_password, $nip);
+            $update_role_stmt->execute();
+
+            return array("Password berhasil direset. Silakan login dengan password baru Anda.", "success");
+        } else {
+            return array("Gagal mereset password. Silakan coba lagi.", "danger");
+        }
+    } else {
+        return array("NIP tidak ditemukan atau bukan milik dosen atau admin prodi APD.", "danger");
+    }
+}
+
+function resetPasswordMahasiswa($db, $nim, $password1, $password2)
+{
+    if (empty($nim) || empty($password1) || empty($password2)) {
+        return array("Semua field harus diisi.", "danger");
+    } elseif ($password1 !== $password2) {
+        return array("Password baru dan konfirmasi password tidak cocok.", "danger");
+    }
+
+    $stmt = $db->prepare("SELECT user_id FROM daftar_mahasiswa WHERE nim = ?");
+    $stmt->bind_param("s", $nim);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+        $user_id = $user['user_id'];
+
+        $hashed_password = password_hash($password1, PASSWORD_DEFAULT);
+
+        $update_stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
+        $update_stmt->bind_param("si", $hashed_password, $user_id);
+
+        if ($update_stmt->execute()) {
+            $update_mhs_stmt = $db->prepare("UPDATE daftar_mahasiswa SET password = ? WHERE nim = ?");
+            $update_mhs_stmt->bind_param("ss", $hashed_password, $nim);
+            $update_mhs_stmt->execute();
+
+            return array("Password berhasil direset. Silakan login dengan password baru Anda.", "success");
+        } else {
+            return array("Gagal mereset password. Silakan coba lagi.", "danger");
+        }
+    } else {
+        return array("NIM tidak ditemukan.", "danger");
+    }
+}
+// End of Reset Password
 // halaman edit profil mahasiswa functions
 function updateProfile($user_id, $role, $data)
 {

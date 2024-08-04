@@ -81,10 +81,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <button type="submit" name="login" class="btn btn-primary">Login</button>
                         </div>
                     </div>
-                    <div class="row text-center">
-                        <small>Belum memiliki akun? Silakan <a href="register.php">register</a> disini</small>
-                    </div>
                 </form>
+                <div class="row text-center">
+                    <small style="font-size: 0.7rem;">Lupa <a href="reset-password-pegawai.php">
+                            password?</a></small>
+                    <small style="font-size: 0.7rem;">Belum memiliki akun? Silakan <a href="register.php">register</a>
+                        disini</small>
+                </div>
             </div>
         </div>
     </div>
