@@ -106,7 +106,6 @@ $dosen_pengampu = retrieve("SELECT DISTINCT d.nama
       <div class="row">
         <h4>Mata Kuliah</h4>
         <p><?= htmlspecialchars($detailmk['nama']); ?></p>
-        <p>Dosen Pengampu: <?= implode(", ", array_column($dosen_pengampu, 'nama')) ?></p>
       </div>
       <div class="col submit-button mb-2">
         <a href="detail-matkul.php?id=<?= $matkul_id; ?>"><button class="btn">Kembali</button></a>
