@@ -1,24 +1,45 @@
 * {
-  font-family: "Poppins";
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
 }
-section {
-  padding-top: 7rem;
-  margin-bottom: 4rem;
+
+:root {
+  --primary-color: #c6ac8f;
+  --secondary-color: #eae0d5;
+  --text-color: #0a0908;
+  --white-color: #fffffe;
 }
+
+html {
+  font-size: 1rem;
+}
+
 body {
-  background-color: #eae0d5;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
 }
+
+section {
+  padding-top: 5rem;
+  margin-bottom: 3rem;
+}
+
 .bg-navbar {
-  background-color: #c6ac8f;
+  background-color: var(--primary-color);
 }
+
 .jumbotron {
   background-image: url("../images/thought-catalog-505eectW54k-unsplash.jpg");
   background-position: center;
   background-size: cover;
   min-height: 100vh;
-  color: #fffffe;
-  text-shadow: 3px 3px 4px black;
+  color: var(--white-color);
+  text-shadow: 0.1875rem 0.1875rem 0.25rem rgba(0, 0, 0, 0.7);
+  position: relative;
 }
+
 .jumbotron::after {
   content: "";
   position: absolute;
@@ -26,74 +47,85 @@ body {
   width: 100%;
   height: 50%;
   bottom: 0;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 7%,
+    rgba(255, 255, 255, 0) 50%
+  );
 }
+
 /* Index */
 .alamat th,
 .kontak th {
-  vertical-align: text-top;
+  vertical-align: top;
   width: 10rem;
 }
+
 .carousel-item {
-  height: 50vh; /* Make carousel full height of viewport */
+  height: 50vh;
   position: relative;
 }
+
 .carousel-item::after {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
   bottom: 0;
-  width: 100%;
-  height: 100%;
   background: linear-gradient(
     0deg,
-    #eae0d5 0%,
-    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 80%,
-    /* Very light black in the middle */ #eae0d5 100%
-      /* Very light black at the top */
+    var(--secondary-color) 0%,
+    rgba(0, 0, 0, 0.1) 80%,
+    var(--secondary-color) 100%
   );
 }
+
 .carousel-item img {
   object-fit: cover;
   height: 100%;
   width: 100%;
 }
+
 .carousel-caption {
   z-index: 1;
-  top: 55%;
+  top: 50%;
   transform: translateY(-50%);
-  bottom: initial;
-  padding: 20px;
+  bottom: auto;
+  padding: 1.25rem;
 }
+
 .carousel-caption h5 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   margin-bottom: 1rem;
-  color: #ffffff; /* Ensure text is white for better contrast */
-  text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
+  color: var(--white-color);
+  text-shadow: 0.25rem 0.25rem 0.625rem rgba(0, 0, 0, 0.9);
 }
+
 .carousel-caption p {
-  font-size: 1.8rem;
-  color: #fff; /* Ensure text is white for better contrast */
-  text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Add text shadow for better readability */
+  font-size: 1.2rem;
+  color: var(--white-color);
+  text-shadow: 0.25rem 0.25rem 0.625rem rgba(0, 0, 0, 0.9);
 }
+
 footer {
-  background-color: #c6ac8f;
+  background-color: var(--primary-color);
 }
+
 #logo-carousel {
-  padding: 50px 0;
+  padding: 3.125rem 0;
   background-color: #f8f9fa;
 }
 
 .logo-slider {
-  padding: 0 50px;
+  padding: 0 3.125rem;
 }
 
 .logo-item {
   display: flex !important;
   justify-content: center;
   align-items: center;
-  height: 100px; /* Sesuaikan dengan tinggi maksimum logo Anda */
+  height: 6.25rem;
 }
 
 .logo-item img {
@@ -112,20 +144,20 @@ footer {
 .slick-slide {
   height: auto;
 }
+
 #showcase .card {
   transition: transform 0.3s ease-in-out;
 }
 
 #showcase .card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-0.3125rem);
 }
 
 #showcase .card-img-top {
-  height: 200px;
+  height: 12.5rem;
   object-fit: cover;
 }
 
-/* End of Index */
 /* Fasilitas */
 .facility-hero {
   background-image: url("../images/lab-perkantoran-kp2.jpeg");
@@ -133,30 +165,32 @@ footer {
   background-size: cover;
   min-height: 40vh;
   background-position: center;
-  color: #fffffe;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.6);
+  position: relative;
 }
+
 .facility-hero::after {
   content: "";
-  display: block;
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
   bottom: 0;
-  width: 100%;
-  height: 40%;
   background: linear-gradient(
     0deg,
-    #eae0d5 0%,
-    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 50%,
-    /* Very light black in the middle */ rgba(0, 0, 0, 0.1) 100%
-      /* Very light black at the top */
+    var(--secondary-color) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.1) 100%
   );
 }
+
 .facility-hero h1 {
-  color: #ffffff;
+  color: var(--white-color);
+  position: relative;
+  z-index: 1;
 }
-/* End of Fasiitas */
+
 /* Promotion */
 .promotion-hero {
   background-image: url("../images/promosi-5-hero.jpeg");
@@ -164,39 +198,44 @@ footer {
   background-size: cover;
   min-height: 40vh;
   background-position: center;
-  color: #fffffe;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.6);
+  position: relative;
 }
+
 .promotion-hero::after {
   content: "";
-  display: block;
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
   bottom: 0;
-  width: 100%;
-  height: 40%;
   background: linear-gradient(
     0deg,
-    #eae0d5 0%,
-    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 50%,
-    /* Very light black in the middle */ rgba(0, 0, 0, 0.1) 100%
-      /* Very light black at the top */
+    var(--secondary-color) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.1) 100%
   );
 }
+
 .promotion-hero h1 {
-  color: #ffffff;
+  color: var(--white-color);
+  position: relative;
+  z-index: 1;
 }
+
 .card-img-custom {
   width: 100%;
-  height: 250px; /* Anda bisa menyesuaikan tinggi ini sesuai kebutuhan */
+  height: 15.625rem;
   object-fit: cover;
 }
+
 .thumbnail-custom {
-  max-width: 60pc; /* atau ukuran yang Anda inginkan */
-  margin: 0 auto; /* untuk memposisikan gambar di tengah */
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
 }
-/* End of Promotion */
+
 /* Activity */
 .activity-hero {
   background-image: url("../images/promosi-5-hero.jpeg");
@@ -204,30 +243,32 @@ footer {
   background-size: cover;
   min-height: 40vh;
   background-position: center;
-  color: #fffffe;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.6);
+  position: relative;
 }
+
 .activity-hero::after {
   content: "";
-  display: block;
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
   bottom: 0;
-  width: 100%;
-  height: 40%;
   background: linear-gradient(
     0deg,
-    #eae0d5 0%,
-    /* Slightly darker at the bottom */ rgba(0, 0, 0, 0.1) 50%,
-    /* Very light black in the middle */ rgba(0, 0, 0, 0.1) 100%
-      /* Very light black at the top */
+    var(--secondary-color) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.1) 100%
   );
 }
+
 .activity-hero h1 {
-  color: #ffffff;
+  color: var(--white-color);
+  position: relative;
+  z-index: 1;
 }
-/* End of Activity */
+
 /* Login */
 .login {
   background-image: url("../images/inaki-del-olmo-NIJuEQw0RKg-unsplash.jpg");
@@ -235,19 +276,16 @@ footer {
   background-size: cover;
   min-height: 100vh;
   background-position: center;
-  color: #0a0908;
+  color: var(--text-color);
 }
-/* End of Login */
+
 /* Reset Password */
 .password {
   background-color: #f5ebe0;
-  background-repeat: no-repeat;
-  background-size: cover;
   min-height: 100vh;
-  background-position: center;
-  color: #0a0908;
+  color: var(--text-color);
 }
-/* End of Reset Password */
+
 /* Register */
 .register {
   height: 100vh;
@@ -255,9 +293,8 @@ footer {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  color: #fffffe;
+  color: var(--white-color);
 }
-/* End of Register */
 
 /* Mata Kuliah */
 .hero-matkul {
@@ -266,73 +303,94 @@ footer {
   background-size: cover;
   min-height: 30vh;
   background-position: center;
-  color: #fffffe;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.6);
+  position: relative;
 }
+
 .hero-matkul::after {
-  display: block;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
   content: "";
-  width: 100%;
-  min-height: 19%;
   position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 19%;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 7%,
+    rgba(255, 255, 255, 0) 50%
+  );
 }
+
 .daftar-matkul ul li {
   list-style-type: none;
   padding: 1rem 0;
-  border-bottom: 1px solid #000;
+  border-bottom: 0.0625rem solid var(--text-color);
 }
+
 .daftar-matkul ul li a {
-  color: #0a0908;
+  color: var(--text-color);
   font-weight: 600;
   text-decoration: none;
 }
-/* End of Mata Kuliah */
 
 /* Detail Mata Kuliah */
 .list-materi ul li {
-  border-bottom: 1px solid #000;
-  padding: 10px 0;
+  border-bottom: 0.0625rem solid var(--text-color);
+  padding: 0.625rem 0;
   list-style: none;
 }
+
 .detail-matkul button:hover {
   background-color: #8f704a;
   border: none;
   font-weight: 600;
-  color: white;
+  color: var(--white-color);
 }
-/* End of Detail Mata Kuliah */
 
 /* Jadwal Perkuliahan */
+.roster {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .roster th,
 .roster td {
-  border: 1px solid black;
-  padding: 5px;
+  border: 0.0625rem solid var(--text-color);
+  padding: 0.3125rem;
   text-align: center;
-  font-size: 0.5rem;
+  font-size: 0.75rem;
 }
+
 .istirahat {
-  background-color: #c6ac8f;
+  background-color: var(--primary-color);
   font-weight: bold;
 }
+
 .hero-jadwal {
   background-image: url("../images/eric-rothermel-FoKO4DpXamQ-unsplash.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   min-height: 30vh;
   background-position: center;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  color: #fffffe;
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.8);
+  color: var(--white-color);
+  position: relative;
 }
+
 .hero-jadwal::after {
-  display: block;
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
-  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 19%;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 7%,
+    rgba(255, 255, 255, 0) 50%
+  );
 }
-/* End of Jadwal Perkuliahan */
 
 /* Daftar Dosen */
 .dosen-hero {
@@ -341,30 +399,42 @@ footer {
   background-size: cover;
   min-height: 30vh;
   background-position: center;
-  color: #fffffe;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.7);
+  position: relative;
 }
+
 .dosen-hero::after {
   content: "";
   position: absolute;
-  min-height: 19%;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
-  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 19%;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 7%,
+    rgba(255, 255, 255, 0) 50%
+  );
 }
+
 .dosen-content ul li {
   list-style-type: none;
 }
+
 .daftar-dosen {
-  border: 1px solid #000;
+  border: 0.0625rem solid var(--text-color);
 }
+
 .card-body a {
   text-decoration: none;
-  color: #0a0908;
+  color: var(--text-color);
 }
+
 .card-body a:hover {
   color: blue;
 }
-/* End of Daftar Dosen  */
+
 /* Edit Materi Perkuliahan */
 .edit-hero {
   background-image: url("../images/patrick-tomasso-Oaqk7qqNh_c-unsplash.jpg");
@@ -372,38 +442,47 @@ footer {
   background-size: cover;
   min-height: 30vh;
   background-position: center;
-  color: #fffffe;
-  text-shadow: 4px 6px 6px rgba(0, 0, 0, 0.5);
+  color: var(--white-color);
+  text-shadow: 0.25rem 0.375rem 0.375rem rgba(0, 0, 0, 0.5);
+  position: relative;
 }
+
 .edit-hero::after {
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
-  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 19%;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 7%,
+    rgba(255, 255, 255, 0) 50%
+  );
 }
+
 .submit-button .btn,
 .edit-btn {
-  background-color: #c6ac8f;
+  background-color: var(--primary-color);
   border: none;
 }
+
 .submit-button .btn:hover,
 .edit-btn:hover {
   background-color: #8f704a;
-  color: #fffffe;
+  color: var(--white-color);
   font-weight: 600;
 }
-/* End of Edit Materi Perkuliahan */
 
 /* Edit Jadwal Perkuliahan */
 .card-body table th {
-  width: 180px;
-  padding-bottom: 10px;
+  width: 11.25rem;
+  padding-bottom: 0.625rem;
 }
+
 .card-body table td {
-  padding-bottom: 10px;
+  padding-bottom: 0.625rem;
 }
-/* End of Jadwal Perkuliahan */
 
 /* Data Mahasiswa */
 .mhs-hero {
@@ -412,30 +491,46 @@ footer {
   background-size: cover;
   min-height: 30vh;
   background-position: center;
-  color: #fffffe;
-  text-shadow: 4px 6px 6px rgba(0, 0, 0, 0.5);
+  color: var(--white-color);
+  text-shadow: 0.25rem 0.375rem 0.375rem rgba(0, 0, 0, 0.5);
+  position: relative;
 }
+
 .mhs-hero::after {
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
-  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 19%;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 7%,
+    rgba(255, 255, 255, 0) 50%
+  );
 }
+
+.data-mhs {
+  overflow-x: auto;
+}
+
+.data-mhs table {
+  width: 100%;
+}
+
 .data-mhs table td,
 .data-mhs table th {
-  border: 1px solid #000;
-  padding: 5px;
+  border: 0.0625rem solid var(--text-color);
+  padding: 0.3125rem;
   font-size: 0.8rem;
   text-align: center;
 }
-/* End of Data Mahasiswa */
 
 /* Edit Data Mahasiswa */
 #edit-data-mhs .container {
   max-width: 50rem;
 }
-/* End of Edit Data Mahasiswa */
+
 /* Edit Profile */
 .edit-profile {
   max-width: 50rem;
@@ -448,74 +543,180 @@ footer {
   background-size: cover;
   height: 30vh;
   background-position: center;
-  color: #fffffe;
-  text-shadow: 4px 6px 6px rgba(0, 0, 0, 0.7);
+  color: var(--white-color);
+  text-shadow: 0.25rem 0.375rem 0.375rem rgba(0, 0, 0, 0.7);
+  position: relative;
 }
+
 .tugas-jumbotron::after {
   content: "";
   position: absolute;
-  background: linear-gradient(0deg, #eae0d5 7%, rgba(255, 255, 255, 0) 50%);
-  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 19%;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 7%,
+    rgba(255, 255, 255, 0) 50%
+  );
 }
+
 .list-tugas ul li {
   list-style-type: none;
 }
 
-/* Media Query */
-@media (max-width: 767.98px) {
+/* Responsive adjustments */
+@media (max-width: 1200px) {
   html {
-    font-size: 75%;
+    font-size: 15px;
   }
+}
+
+@media (max-width: 992px) {
+  html {
+    font-size: 14px;
+  }
+
+  .carousel-item {
+    height: 40vh;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 13px;
+  }
+
   .carousel-item {
     height: 30vh;
   }
+
   .carousel-caption h5 {
     font-size: 1.5rem;
   }
+
   .carousel-caption p {
     font-size: 1rem;
   }
+
   section#visimisi {
-    height: 20vh;
+    height: auto;
+    min-height: 20vh;
   }
-  section#visimisi::after {
-    height: 28%;
-  }
-  /* Index */
+
   iframe {
-    height: 250px;
+    height: 15.625rem;
   }
-  /* Mata Kuliah */
-  .hero-matkul {
+
+  .hero-matkul,
+  .hero-jadwal,
+  .dosen-hero,
+  .edit-hero,
+  .mhs-hero,
+  .tugas-jumbotron {
     min-height: 25vh;
-  }
-  /* Jadwal Perkuliahan */
-  .hero-jadwal {
-    min-height: 25vh;
-  }
-  /* Dosen */
-  .dosen-hero {
-    min-height: 25vh;
-  }
-  /* Edit Materi */
-  .edit-hero {
-    min-height: 25vh;
-  }
-  /* Data Mahasiswa */
-  .mhs-hero {
-    min-height: 25vh;
-  }
-  /* Data Dosen */
-  .list-group .list-group-item li {
-    font-size: 20px;
   }
 }
-@media (max-width: 575.98px) {
+
+@media (max-width: 576px) {
   html {
-    font-size: 70%;
+    font-size: 12px;
   }
+
   .container .data-mhs {
-    padding: 1rem 7% 0;
+    padding: 1rem 5% 0;
   }
+
+  .carousel-caption h5 {
+    font-size: 1.2rem;
+  }
+
+  .carousel-caption p {
+    font-size: 0.9rem;
+  }
+
+  .roster th,
+  .roster td,
+  .data-mhs table td,
+  .data-mhs table th {
+    font-size: 0.7rem;
+    padding: 0.2rem;
+  }
+}
+
+/* Accessibility improvements */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles for better keyboard navigation */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 0.125rem solid #4d90fe;
+  outline-offset: 0.125rem;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    background: none;
+    color: #000;
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr,
+  img {
+    page-break-inside: avoid;
+  }
+
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}
+
+/* Additional performance optimizations */
+.lazy-load {
+  transition: opacity 0.3s;
+}
+
+.lazy-load[data-loaded="false"] {
+  opacity: 0;
+}
+
+.lazy-load[data-loaded="true"] {
+  opacity: 1;
 }
