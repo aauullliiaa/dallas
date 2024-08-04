@@ -174,7 +174,8 @@ if ($alert_type === 'success') {
                         </div>
                         <div id="nimField" class="mb-3" style="display: none;">
                             <label for="nim" class="form-label">NIM:</label>
-                            <input type="text" id="nim" name="nim" class="form-control">
+                            <input type="text" id="nim" name="nim" class="form-control" maxlength="8">
+                            <small id="nipError" style="color: red; display: none;">NIM harus 8 digit</small>
                         </div>
                         <div id="nipField" class="mb-3" style="display: none;">
                             <label for="nip" class="form-label">NIP:</label>
