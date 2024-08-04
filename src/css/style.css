@@ -237,29 +237,17 @@ footer {
   background-position: center;
   color: #0a0908;
 }
-.login-box {
-  width: 460px;
-  border-radius: 15px;
-}
-.login-box span a {
-  text-decoration: none;
+/* End of Login */
+/* Reset Password */
+.password {
+  background-color: #f5ebe0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  background-position: center;
   color: #0a0908;
 }
-.login-box span a:hover {
-  text-decoration: underline;
-  color: blue;
-}
-.login-box .btn {
-  background-color: #cfae8f;
-  transition: 0.2s;
-}
-.login-box .btn:hover {
-  background-color: #8f704a;
-  color: #fffffe;
-  font-weight: 600;
-}
-/* End of Login */
-
+/* End of Reset Password */
 /* Register */
 .register {
   height: 100vh;
