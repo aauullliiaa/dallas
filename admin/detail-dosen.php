@@ -76,7 +76,7 @@ $dosen = retrieve("SELECT * FROM daftar_dosen WHERE id = $id")[0];
             </ul>
           </li>
           <li class="nav-item">
-          <a class="nav-link" href="../logout.php" onclick="confirm('Apakah anda yakin ingin keluar?')">Logout</a>
+            <a class="nav-link" href="../logout.php" onclick="confirm('Apakah anda yakin ingin keluar?')">Logout</a>
           </li>
         </ul>
       </div>
@@ -93,7 +93,7 @@ $dosen = retrieve("SELECT * FROM daftar_dosen WHERE id = $id")[0];
     <div class="card p-3">
       <div class="card-body">
         <div class="row">
-          <img src="../src/images/<?= $dosen["foto"] ?>" alt="" style="width: 80px; border-radius: 50%;">
+          <img src="../src/images/<?= $dosen["foto"] ?>" alt="" style="width: 100px; border-radius: 50%;">
         </div>
         <div class="row mt-3">
           <h5>Nama</h5>
