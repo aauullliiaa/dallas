@@ -94,7 +94,7 @@
 
 <body>
     <section class="activity-hero d-flex justify-content-center align-items-center">
-        <h1 data-aos="fade-up">Kegiatan Program Studi</h1>
+        <h1>Kegiatan Program Studi</h1>
     </section>
     <div class="container py-5">
 
