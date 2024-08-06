@@ -1544,7 +1544,60 @@ function deleteMataKuliah($db, $id)
     $db->begin_transaction();
 
     try {
-        // Then, delete the mata_kuliah entry
+        // Delete related entries in the tugas_kumpul table
+        $query = "DELETE tk FROM tugas_kumpul tk
+                  INNER JOIN tugas_pertemuan tp ON tk.tugas_id = tp.id
+                  INNER JOIN pertemuan p ON tp.pertemuan_id = p.id
+                  WHERE p.mata_kuliah_id = ?";
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed for tugas_kumpul: " . $db->error);
+        }
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed for tugas_kumpul: " . $stmt->error);
+        }
+        $stmt->close();
+
+        // Delete related entries in the tugas_pertemuan table
+        $query = "DELETE tp FROM tugas_pertemuan tp
+                  INNER JOIN pertemuan p ON tp.pertemuan_id = p.id
+                  WHERE p.mata_kuliah_id = ?";
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed for tugas_pertemuan: " . $db->error);
+        }
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed for tugas_pertemuan: " . $stmt->error);
+        }
+        $stmt->close();
+
+        // Delete related entries in the materi table
+        $query = "DELETE FROM materi WHERE mata_kuliah_id = ?";
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed for materi: " . $db->error);
+        }
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed for materi: " . $stmt->error);
+        }
+        $stmt->close();
+
+        // Delete related entries in the pertemuan table
+        $query = "DELETE FROM pertemuan WHERE mata_kuliah_id = ?";
+        $stmt = $db->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed for pertemuan: " . $db->error);
+        }
+        $stmt->bind_param("i", $id);
+        if (!$stmt->execute()) {
+            throw new Exception("Execute failed for pertemuan: " . $stmt->error);
+        }
+        $stmt->close();
+
+        // Finally, delete the mata_kuliah entry
         $query = "DELETE FROM mata_kuliah WHERE id = ?";
         $stmt = $db->prepare($query);
         if (!$stmt) {
@@ -1556,7 +1609,7 @@ function deleteMataKuliah($db, $id)
         }
         $stmt->close();
 
-        // If we get here, both operations were successful
+        // If we get here, all operations were successful
         $db->commit();
         return true;
     } catch (Exception $e) {
