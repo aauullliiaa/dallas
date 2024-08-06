@@ -96,14 +96,14 @@ section {
 }
 
 .carousel-caption h5 {
-  font-size: 2rem;
+  font-size: 2.2rem;
   margin-bottom: 1rem;
   color: var(--white-color);
   text-shadow: 0.25rem 0.25rem 0.625rem rgba(0, 0, 0, 0.9);
 }
 
 .carousel-caption p {
-  font-size: 1.2rem;
+  font-size: 1.7rem;
   color: var(--white-color);
   text-shadow: 0.25rem 0.25rem 0.625rem rgba(0, 0, 0, 0.9);
 }
@@ -566,30 +566,86 @@ footer {
   list-style-type: none;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-  html {
-    font-size: 15px;
-  }
-}
-
+/* Tablet styles */
 @media (max-width: 992px) {
   html {
     font-size: 14px;
   }
 
   .carousel-item {
-    height: 40vh;
+    height: 50vh;
+  }
+
+  .carousel-caption h5 {
+    font-size: 2rem;
+  }
+
+  .carousel-caption p {
+    font-size: 1.3rem;
+  }
+
+  .hero-matkul,
+  .hero-jadwal,
+  .dosen-hero,
+  .edit-hero,
+  .mhs-hero,
+  .tugas-jumbotron {
+    min-height: 35vh;
+  }
+
+  #showcase .card-img-top {
+    height: 11rem;
+  }
+
+  .card-img-custom {
+    height: 14rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+
+  .navbar-toggler {
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+  }
+
+  .navbar-nav {
+    padding-top: 0.5rem;
+  }
+
+  .navbar-nav .nav-item {
+    padding: 0.25rem 0;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar-collapse {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--primary-color);
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar-nav {
+    max-height: 80vh;
+    overflow-y: auto;
   }
 }
 
+/* Mobile styles */
 @media (max-width: 768px) {
   html {
     font-size: 13px;
   }
 
   .carousel-item {
-    height: 30vh;
+    height: 40vh;
   }
 
   .carousel-caption h5 {
@@ -617,8 +673,57 @@ footer {
   .tugas-jumbotron {
     min-height: 25vh;
   }
+
+  /* Responsive table adjustments */
+  .roster,
+  .data-mhs {
+    overflow-x: auto;
+  }
+
+  .roster th,
+  .roster td,
+  .data-mhs table td,
+  .data-mhs table th {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
+
+  /* Improve touch targets for mobile */
+  button,
+  .btn,
+  a {
+    min-height: 35px;
+    min-width: 35px;
+  }
+
+  /* Optimize images for mobile */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Improve form elements for mobile */
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* Prevents auto-zoom on iOS */
+  }
+
+  .navbar-brand {
+    font-size: 1rem;
+  }
+
+  .navbar-toggler {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 0.4rem 0.8rem;
+  }
 }
 
+/* Small mobile devices */
 @media (max-width: 576px) {
   html {
     font-size: 12px;
@@ -642,6 +747,14 @@ footer {
   .data-mhs table th {
     font-size: 0.7rem;
     padding: 0.2rem;
+  }
+
+  #showcase .card-img-top {
+    height: 10rem;
+  }
+
+  .card-img-custom {
+    height: 12rem;
   }
 }
 
