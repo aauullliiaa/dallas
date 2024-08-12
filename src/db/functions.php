@@ -118,6 +118,9 @@ function loginUser($emailOrId, $password)
 {
     global $db;
 
+    // Sanitasi input untuk mencegah SQL injection
+    $emailOrId = $db->real_escape_string($emailOrId);
+
     // Cek apakah input adalah NIP atau NIM
     if (isNIP($emailOrId)) {
         // Admin atau Dosen menggunakan NIP
@@ -128,15 +131,19 @@ function loginUser($emailOrId, $password)
                       ELSE NULL 
                   END as role
                   FROM users u
-                  WHERE u.id IN (SELECT user_id FROM daftar_admin WHERE nip = ? UNION SELECT user_id FROM daftar_dosen WHERE nip = ?)";
-        $role = 'admin/dosen';
+                  WHERE u.id IN (SELECT user_id FROM daftar_admin WHERE nip = ? UNION SELECT user_id FROM daftar_dosen WHERE nip = ?)
+                  LIMIT 1"; // Tambahkan LIMIT 1 untuk memastikan hanya satu baris yang dikembalikan
+        $params = [$emailOrId, $emailOrId, $emailOrId, $emailOrId];
+        $types = "ssss";
     } elseif (isNIM($emailOrId)) {
         // Mahasiswa menggunakan NIM
         $query = "SELECT u.id, u.password, 'mahasiswa' as role
                   FROM users u
                   JOIN daftar_mahasiswa dm ON u.id = dm.user_id
-                  WHERE dm.nim = ?";
-        $role = 'mahasiswa';
+                  WHERE dm.nim = ?
+                  LIMIT 1"; // Tambahkan LIMIT 1 untuk memastikan hanya satu baris yang dikembalikan
+        $params = [$emailOrId];
+        $types = "s";
     } else {
         // Jika bukan NIP atau NIM, return false
         return false;
@@ -148,22 +155,23 @@ function loginUser($emailOrId, $password)
         return false;
     }
 
-    if ($role === 'admin/dosen') {
-        $stmt->bind_param("ssss", $emailOrId, $emailOrId, $emailOrId, $emailOrId);
-    } else {
-        $stmt->bind_param("s", $emailOrId);
+    $stmt->bind_param($types, ...$params);
+
+    if (!$stmt->execute()) {
+        error_log("Execute failed: " . $stmt->error);
+        $stmt->close();
+        return false;
     }
 
-    $stmt->execute();
-    $stmt->bind_result($user_id, $hashed_password, $role);
-    $stmt->fetch();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
     $stmt->close();
 
-    if (isset($hashed_password) && password_verify($password, $hashed_password)) {
+    if ($user && password_verify($password, $user['password'])) {
         session_start();
-        $_SESSION['user_id'] = $user_id;
+        $_SESSION['user_id'] = $user['id'];
         $_SESSION['emailOrId'] = $emailOrId;
-        $_SESSION['role'] = $role;
+        $_SESSION['role'] = $user['role'];
 
         return true;
     } else {
