@@ -40,10 +40,10 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="#about">Tentang Prodi</a>
+                <a class="dropdown-item" href="index.php#about">Tentang Prodi</a>
               </li>
               <li>
-                <a class="dropdown-item" href="#vision-mission">Visi dan Misi Prodi</a>
+                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi Prodi</a>
               </li>
             </ul>
           </li>
@@ -78,7 +78,7 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="login-pegawai.php">Login Pegawai</a>
+                <a class="dropdown-item" href="login-pegawai.php">Login Dosen/Admin</a>
               </li>
               <li>
                 <a class="dropdown-item" href="login-mahasiswa.php">Login Mahasiswa</a>
