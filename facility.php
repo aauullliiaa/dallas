@@ -40,10 +40,10 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="index.php#about">Tentang Prodi</a>
+                <a class="dropdown-item" href="#about">Tentang Prodi</a>
               </li>
               <li>
-                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi Prodi</a>
+                <a class="dropdown-item" href="#vision-mission">Visi dan Misi Prodi</a>
               </li>
             </ul>
           </li>
@@ -61,13 +61,16 @@
             </ul>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="dosen.php">Dosen</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="facility.php">Fasilitas</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="index.php#mitra">Mitra</a>
+            <a class="nav-link" href="#mitra">Mitra</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="index.php#alamat">Kontak</a>
+            <a class="nav-link" href="#alamat">Kontak</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
