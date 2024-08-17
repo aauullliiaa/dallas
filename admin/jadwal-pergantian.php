@@ -48,13 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hari = $_POST['hari'];
     $matkul = $_POST['matkul'];
     $dosen_id_1 = $_POST['dosen_id_1'];
-    $dosen_id_2 = $_POST['dosen_id_2'];
+    $dosen_id_2 = !empty($_POST['dosen_id_2']) ? $_POST['dosen_id_2'] : null;
     $kelas = $_POST['kelas'];
 
     $result = delete_schedule_temporarily($db, $hari, $matkul, $dosen_id_1, $dosen_id_2, $kelas);
 
-    if ($result) {
-      $_SESSION['message'] = "Berhasil menghapus jadwal sementara untuk pekan ini.";
+    if ($result !== false) {
+      $_SESSION['message'] = "Berhasil menghapus {$result['updated']} jadwal sementara dan menyimpan {$result['inserted']} data.";
       $_SESSION['alert_class'] = "alert-success";
     } else {
       $_SESSION['message'] = "Gagal menghapus jadwal sementara.";
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hari = $_POST['hari'];
     $matkul = $_POST['matkul'];
     $dosen_id_1 = $_POST['dosen_id_1'];
-    $dosen_id_2 = $_POST['dosen_id_2'];
+    $dosen_id_2 = !empty($_POST['dosen_id_2']) ? $_POST['dosen_id_2'] : null;
     $kelas = $_POST['kelas'];
 
     $affected_rows = cancel_temporary_delete($db, $hari, $matkul, $dosen_id_1, $dosen_id_2, $kelas);
