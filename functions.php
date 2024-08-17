@@ -1,7 +1,7 @@
 <?php
 // koneksi ke database
 date_default_timezone_set('Asia/Makassar');
-$db = mysqli_connect("localhost", "root", "", "apd_db");
+$db = mysqli_connect("localhost", "root", "", "db_learning_space");
 
 // query fetch data
 // src/db/functions.php
@@ -113,7 +113,6 @@ function updateAdminProfile($user_id, $email, $password, $nip)
         return false;
     }
 }
-
 function loginUser($emailOrId, $password)
 {
     global $db;
@@ -1025,30 +1024,53 @@ function delete_schedule_temporarily($db, $hari, $matkul, $dosen_id_1, $dosen_id
         $current_date = date('Y-m-d');
         $end_date = date('Y-m-d', strtotime('next Sunday'));
 
+        // Persiapkan kondisi WHERE untuk query
+        $where_condition = "hari = ? AND matkul = ? AND dosen_id_1 = ? AND kelas = ?";
+        $param_types = "ssss";
+        $params = [$hari, $matkul, $dosen_id_1, $kelas];
+
+        // Jika dosen_id_2 ada, tambahkan ke kondisi
+        if ($dosen_id_2) {
+            $where_condition .= " AND dosen_id_2 = ?";
+            $param_types .= "s";
+            $params[] = $dosen_id_2;
+        } else {
+            $where_condition .= " AND (dosen_id_2 IS NULL OR dosen_id_2 = '')";
+        }
+
         // Update jadwal_kuliah
         $sql = "UPDATE jadwal_kuliah SET is_deleted_temporarily = 1, end_date = ? 
-                WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND (dosen_id_2 = ? OR (dosen_id_2 IS NULL AND ? IS NULL)) AND kelas = ?";
+                WHERE $where_condition";
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             throw new Exception($db->error);
         }
-        $stmt->bind_param("sssssss", $end_date, $hari, $matkul, $dosen_id_1, $dosen_id_2, $dosen_id_2, $kelas);
-        $stmt->execute();
+        array_unshift($params, $end_date);
+        $stmt->bind_param("s" . $param_types, ...$params);
+        $result = $stmt->execute();
+        if (!$result) {
+            throw new Exception($stmt->error);
+        }
+        $affected_rows = $stmt->affected_rows;
 
         // Insert into temporary_deleted_schedules
         $sql = "INSERT INTO temporary_deleted_schedules (original_id, hari, jam_mulai, jam_selesai, matkul, dosen_id_1, dosen_id_2, classroom, kelas, end_date)
                 SELECT id, hari, SUBSTRING_INDEX(jam, ' - ', 1), SUBSTRING_INDEX(jam, ' - ', -1), matkul, dosen_id_1, dosen_id_2, classroom, kelas, ?
                 FROM jadwal_kuliah 
-                WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND (dosen_id_2 = ? OR (dosen_id_2 IS NULL AND ? IS NULL)) AND kelas = ?";
+                WHERE $where_condition AND is_deleted_temporarily = 1";
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             throw new Exception($db->error);
         }
-        $stmt->bind_param("sssssss", $end_date, $hari, $matkul, $dosen_id_1, $dosen_id_2, $dosen_id_2, $kelas);
-        $stmt->execute();
+        $stmt->bind_param("s" . $param_types, ...$params);
+        $result = $stmt->execute();
+        if (!$result) {
+            throw new Exception($stmt->error);
+        }
+        $inserted_rows = $stmt->affected_rows;
 
         $db->commit();
-        return true;
+        return ["updated" => $affected_rows, "inserted" => $inserted_rows];
     } catch (Exception $e) {
         $db->rollback();
         error_log("Error in delete_schedule_temporarily: " . $e->getMessage());
@@ -1061,21 +1083,41 @@ function cancel_temporary_delete($db, $hari, $matkul, $dosen_id_1, $dosen_id_2, 
     $db->begin_transaction();
 
     try {
+        // Persiapkan kondisi WHERE untuk query
+        $where_condition = "hari = ? AND matkul = ? AND dosen_id_1 = ? AND kelas = ?";
+        $param_types = "ssss";
+        $params = [$hari, $matkul, $dosen_id_1, $kelas];
+
+        // Jika dosen_id_2 ada, tambahkan ke kondisi
+        if ($dosen_id_2) {
+            $where_condition .= " AND dosen_id_2 = ?";
+            $param_types .= "s";
+            $params[] = $dosen_id_2;
+        } else {
+            $where_condition .= " AND (dosen_id_2 IS NULL OR dosen_id_2 = '')";
+        }
+
         // Update jadwal_kuliah table
         $sql1 = "UPDATE jadwal_kuliah 
                  SET is_deleted_temporarily = 0, end_date = NULL 
-                 WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND (dosen_id_2 = ? OR (dosen_id_2 IS NULL AND ? IS NULL)) AND kelas = ?";
+                 WHERE $where_condition";
         $stmt1 = $db->prepare($sql1);
-        $stmt1->bind_param("ssiiss", $hari, $matkul, $dosen_id_1, $dosen_id_2, $dosen_id_2, $kelas);
+        if (!$stmt1) {
+            throw new Exception($db->error);
+        }
+        $stmt1->bind_param($param_types, ...$params);
         $stmt1->execute();
         $affected_rows_jadwal = $stmt1->affected_rows;
         $stmt1->close();
 
         // Get the IDs of the updated rows in jadwal_kuliah
         $sql2 = "SELECT id FROM jadwal_kuliah 
-                 WHERE hari = ? AND matkul = ? AND dosen_id_1 = ? AND (dosen_id_2 = ? OR (dosen_id_2 IS NULL AND ? IS NULL)) AND kelas = ?";
+                 WHERE $where_condition";
         $stmt2 = $db->prepare($sql2);
-        $stmt2->bind_param("ssiiss", $hari, $matkul, $dosen_id_1, $dosen_id_2, $dosen_id_2, $kelas);
+        if (!$stmt2) {
+            throw new Exception($db->error);
+        }
+        $stmt2->bind_param($param_types, ...$params);
         $stmt2->execute();
         $result = $stmt2->get_result();
         $ids = [];
@@ -1085,17 +1127,19 @@ function cancel_temporary_delete($db, $hari, $matkul, $dosen_id_1, $dosen_id_2, 
         $stmt2->close();
 
         // Delete from temporary_deleted_schedules table using the collected IDs
+        $affected_rows_temp = 0;
         if (!empty($ids)) {
             $placeholders = implode(',', array_fill(0, count($ids), '?'));
             $sql3 = "DELETE FROM temporary_deleted_schedules 
                      WHERE original_id IN ($placeholders)";
             $stmt3 = $db->prepare($sql3);
+            if (!$stmt3) {
+                throw new Exception($db->error);
+            }
             $stmt3->bind_param(str_repeat('i', count($ids)), ...$ids);
             $stmt3->execute();
             $affected_rows_temp = $stmt3->affected_rows;
             $stmt3->close();
-        } else {
-            $affected_rows_temp = 0;
         }
 
         $db->commit();
