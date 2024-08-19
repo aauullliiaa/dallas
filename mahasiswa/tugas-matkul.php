@@ -4,7 +4,12 @@ require '../src/db/functions.php';
 checkRole('mahasiswa');
 
 $matkul_id = $_GET["id"];
-$detailmk = retrieve("SELECT * FROM mata_kuliah WHERE id =?", [$matkul_id])[0];
+$detailmk = retrieve("SELECT * FROM mata_kuliah WHERE id =?", [$matkul_id]);
+if (empty($detailmk)) {
+  die("Mata kuliah tidak ditemukan.");
+}
+$detailmk = $detailmk[0];
+
 $tugasList = retrieve("SELECT tp.*, p.pertemuan as pertemuan_ke, d.nama as nama_dosen 
                        FROM tugas_pertemuan tp 
                        JOIN pertemuan p ON tp.pertemuan_id = p.id 
@@ -15,10 +20,21 @@ $tugasList = retrieve("SELECT tp.*, p.pertemuan as pertemuan_ke, d.nama as nama_
 );
 
 $user_id = $_SESSION['user_id']; // assuming you have the user ID stored in the session
-$mahasiswa_id = retrieve("SELECT id FROM daftar_mahasiswa WHERE user_id = ?", [$user_id])[0]['id'];
+$mahasiswa = retrieve("SELECT id FROM daftar_mahasiswa WHERE user_id = ?", [$user_id]);
+if (empty($mahasiswa)) {
+  die("Mahasiswa tidak ditemukan.");
+}
+$mahasiswa_id = $mahasiswa[0]['id'];
 
-$dosen_id = retrieve("SELECT * FROM pertemuan")[0]['dosen_id'];
-$nama_dosen = retrieve("SELECT * FROM daftar_dosen WHERE id = $dosen_id")[0]['nama'];
+// Dosen ID and name retrieval
+$pertemuan = retrieve("SELECT dosen_id FROM pertemuan WHERE mata_kuliah_id = ? LIMIT 1", [$matkul_id]);
+if (!empty($pertemuan)) {
+  $dosen_id = $pertemuan[0]['dosen_id'];
+  $nama_dosen = retrieve("SELECT nama FROM daftar_dosen WHERE id = ?", [$dosen_id])[0]['nama'];
+} else {
+  $dosen_id = null;
+  $nama_dosen = "Tidak ditemukan";
+}
 
 $tugas_kumpul = retrieve("SELECT * FROM tugas_kumpul WHERE mahasiswa_id =? AND tugas_id IN (SELECT id FROM tugas_pertemuan WHERE pertemuan_id IN (SELECT id FROM pertemuan WHERE mata_kuliah_id =?))", [$mahasiswa_id, $matkul_id]);
 
