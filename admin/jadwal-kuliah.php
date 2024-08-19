@@ -243,7 +243,7 @@ unset($_SESSION['alert_class']);
         </form>
         <div class="row">
           <div class="col submit-button text-center">
-            <a href="edit-jadwal"><button class="btn btn-light">Edit Jadwal</button></a>
+            <a href="edit-jadwal.php"><button class="btn btn-light">Edit Jadwal</button></a>
             <a href="input-jadwal.php"><button class="btn btn-light">Tambah Jadwal</button></a>
             <a href="index.php"><button class="btn btn-light">Kembali</button></a>
           </div>
