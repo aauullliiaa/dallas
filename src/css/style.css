@@ -191,6 +191,33 @@ footer {
   z-index: 1;
 }
 
+/* Penelitian Dosen */
+.penelitian-hero {
+  background-image: url("../images/penelitian-dosen-jumbotron.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 40vh;
+  background-position: center;
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+.penelitian-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+
+/* End of Penelitian Dosen */
 /* Promotion */
 .promotion-hero {
   background-image: url("../images/promosi-5-hero.jpeg");
@@ -669,7 +696,8 @@ footer {
   .dosen-hero,
   .edit-hero,
   .mhs-hero,
-  .tugas-jumbotron {
+  .tugas-jumbotron,
+  .penelitian-hero {
     min-height: 25vh;
   }
 
