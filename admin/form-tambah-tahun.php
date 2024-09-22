@@ -1,4 +1,6 @@
 <?php
+session_start(); // Tambahkan ini di awal untuk memulai session
+
 require '../src/db/functions.php';
 
 $message = "";
@@ -39,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $result = retrieve($sql, [$tahun_mulai, $tahun_selesai, $kode, $status, $tanggal_mulai, $tanggal_selesai]);
 
-        if ($success) {
+        if ($result) {
             $_SESSION['message'] = "Tahun akademik berhasil ditambahkan.";
             $_SESSION['alert_class'] = "success";
         } else {
@@ -49,8 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         header("Location: tahun-akademik.php");
         exit();
     } else {
-        $message = implode("<br>", $errors);
-        $alert_class = "danger";
+        $_SESSION['message'] = implode("<br>", $errors);
+        $_SESSION['alert_class'] = "danger";
     }
 }
 

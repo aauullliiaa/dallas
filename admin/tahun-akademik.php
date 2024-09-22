@@ -1,7 +1,10 @@
 <?php
+session_start(); // Pastikan session dimulai di bagian paling atas
 require '../src/db/functions.php';
+
 // Fetch all academic years
-$query = retrieve("SELECT * FROM tahun_akademik");
+$query = retrieve("SELECT * FROM tahun_akademik ORDER BY tahun_mulai DESC");
+
 // Check for alert messages in the session
 $message = "";
 $alert_class = "";
@@ -118,6 +121,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
         </div>
         <div class="card p-3">
             <div class="card-body">
+                <!-- Tampilkan pesan alert -->
                 <?php if (!empty($message)): ?>
                     <div class="alert alert-<?php echo $alert_class; ?>" role="alert">
                         <?php echo $message; ?>
@@ -125,8 +129,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                 <?php endif; ?>
 
                 <div class="table-responsive">
-                    <?php $i = 1; ?>
-                    <table>
+                    <table class="table table-striped">
                         <thead>
                             <tr class="align-middle text-center">
                                 <th>No</th>
@@ -136,23 +139,25 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                                 <th>Status</th>
                                 <th>Tanggal Mulai</th>
                                 <th>Tanggal Selesai</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <?php $i = 1; ?>
                             <?php foreach ($query as $data): ?>
                                 <tr class="align-middle text-center">
-                                    <td><?= $i; ?></td>
+                                    <td><?= $i++; ?></td>
                                     <td><?= $data['tahun_mulai'] ?></td>
                                     <td><?= $data['tahun_selesai'] ?></td>
                                     <td><?= $data['kode'] ?></td>
                                     <td><?= $data['status'] ?></td>
                                     <td><?= $data['tanggal_mulai'] ?></td>
                                     <td><?= $data['tanggal_selesai'] ?></td>
+                                    <td><button></button></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                    <?php $i++; ?>
                 </div>
             </div>
         </div>
