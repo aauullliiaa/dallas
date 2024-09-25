@@ -163,6 +163,26 @@ checkRole('dosen');
             </div>
           </div>
         </div>
+
+        <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="500">
+          <div class="card h-100 shadow hover-card p-3"
+            style="border-radius: 15px; border: none; transition: all 0.3s;">
+            <div class="card-body text-center">
+              <div class="icon-circle mb-4 mx-auto d-flex align-items-center justify-content-center"
+                style="width: 80px; height: 80px; background-color: #E6F3FF;  border-radius: 50%;">
+                <i class="bi bi-journals text-primary" style="font-size: 2.5rem;"></i>
+              </div>
+              <h5 class="card-title mt-4 fw-bold">Penelitian Dosen</h5>
+              <p class="card-text">
+                Repositori penelitian dosen program studi Administrasi Perkantoran Digital.
+              </p>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-end">
+              <a href="penelitian.php" class="btn btn-primary btn-sm rounded-pill text-white">Lanjut <i
+                  class="bi bi-arrow-right-short"></i></a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
