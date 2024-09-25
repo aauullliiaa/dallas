@@ -16,15 +16,14 @@ $user_id = $_SESSION['user_id'];
 $profile = getUserProfile($user_id, $_SESSION['role']);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  // Handle file upload within updateProfile function
-  $result = updateProfile($user_id, $_SESSION['role'], $data);
+  if (isset($_POST['update_profile']))
+    // Handle profile update
+    $result = updateProfile($user_id, $_SESSION['role'], $_POST);
   $message = $result['message'];
   $alert_type = $result['alert_type'];
   $profile = $result['profile'];
 }
 ?>
-
-
 <!DOCTYPE html>
 <html>
 
@@ -32,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>APD Learning Space - Mata Kuliah</title>
+  <title>APD Learning Space - Profil</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -80,14 +79,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <li class="nav-item">
               <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="dosen.php">Dosen</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Dosen
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="dosen.php">Daftar Dosen</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="penelitian.php">Penelitian Dosen</a>
+                </li>
+              </ul>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="profile.php">Profil</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Profil
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="profile.php">Edit Profil</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="form-upload-penelitian.php">Upload Penelitian</a>
+                </li>
+              </ul>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#" onclick="confirmLogout()">Logout</a>
@@ -99,13 +120,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   </header>
   <section>
     <div class="row text-center">
-      <h1>Edit Profile</h1>
+      <h1>Edit Profil</h1>
     </div>
   </section>
 
-  <div class="container edit-profile">
+  <div class="container mb-3 edit-profile">
     <div class="card p-3">
       <div class="card-body">
+        <div class="row mb-3">
+          <h3 class="text-center">Data Diri</h3>
+        </div>
         <div class="row mb-3 text-center">
           <img src="../src/images/<?= htmlspecialchars($profile['foto'], ENT_QUOTES, 'UTF-8'); ?>"
             style="border-radius: 50%; width: 100px;">
@@ -155,9 +179,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="foto" class="form-label">Foto:</label>
             <input type="file" name="foto" class="form-control">
           </div>
-          <div class="row mb-1">
+          <div class="row mb-2">
             <div class="col text-center submit-button">
-              <button type="submit" name="submit" class="btn btn-light">Update Profil</button>
+              <button type="submit" name="update_profile" class="btn btn-light">Update Profil</button>
             </div>
           </div>
         </form>
