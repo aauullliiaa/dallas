@@ -353,6 +353,45 @@ function updateProfile($user_id, $role, $data)
         'alert_type' => $alert_type
     ];
 }
+function saveResearch($db)
+{
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $judul = $_POST['judul'] ?? '';
+        $tahun = $_POST['tahun'] ?? '';
+        $author1 = $_POST['author1'] ?? '';
+        $author2 = $_POST['author2'] ?? '';
+        $abstrak = $_POST['abstrak'] ?? '';
+        $doi = $_POST['doi'] ?? '';
+
+        // Handle file upload
+        $file_path = '';
+        if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
+            $target_dir = "../src/files/penelitian/";
+            $file_name = basename($_FILES["file"]["name"]);
+            $target_file = $target_dir . $file_name;
+
+            if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
+                $file_path = $target_file;
+            } else {
+                return ['success' => false, 'message' => 'Error during file upload.'];
+            }
+        }
+
+        // Insert data into the database
+        $sql = "INSERT INTO penelitian (judul, tahun_terbit, author1, author2, abstrak, doi, file_path) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("sssssss", $judul, $tahun, $author1, $author2, $abstrak, $doi, $file_path);
+
+        if ($stmt->execute()) {
+            return ['success' => true, 'message' => 'Penelitian berhasil diunggah.'];
+        } else {
+            return ['success' => false, 'message' => 'Error: ' . $stmt->error];
+        }
+    }
+
+    return ['success' => false, 'message' => 'Invalid request method.'];
+}
 
 // fungsi untuk mendapatkan data user untuk di halaman profil masing-masing profil
 function getUserProfile($user_id, $role)
