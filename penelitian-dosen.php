@@ -47,10 +47,10 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="#about">Tentang Prodi</a>
+                                <a class="dropdown-item" href="index.php#about">Tentang Prodi</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#vision-mission">Visi dan Misi Prodi</a>
+                                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi Prodi</a>
                             </li>
                         </ul>
                     </li>
@@ -86,10 +86,10 @@
                         <a class="nav-link" href="facility.php">Fasilitas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#mitra">Mitra</a>
+                        <a class="nav-link" href="index.php#mitra">Mitra</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#alamat">Kontak</a>
+                        <a class="nav-link" href="index.php#alamat">Kontak</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -121,8 +121,16 @@
                 <h3 class="card-subtitle text-muted mb-4">Pengelolaan Pembelajaran Berbasis Website pada Program Studi
                     Sarjana Terapan Administrasi Perkantoran Digital
                 </h3>
-                <p class="text-secondary mb-4"><i class="bi bi-people me-2"></i>Imasita, Nahiruddin, Dewi Sartika Z,
-                    Aulia Kinanah</p>
+                <div class="row">
+                    <div class="col-sm-1">
+                        <p class="text-secondary mb-4"><i class="bi bi-calendar me-2"></i>2024</p>
+                    </div>
+                    <div class="col-sm-10">
+                        <p class="text-secondary mb-4"><i class="bi bi-people me-2"></i>Imasita, Nahiruddin, Dewi
+                            Sartika Z,
+                            Aulia Kinanah</p>
+                    </div>
+                </div>
                 <div class="row mb-4">
                     <div class="col-md-9">
                         <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nulla eligendi autem

@@ -138,17 +138,28 @@ $dosen = retrieve("SELECT * FROM daftar_dosen");
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="dosen.php">Dosen</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Dosen
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="dosen.php">Daftar Dosen</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="penelitian-dosen.php">Penelitian Dosen</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="facility.php">Fasilitas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#mitra">Mitra</a>
+                        <a class="nav-link" href="index.php#mitra">Mitra</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#alamat">Kontak</a>
+                        <a class="nav-link" href="index.php#alamat">Kontak</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
