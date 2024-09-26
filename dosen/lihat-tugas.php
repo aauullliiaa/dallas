@@ -77,14 +77,36 @@ $deadline = strtotime($tugasDetail[0]['tanggal_deadline'] . ' ' . $tugasDetail[0
                     <li class="nav-item">
                         <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="dosen.php">Dosen</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Dosen
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="dosen.php">Daftar Dosen</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="penelitian.php">Penelitian Dosen</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="profile.php">Profil</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Profil
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="profile.php">Edit Profil</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="form-upload-penelitian.php">Upload Penelitian</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="confirmLogout()">Logout</a>

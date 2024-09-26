@@ -127,9 +127,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <div class="container mb-3 edit-profile">
     <div class="card p-3">
       <div class="card-body">
-        <div class="row mb-3">
-          <h3 class="text-center">Data Diri</h3>
-        </div>
         <div class="row mb-3 text-center">
           <img src="../src/images/<?= htmlspecialchars($profile['foto'], ENT_QUOTES, 'UTF-8'); ?>"
             style="border-radius: 50%; width: 100px;">

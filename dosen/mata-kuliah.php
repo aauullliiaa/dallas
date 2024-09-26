@@ -50,7 +50,7 @@ if ($dosen_id !== null) {
 <header>
   <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
     <div class="container">
-      <a class="navbar-brand" href="../dosen/index.php#home">
+      <a class="navbar-brand" href="index.php#home">
         <img src="../src/images/logo kampus.png" alt="Logo" width="40px" />
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -79,14 +79,36 @@ if ($dosen_id !== null) {
           <li class="nav-item">
             <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="dosen.php">Dosen</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Dosen
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="dosen.php">Daftar Dosen</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="penelitian.php">Penelitian Dosen</a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="profile.php">Profil</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Profil
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="profile.php">Edit Profil</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="form-upload-penelitian.php">Upload Penelitian</a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#" onclick="confirmLogout()">Logout</a>
