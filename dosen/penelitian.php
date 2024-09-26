@@ -9,7 +9,9 @@ if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];
     $alert_type = $_SESSION['alert_type']; // Hapus pesan setelah ditampilkan unset($_SESSION['message']);
     unset($_SESSION['alert_type']);
-} ?>
+}
+$penelitian = retrieve("SELECT * FROM penelitian");
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -121,39 +123,49 @@ if (isset($_SESSION['message'])) {
                 </div>
             </div>
         <?php endif; ?>
-        <div class="card shadow-sm p-3">
-            <div class="card-body">
-                <h3 class="card-subtitle text-muted mb-2">Pengelolaan Pembelajaran Berbasis Website pada Program
-                    Studi
-                    Sarjana Terapan Administrasi Perkantoran Digital
-                </h3>
-                <small class="text-secondary mb-4"><i class="bi bi-people me-2"></i>Imasita, Nahiruddin, Dewi
-                    Sartika Z,
-                    Aulia Kinanah</small> <br>
-                <small class="text-secondary mb-4"><i class="bi bi-calendar me-2"></i>2024</small>
-                <div class="row mt-1 mb-2">
-                    <strong>DOI: </strong>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-md-10">
-                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nulla eligendi autem
-                            atque rem quam a eveniet id expedita fugit aperiam. Saepe architecto nostrum nisi
-                            fugiat
-                            odit totam consequatur quis asperiores?</p>
+        <?php foreach ($penelitian as $row): ?>
+            <div class="card shadow-sm mb-3 p-2">
+                <div class="card-body">
+                    <h3 class="card-subtitle text-muted mb-2"><?= $row["judul"] ?></h3>
+
+                    <?php
+                    // Ambil semua penulis dari array row
+                    $authors = array_filter([$row["author1"], $row["author2"], $row["author3"], $row["author4"]]);
+                    $authorCount = count($authors);
+
+                    // Tampilkan penulis dengan format yang benar
+                    if ($authorCount === 1) {
+                        echo '<small class="text-secondary mb-4"><i class="bi bi-people me-2"></i>' . $authors[0] . '</small>';
+                    } else {
+                        echo '<small class="text-secondary mb-4"><i class="bi bi-people me-2"></i>' . implode(', ', $authors) . '</small>';
+                    }
+                    ?>
+
+                    <br>
+                    <small class="text-secondary mb-4"><i
+                            class="bi bi-calendar me-2"></i><?= $row["tahun_terbit"] ?></small>
+                    <div class="row mt-1 mb-2">
+                        <strong>DOI: <?= $row["doi"] ?></strong>
                     </div>
-                </div>
-                <div class="row submit-button">
-                    <div class="col-lg-6">
-                        <a href="#" class="btn btn-light me-2 mb-2">
-                            <i class="bi bi-eye me-2"></i>View
-                        </a>
-                        <a href="#" class="btn btn-light mb-2">
-                            <i class="bi bi-download me-2"></i>Download
-                        </a>
+                    <div class="row mb-2">
+                        <div class="col-md-10">
+                            <p><?= $row["abstrak"] ?></p>
+                        </div>
+                    </div>
+                    <div class="row submit-button">
+                        <div class="col-lg-6">
+                            <a href="<?= $row["file_path"] ?>" target="_blank" class="btn btn-light me-2 mb-2">
+                                <i class="bi bi-eye me-2"></i>Preview
+                            </a>
+                            <a href="<?= $row["file_path"] ?>" download class="btn btn-light mb-2">
+                                <i class="bi bi-download me-2"></i>Download
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        <?php endforeach; ?>
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
