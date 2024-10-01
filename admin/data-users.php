@@ -93,8 +93,24 @@ if (isset($_SESSION['message']) && isset($_SESSION['alert_class'])) {
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="data-users.php">Data Pengguna</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Data Program Studi</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="data-users.php">Data Pengguna</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="tahun-akademik.php">Tahun Akademik</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="data-ruangan.php">Data Ruang Kelas</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="data-semester.php">Data Semester</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"

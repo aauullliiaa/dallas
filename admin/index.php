@@ -187,7 +187,7 @@ checkRole('admin');
           <div class="card h-100 shadow p-3" style="background-color: #E6F3FF">
             <div class="card-body">
               <h3 class="card-title text-center mb-4">VISI</h3>
-              <p class="card-text">
+              <p class="card-text text-center" style="font-size: 1.2rem">
                 Menjadi program studi yang menghasilkan sarjana terapan
                 berwawasan global dan berdaya saing tinggi dibidang
                 Administrasi Perkantoran Digital secara profesional dan
@@ -236,14 +236,14 @@ checkRole('admin');
     <div class="container">
       <h2 class="text-center mb-5" data-aos="fade-up">Alamat dan Kontak</h2>
       <div class="row align-items-center">
-        <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-left" data-aos-delay="100">
+        <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-right" data-aos-delay="100">
           <div class="ratio ratio-16x9">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63581.11650113188!2d119.39864003002323!3d-5.132706847633037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbefcca2887e13f%3A0xf5c059de86dd07!2sPNUP%20Politeknik%20Negeri%20Ujung%20Pandang!5e0!3m2!1sen!2sid!4v1712199819055!5m2!1sen!2sid"
               allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div>
         </div>
-        <div class="col-md-6" data-aos="fade-right" data-aos-delay="200">
+        <div class="col-md-6" data-aos="fade-left" data-aos-delay="200">
           <h3 class="mb-3">Alamat</h3>
           <address>
             <strong>Kampus 1:</strong><br />

@@ -89,13 +89,34 @@ if (isset($alert_type) && $alert_type === 'success') {
               Home
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="index.php#about">About</a></li>
-              <li><a class="dropdown-item" href="index.php#kata-sambutan">Kata Sambutan</a></li>
-              <li><a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a></li>
+              <li>
+                <a class="dropdown-item" href="index.php#about">About</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
+              </li>
             </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="data-users.php">Data Pengguna</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Data Program Studi</a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="data-users.php">Data Pengguna</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="tahun-akademik.php">Tahun Akademik</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="data-ruangan.php">Data Ruang Kelas</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="data-semester.php">Data Semester</a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#home" role="button" data-bs-toggle="dropdown"
@@ -103,9 +124,12 @@ if (isset($alert_type) && $alert_type === 'success') {
               Perkuliahan
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a></li>
-              <li><a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a></li>
-              <li><a class="dropdown-item" href="list-request.php">Request Pergantian</a></li>
+              <li>
+                <a class="dropdown-item" href="jadwal-kuliah.php">Jadwal Kuliah</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="mata-kuliah.php">Mata Kuliah</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item">
