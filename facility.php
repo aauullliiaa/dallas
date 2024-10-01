@@ -116,9 +116,10 @@
             <div class="col-md-6">
               <h3 class="card-title mb-3">Lab Komputer (Kampus 1)</h3>
               <p class="card-text lead">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
-                itaque eum soluta atque?
+                Laboratorium Komputer Program Studi Sarjana Terapan Administrasi Perkantoran Digital menyediakan
+                fasilitas dengan komputer yang memadai dan internet berkecepatan cukup tinggi. Lab ini dirancang untuk
+                mendukung mahasiswa dalam mempelajari keterampilan administrasi perkantoran modern, termasuk pengelolaan
+                dokumen digital, aplikasi perkantoran, manajemen data, dan komunikasi bisnis berbasis teknologi.
               </p>
             </div>
           </div>
@@ -135,9 +136,10 @@
             <div class="col-md-6 order-md-1">
               <h3 class="card-title mb-3">Lab Komputer (Kampus 2)</h3>
               <p class="card-text lead">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
-                itaque eum soluta atque?
+                Laboratorium Komputer Program Studi Sarjana Terapan Administrasi Perkantoran Digital menyediakan
+                fasilitas dengan komputer yang memadai dan internet berkecepatan cukup tinggi. Lab ini dirancang untuk
+                mendukung mahasiswa dalam mempelajari keterampilan administrasi perkantoran modern, termasuk pengelolaan
+                dokumen digital, aplikasi perkantoran, manajemen data, dan komunikasi bisnis berbasis teknologi.
               </p>
             </div>
           </div>
@@ -154,9 +156,10 @@
             <div class="col-md-6">
               <h3 class="card-title mb-3">Lab Typing Tutor (Kampus 1)</h3>
               <p class="card-text lead">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
-                itaque eum soluta atque?
+                Lab Typing Tutor di Program Studi Sarjana Terapan Administrasi Perkantoran Digital dirancang untuk
+                membantu mahasiswa meningkatkan keterampilan mengetik yang akurat dan efisien. Dengan menggunakan
+                perangkat lunak pembelajaran mengetik, mahasiswa dapat berlatih secara mandiri dalam suasana yang nyaman
+                dan terarah.
               </p>
             </div>
           </div>
@@ -173,9 +176,9 @@
             <div class="col-md-6 order-md-1">
               <h3 class="card-title mb-3">Lab Typing Speed (Kampus 2)</h3>
               <p class="card-text lead">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
-                itaque eum soluta atque?
+                Lab Typing Speed menyediakan fasilitas bagi mahasiswa untuk mengukur dan meningkatkan kecepatan mengetik
+                mereka. Dengan perangkat lunak pengujian kecepatan mengetik yang terintegrasi, lab ini memungkinkan
+                mahasiswa untuk berlatih dan memantau perkembangan mereka secara rutin.
               </p>
             </div>
           </div>
@@ -192,9 +195,9 @@
             <div class="col-md-6">
               <h3 class="card-title mb-3">Lab Otomatisasi dan Simulasi Bisnis (Kampus 1)</h3>
               <p class="card-text lead">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
-                itaque eum soluta atque?
+                Lab Otomatisasi dan Simulasi Bisnis di Program Studi Sarjana Terapan Administrasi Perkantoran Digital
+                dilengkapi dengan perangkat lunak manajemen bisnis yang mendukung mahasiswa dalam mempelajari proses
+                otomatisasi administrasi, pengelolaan data, serta simulasi skenario bisnis.
               </p>
             </div>
           </div>
@@ -211,9 +214,11 @@
             <div class="col-md-6 order-md-1">
               <h3 class="card-title mb-3">Lab Perkantoran (Kampus 2)</h3>
               <p class="card-text lead">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
-                itaque eum soluta atque?
+                Lab Perkantoran di Program Studi Sarjana Terapan Administrasi Perkantoran Digital dirancang menyerupai
+                lingkungan kantor modern, memberikan pengalaman praktis bagi mahasiswa dalam menjalankan tugas-tugas
+                administrasi. Fasilitas ini dilengkapi dengan perangkat lunak perkantoran terkini dan peralatan yang
+                mendukung berbagai aktivitas administrasi seperti pengelolaan surat-menyurat, manajemen dokumen digital,
+                pengarsipan, serta pengaturan jadwal dan rapat
               </p>
             </div>
           </div>
@@ -230,9 +235,10 @@
             <div class="col-md-6">
               <h3 class="card-title mb-3">Studio Bahasa (Kampus 1)</h3>
               <p class="card-text lead">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
-                itaque eum soluta atque?
+                Studio Bahasa menyediakan lingkungan yang interaktif dan multimedia untuk mendukung pengembangan
+                kemampuan komunikasi bisnis internasional mahasiswa. Dilengkapi dengan perangkat lunak pembelajaran
+                bahasa dan alat bantu audio-visual, studio ini memfasilitasi latihan mendengarkan, berbicara, dan
+                menulis dalam bahasa asing yang relevan dengan kebutuhan administrasi perkantoran global.
               </p>
             </div>
           </div>
@@ -245,9 +251,10 @@
           <div class="row mb-2 align-items-center text-center">
             <h3 class="card-title mb-3">Ruang Kelas</h3>
             <p class="card-text lead">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Suscipit mollitia alias in aperiam blanditiis ut repudiandae,
-              itaque eum soluta atque?
+              Ruang Kelas di Program Studi Sarjana Terapan Administrasi Perkantoran Digital dirancang untuk menciptakan
+              suasana belajar yang kondusif dan interaktif. Setiap ruang kelas dilengkapi dengan teknologi pendukung
+              pembelajaran, seperti proyektor, akses internet, dan perangkat multimedia yang memfasilitasi presentasi
+              serta diskusi.
             </p>
           </div>
           <div class="row align-items-center">
