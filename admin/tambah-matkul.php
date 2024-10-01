@@ -2,7 +2,6 @@
 session_start();
 require '../src/db/functions.php';
 checkRole('admin');
-
 // Ambil daftar nama dosen dari tabel daftar_dosen
 $dosenList = [];
 $query = "SELECT id, nama FROM daftar_dosen";
@@ -47,6 +46,29 @@ if (isset($alert_type) && $alert_type === 'success') {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <!-- CSS -->
   <link rel="stylesheet" href="../src/css/style.css" />
+  <script>
+    function updateSemesterOptions() {
+      const semesterSelect = document.getElementById('nomor_semester');
+      const selectedType = document.querySelector('input[name="jenis_semester"]:checked').value;
+
+      semesterSelect.innerHTML = '<option value="">Pilih Nomor Semester</option>';
+
+      const options = selectedType === 'ganjil' ? [1, 3, 5, 7] : [2, 4, 6, 8];
+      options.forEach(function (semester) {
+        const option = document.createElement('option');
+        option.value = semester;
+        option.text = `Semester ${semester}`;
+        semesterSelect.add(option);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const radioButtons = document.querySelectorAll('input[name="jenis_semester"]');
+      radioButtons.forEach(function (radio) {
+        radio.addEventListener('change', updateSemesterOptions);
+      });
+    });
+  </script>
 </head>
 
 <header>
@@ -136,6 +158,23 @@ if (isset($alert_type) && $alert_type === 'success') {
               <?php foreach ($dosenList as $dosen): ?>
                 <option value="<?= htmlspecialchars($dosen['id']); ?>"><?= htmlspecialchars($dosen['nama']); ?></option>
               <?php endforeach; ?>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Semester:</label><br>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="jenis_semester" id="ganjil" value="ganjil" required>
+              <label class="form-check-label" for="ganjil">Ganjil</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="jenis_semester" id="genap" value="genap" required>
+              <label class="form-check-label" for="genap">Genap</label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="nomor_semester" class="form-label">Nomor Semester:</label>
+            <select id="nomor_semester" class="form-select" name="nomor_semester" required>
+              <option value="">Pilih Nomor Semester</option>
             </select>
           </div>
           <div class="row mb-2">

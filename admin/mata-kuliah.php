@@ -97,7 +97,7 @@ $mata_kuliah = getAllMataKuliah($db);
             </ul>
           </li>
           <li class="nav-item">
-          <a class="nav-link" href="../logout.php" onclick="confirm('Apakah anda yakin ingin keluar?')">Logout</a>
+            <a class="nav-link" href="../logout.php" onclick="confirm('Apakah anda yakin ingin keluar?')">Logout</a>
           </li>
         </ul>
       </div>
@@ -128,6 +128,7 @@ $mata_kuliah = getAllMataKuliah($db);
                 <th scope="col">Deskripsi</th>
                 <th scope="col">Dosen Pengampu 1</th>
                 <th scope="col">Dosen Pengampu 2</th>
+                <th scope="col">Semester</th>
                 <th scope="col">Aksi</th>
               </tr>
             </thead>
@@ -141,6 +142,7 @@ $mata_kuliah = getAllMataKuliah($db);
                   <td><?= htmlspecialchars($mata_kuliah_item['deskripsi']); ?></td>
                   <td><?= htmlspecialchars($mata_kuliah_item['dosen_1']); ?></td>
                   <td><?= htmlspecialchars($mata_kuliah_item['dosen_2']); ?></td>
+                  <td>Semester <?= $mata_kuliah_item['nomor_semester'] ?></td>
                   <td>
                     <a href="mata-kuliah.php?delete=<?= $mata_kuliah_item['id']; ?>" class="btn btn-danger btn-sm"
                       onclick="confirmDeletion(event, this.href)">Hapus</a>
