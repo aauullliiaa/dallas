@@ -181,7 +181,7 @@ $dosen = retrieve("SELECT * FROM daftar_dosen");
     </nav>
     <!-- End of Navbar -->
     <section class="dosen-hero d-flex align-items-center justify-content-center">
-        <h1 data-aos="fade-up" style="font-weight: 600;">DAFTAR DOSEN</h1>
+        <h1 style="font-weight: 600;">DAFTAR DOSEN</h1>
     </section>
 </header>
 
