@@ -1482,7 +1482,7 @@ function deletePertemuan($pertemuan_id)
 
 function getAllMataKuliah($db)
 {
-    $sql = "SELECT mk.id, mk.kode, mk.nama, mk.deskripsi,
+    $sql = "SELECT mk.id, mk.kode, mk.nama, mk.deskripsi, mk.nomor_semester,
                    dd1.nama as dosen_1,
                    dd2.nama as dosen_2
             FROM mata_kuliah mk
@@ -1511,6 +1511,8 @@ function processCourseFormByAdmin($db)
         $deskripsi = htmlspecialchars($_POST['deskripsi']);
         $dosen_id_1 = (int) $_POST['dosen_id_1'];
         $dosen_id_2 = !empty($_POST['dosen_id_2']) ? (int) $_POST['dosen_id_2'] : NULL;
+        $jenis_semester = htmlspecialchars($_POST['jenis_semester']);
+        $nomor_semester = htmlspecialchars($_POST['nomor_semester']);
 
         // Cek apakah dosen_id_1 ada di daftar_dosen berdasarkan kolom id
         $query = "SELECT id FROM daftar_dosen WHERE id = ?";
@@ -1558,7 +1560,7 @@ function processCourseFormByAdmin($db)
         }
 
         // Lanjutkan dengan insert jika dosen_id valid
-        $sql = "INSERT INTO mata_kuliah (kode, nama, deskripsi, dosen_id_1, dosen_id_2) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO mata_kuliah (kode, nama, deskripsi, dosen_id_1, dosen_id_2, jenis_semester, nomor_semester) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             $message = "Terjadi kesalahan pada persiapan statement: " . $db->error;
@@ -1566,7 +1568,7 @@ function processCourseFormByAdmin($db)
             return [$message, $alert_type];
         }
 
-        $stmt->bind_param("sssii", $kode, $nama, $deskripsi, $dosen_id_1, $dosen_id_2);
+        $stmt->bind_param("sssiiss", $kode, $nama, $deskripsi, $dosen_id_1, $dosen_id_2, $jenis_semester, $nomor_semester);
 
         if ($stmt->execute()) {
             $message = "Mata Kuliah berhasil ditambahkan.";
