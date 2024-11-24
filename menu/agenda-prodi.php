@@ -91,7 +91,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="">Laboratorium</a>
+                                <a class="dropdown-item" href="../fasilitas/laboratorium.php">Laboratorium</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="">Gedung</a>
@@ -136,7 +136,7 @@
 </header>
 
 <body>
-    <section>
+    <section class="agendaprodi-hero d-flex align-items-center justify-content-center">
         <div class="row text-center">
             <h1>Agenda Program Studi</h1>
         </div>
@@ -357,6 +357,11 @@
             </div>
         </div>
     </div>
+    <footer class="py-4">
+        <div class="container text-center">
+            <small>&copy; APD Learning Space - 2024</small>
+        </div>
+    </footer>
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
