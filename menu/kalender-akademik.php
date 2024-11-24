@@ -57,9 +57,6 @@
                   <a class="dropdown-item" href="../index.php#vision-mission">Visi dan Misi Prodi</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="">Minat Studi</a>
-                </li>
-                <li>
                   <a class="dropdown-item" href="../dosen.php">Dosen Pengajar</a>
                 </li>
                 <li>
@@ -155,7 +152,11 @@
       </div>
     </div>
   </div>
-
+  <footer class="py-4">
+    <div class="container text-center">
+      <small>&copy; APD Learning Space - 2024</small>
+    </div>
+  </footer>
   <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 
