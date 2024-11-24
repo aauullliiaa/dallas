@@ -59,7 +59,7 @@
                 <a class="dropdown-item" href="dosen.php">Dosen Pengajar</a>
               </li>
               <li>
-                <a class="dropdown-item" href="">Kurikulum</a>
+                <a class="dropdown-item" href="kurikulum.php">Kurikulum</a>
               </li>
             </ul>
           </li>
