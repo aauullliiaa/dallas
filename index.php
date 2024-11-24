@@ -53,9 +53,6 @@
                 <a class="dropdown-item" href="#vision-mission">Visi dan Misi Prodi</a>
               </li>
               <li>
-                <a class="dropdown-item" href="">Minat Studi</a>
-              </li>
-              <li>
                 <a class="dropdown-item" href="dosen.php">Dosen Pengajar</a>
               </li>
               <li>

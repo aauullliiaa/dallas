@@ -123,9 +123,6 @@ $dosen = retrieve("SELECT * FROM daftar_dosen");
                                 <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi Prodi</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="minat-studi.php">Minat Studi</a>
-                            </li>
-                            <li>
                                 <a class="dropdown-item" href="dosen.php">Dosen Pengajar</a>
                             </li>
                             <li>
