@@ -85,7 +85,8 @@
                 <a class="dropdown-item" href="">Unit Kegiatan</a>
               </li>
               <li>
-                <a class="dropdown-item" href="">Himpunan Mahasiswa</a>
+                <a class="dropdown-item" href="https://hmanpnup.or.id/">Himpunan Mahasiswa Jurusan Administrasi
+                  Niaga</a>
               </li>
             </ul>
           </li>
