@@ -91,10 +91,10 @@
                                 <a class="dropdown-item" href="../fasilitas/laboratorium.php">Laboratorium</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="">Gedung</a>
+                                <a class="dropdown-item" href="../fasilitas/gedung.php">Gedung</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="">Pusat Studi</a>
+                                <a class="dropdown-item" href="../fasilitas/pusat-studi.php">Pusat Studi</a>
                             </li>
                         </ul>
                     </li>
@@ -105,10 +105,10 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="">Unit Kegiatan</a>
+                                <a class="dropdown-item" href="../unit-kegiatan.php">Unit Kegiatan</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="">Himpunan Mahasiswa</a>
+                                <a class="dropdown-item" href="../himpunan-jurusan.php">Himpunan Mahasiswa</a>
                             </li>
                         </ul>
                     </li>
