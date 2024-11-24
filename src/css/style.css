@@ -244,6 +244,32 @@ footer {
   );
 }
 /* End of Agenda Program Studi */
+/* Kurikulum */
+.kurikulum-hero {
+  background-image: url("../images/kurikulum-hero.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 40vh;
+  background-position: center;
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+.kurikulum-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+/* End of Kurikulum */
 /* Promotion */
 .promotion-hero {
   background-image: url("../images/promosi-5-hero.jpeg");
@@ -449,7 +475,7 @@ footer {
   background-image: url("../images/education-concept-student-studying-brainstorming-campus-concept-close-up-students-discussing-their-subject-books-textbooks-selective-focus_1418-627.avif");
   background-repeat: no-repeat;
   background-size: cover;
-  min-height: 30vh;
+  min-height: 40vh;
   background-position: center;
   color: var(--white-color);
   text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.7);
@@ -646,7 +672,8 @@ footer {
   .mhs-hero,
   .tugas-jumbotron,
   .penelitian-hero,
-  .agendaprodi-hero {
+  .agendaprodi-hero,
+  .kurikulum-hero {
     min-height: 35vh;
   }
 
@@ -729,7 +756,8 @@ footer {
   .mhs-hero,
   .tugas-jumbotron,
   .penelitian-hero,
-  .agendaprodi-hero {
+  .agendaprodi-hero,
+  .kurikulum-hero {
     min-height: 25vh;
   }
 
