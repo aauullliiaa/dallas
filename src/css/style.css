@@ -218,6 +218,7 @@ footer {
 }
 
 /* End of Penelitian Dosen */
+
 /* Pusat Studi */
 .ps-hero {
   background-image: url("../images/foto\ kampus.jpg");
@@ -353,6 +354,58 @@ footer {
   opacity: 0.9;
 }
 /* End of Pusat Studi */
+/* Laboratorium */
+.lab-hero {
+  background-image: url("../images/lab-hero.jpg");
+  position: relative;
+  background-position: center;
+  min-height: 40vh;
+  background-size: cover;
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.6);
+  background-repeat: no-repeat;
+}
+.lab-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+/* End of Laboratorium */
+/* Berita */
+.news-hero {
+  background-image: url("../images/news-hero.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 40vh;
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+.news-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+/* End of Berita */
 /* Agenda Program Studi */
 .agendaprodi-hero {
   background-image: url("../images/agendaprodi-hero.jpg");
@@ -405,6 +458,112 @@ footer {
   );
 }
 /* End of Kurikulum */
+
+/* Berita Program Studi */
+.news-section {
+  padding: 80px 0;
+}
+
+/* Menetapkan ukuran tetap untuk card */
+.news-card {
+  height: 500px;
+  /* Ukuran tetap untuk card */
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.news-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Menetapkan ukuran tetap untuk thumbnail */
+.news-image {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  /* Ukuran tetap untuk thumbnail */
+  overflow: hidden;
+}
+
+.news-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.news-card:hover .news-image img {
+  transform: scale(1.1);
+}
+
+/* Mengatur card body agar mengisi sisa ruang */
+.card-body {
+  padding: 25px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.card-text {
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  /* Membatasi teks agar tidak overflow */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.news-meta {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+/* Memastikan button selalu di bawah */
+.news-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(40, 167, 69, 0.9);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Animasi untuk cards */
+.news-card {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* End of Berita Program Studi */
+
 /* Promotion */
 .promotion-hero {
   background-image: url("../images/promosi-5-hero.jpeg");
@@ -808,7 +967,9 @@ footer {
   .tugas-jumbotron,
   .penelitian-hero,
   .agendaprodi-hero,
-  .kurikulum-hero {
+  .kurikulum-hero,
+  .ps-hero,
+  .news-hero {
     min-height: 35vh;
   }
 
@@ -855,6 +1016,10 @@ footer {
     max-height: 80vh;
     overflow-y: auto;
   }
+
+  .news-card {
+    height: 480px;
+  }
 }
 
 /* Mobile styles */
@@ -892,7 +1057,9 @@ footer {
   .tugas-jumbotron,
   .penelitian-hero,
   .agendaprodi-hero,
-  .kurikulum-hero {
+  .kurikulum-hero,
+  .ps-hero,
+  .news-hero {
     min-height: 25vh;
   }
 
@@ -942,6 +1109,10 @@ footer {
 
   .navbar-nav .nav-link {
     padding: 0.4rem 0.8rem;
+  }
+
+  .news-card {
+    height: 500px;
   }
 }
 
