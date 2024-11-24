@@ -218,6 +218,32 @@ footer {
 }
 
 /* End of Penelitian Dosen */
+/* Agenda Program Studi */
+.agendaprodi-hero {
+  background-image: url("../images/agendaprodi-hero.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 40vh;
+  background-position: center;
+  color: var(--white-color);
+  text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+.agendaprodi-hero::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    0deg,
+    var(--secondary-color) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+/* End of Agenda Program Studi */
 /* Promotion */
 .promotion-hero {
   background-image: url("../images/promosi-5-hero.jpeg");
@@ -618,7 +644,9 @@ footer {
   .dosen-hero,
   .edit-hero,
   .mhs-hero,
-  .tugas-jumbotron {
+  .tugas-jumbotron,
+  .penelitian-hero,
+  .agendaprodi-hero {
     min-height: 35vh;
   }
 
@@ -700,7 +728,8 @@ footer {
   .edit-hero,
   .mhs-hero,
   .tugas-jumbotron,
-  .penelitian-hero {
+  .penelitian-hero,
+  .agendaprodi-hero {
     min-height: 25vh;
   }
 
