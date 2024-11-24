@@ -21,11 +21,6 @@
 
   <!-- AOS CSS -->
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-
-  <!-- Slick Carousel CSS -->
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
 </head>
 
 <body id="home">
@@ -72,7 +67,7 @@
                 <a class="dropdown-item" href="fasilitas/laboratorium.php">Laboratorium</a>
               </li>
               <li>
-                <a class="dropdown-item" href="fasilitas/kelas.php">Gedung</a>
+                <a class="dropdown-item" href="fasilitas/gedung.php">Gedung</a>
               </li>
               <li>
                 <a class="dropdown-item" href="fasilitas/pusat-studi.php">Pusat Studi</a>
@@ -114,7 +109,7 @@
       <h1>Kurikulum Program Studi</h1>
     </div>
   </section>
-  <div class="container" data-aos="">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
     <div class="card rounded p-3 h-100">
       <div class="card-body" style="font-size: 1.1rem;">
         <p>Kurikulum kami dirancang untuk menghasilkan lulusan yang terampil dan kompeten
@@ -148,9 +143,9 @@
   </div>
   <section>
     <div class="container">
-      <h2 class="text-center mb-4">Struktur Kurikulum</h2>
+      <h2 class="text-center mb-4" data-aos="fade-up" data-aos-delay="200">Struktur Kurikulum</h2>
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6" data-aos="fade-right" data-aos-delay="300">
           <h4>Semester 1</h4>
           <ul class="list-group mb-4">
             <li class="list-group-item">Dasar-Dasar Administrasi</li>
@@ -159,7 +154,7 @@
             <li class="list-group-item">Komunikasi Bisnis</li>
           </ul>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" data-aos="fade-left" data-aos-delay="400">
           <h4>Semester 2</h4>
           <ul class="list-group mb-4">
             <li class="list-group-item">Manajemen Dokumen</li>
@@ -171,7 +166,7 @@
       </div>
 
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6" data-aos="fade-right" data-aos-delay="500">
           <h4>Semester 3</h4>
           <ul class="list-group mb-4">
             <li class="list-group-item">Analisis Data Kantor</li>
@@ -180,7 +175,7 @@
             <li class="list-group-item">Manajemen Proyek Perkantoran</li>
           </ul>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" data-aos="fade-left" data-aos-delay="500">
           <h4>Semester 4</h4>
           <ul class="list-group mb-4">
             <li class="list-group-item">Strategi Transformasi Digital</li>
@@ -199,8 +194,7 @@
       <small>&copy; APD Learning Space - 2024</small>
     </div>
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script>
     AOS.init({
       duration: 800,
@@ -208,6 +202,9 @@
       offset: 100,
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </body>
 
 </html>
