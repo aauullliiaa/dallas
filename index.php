@@ -43,7 +43,7 @@
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Profil
+              Informasi Program Studi
             </a>
             <ul class="dropdown-menu">
               <li>
@@ -52,42 +52,45 @@
               <li>
                 <a class="dropdown-item" href="#vision-mission">Visi dan Misi Prodi</a>
               </li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Kurikulum
-            </a>
-            <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="#">Seluruh Mata Kuliah</a>
+                <a class="dropdown-item" href="">Minat Studi</a>
               </li>
               <li>
-                <a class="dropdown-item" href="#">Mata Kuliah Kampus Merdeka</a>
+                <a class="dropdown-item" href="dosen.php">Dosen Pengajar</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="">Kurikulum</a>
               </li>
             </ul>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dosen
+              Fasilitas
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="dosen.php">Daftar Dosen</a>
+                <a class="dropdown-item" href="fasilitas/laboratorium.php">Laboratorium</a>
               </li>
               <li>
-                <a class="dropdown-item" href="penelitian-dosen.php">Penelitian Dosen</a>
+                <a class="dropdown-item" href="fasilitas/kelas.php">Gedung</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="fasilitas/pusat-studi.php">Pusat Studi</a>
               </li>
             </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="facility.php">Fasilitas</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#mitra">Mitra</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#alamat">Kontak</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Kemahasiswaan
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="">Unit Kegiatan</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="">Himpunan Mahasiswa</a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -144,52 +147,68 @@
   </div>
 
   <!-- Etalase -->
-  <section id="showcase" class="py-5">
+  <section id="program-studi-menu" class="py-5">
     <div class="container">
-      <h2 class="text-center mb-5">Etalase Program Studi</h2>
+      <h2 class="text-center mb-5">Menu Program Studi</h2>
       <div class="row g-4">
-        <!-- Showcase items -->
-        <div class="col-md-4" data-aos="fade-up">
+        <!-- Menu items -->
+        <div class="col-md-3" data-aos="fade-up">
           <div class="card h-100 shadow hover-card p-3 d-flex flex-column"
             style="background-color: #E6F3FF; border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center flex-grow-1">
-              <i class="bi bi-book display-1 text-primary mb-3"></i>
-              <h5 class="card-title">Kurikulum yang Terbaru</h5>
+              <i class="bi bi-calendar-event display-1 text-primary mb-3"></i>
+              <h5 class="card-title">Kalender Akademik</h5>
               <p class="card-text">
-                Kurikulum terkini yang disesuaikan dengan kebutuhan industri dan perkembangan teknologi.
+                Jadwal kegiatan akademik sepanjang tahun ajaran.
               </p>
               <div class="card-footer bg-transparent border-0 mt-auto">
-                <a href=""><button class="btn btn-primary">Selengkapnya</button></a>
+                <a href="menu/kalender-akademik.php"><button class="btn btn-primary">Lihat
+                    Kalender</button></a>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-          <div class="card h-100 shadow hover-card p-3  d-flex flex-column"
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+          <div class="card h-100 shadow hover-card p-3 d-flex flex-column"
             style="background-color: #CCE5FF; border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center flex-grow-1">
-              <i class="bi bi-laptop display-1 text-info mb-3"></i>
-              <h5 class="card-title">Fasilitas Modern</h5>
+              <i class="bi bi-list-check display-1 text-info mb-3"></i>
+              <h5 class="card-title">Agenda Program Studi</h5>
               <p class="card-text">
-                Nikmati fasilitas belajar terkini yang mendukung pembelajaran digital.
+                Daftar kegiatan dan acara program studi.
               </p>
               <div class="card-footer bg-transparent border-0 mt-auto">
-                <a href="facility.php"><button class="btn btn-info text-white">Selengkapnya</button></a>
+                <a href="menu/agenda-prodi.php"><button class="btn btn-info text-white">Lihat Agenda</button></a>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-          <div class="card h-100 shadow hover-card p-3  d-flex flex-column"
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+          <div class="card h-100 shadow hover-card p-3 d-flex flex-column"
             style="background-color: #B3D9FF; border-radius: 15px; border: none; transition: all 0.3s;">
             <div class="card-body text-center flex-grow-1">
-              <i class="bi bi-people display-1 text-primary mb-3"></i>
-              <h5 class="card-title">Kegiatan di Program Studi</h5>
+              <i class="bi bi-newspaper display-1 text-primary mb-3"></i>
+              <h5 class="card-title">Berita</h5>
               <p class="card-text">
-                Berbagai kegiatan menarik untuk mengembangkan soft skills dan hard skills mahasiswa.
+                Informasi terkini seputar program studi dan kampus.
               </p>
               <div class="card-footer bg-transparent border-0 mt-auto">
-                <a href="activity.php"><button class="btn btn-primary">Selengkapnya</button></a>
+                <a href="menu/berita.php"><button class="btn btn-primary">Baca Berita</button></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+          <div class="card h-100 shadow hover-card p-3 d-flex flex-column"
+            style="background-color: #99CCFF; border-radius: 15px; border: none; transition: all 0.3s;">
+            <div class="card-body text-center flex-grow-1">
+              <i class="bi bi-chat-dots display-1 text-info mb-3"></i>
+              <h5 class="card-title">Forum Diskusi</h5>
+              <p class="card-text">
+                Ruang diskusi online untuk mahasiswa dan dosen.
+              </p>
+              <div class="card-footer bg-transparent border-0 mt-auto">
+                <a href="menu/forum-diskusi.php"><button class="btn btn-info text-white">Masuk Forum</button></a>
               </div>
             </div>
           </div>
