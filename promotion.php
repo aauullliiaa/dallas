@@ -36,7 +36,7 @@
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Profil
+              Informasi Program Studi
             </a>
             <ul class="dropdown-menu">
               <li>
@@ -45,42 +45,42 @@
               <li>
                 <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi Prodi</a>
               </li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Kurikulum
-            </a>
-            <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="#">Seluruh Mata Kuliah</a>
+                <a class="dropdown-item" href="dosen.php">Dosen Pengajar</a>
               </li>
               <li>
-                <a class="dropdown-item" href="#">Mata Kuliah Kampus Merdeka</a>
+                <a class="dropdown-item" href="kurikulum.php">Kurikulum</a>
               </li>
             </ul>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dosen
+              Fasilitas
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="dosen.php">Daftar Dosen</a>
+                <a class="dropdown-item" href="fasilitas/laboratorium.php">Laboratorium</a>
               </li>
               <li>
-                <a class="dropdown-item" href="penelitian-dosen.php">Penelitian Dosen</a>
+                <a class="dropdown-item" href="fasilitas/kelas.php">Gedung</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="fasilitas/pusat-studi.php">Pusat Studi</a>
               </li>
             </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="facility.php">Fasilitas</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="index.php#mitra">Mitra</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="index.php#alamat">Kontak</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Kemahasiswaan
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="unit-kegiatan.php">Unit Kegiatan</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="https://hmanpnup.or.id/">Himpunan Mahasiswa</a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
