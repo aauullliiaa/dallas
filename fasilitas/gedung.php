@@ -174,10 +174,10 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item" href="login-pegawai.php">Login Dosen/Admin</a>
+                                    <a class="dropdown-item" href="../login-pegawai.php">Login Dosen/Admin</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="login-mahasiswa.php">Login Mahasiswa</a>
+                                    <a class="dropdown-item" href="../login-mahasiswa.php">Login Mahasiswa</a>
                                 </li>
                             </ul>
                         </li>
@@ -213,7 +213,7 @@
                 <div class="col-md-4 mb-4">
                     <div class="p-4 rounded-3 shadow-sm bg-white" data-aos="fade-up" data-aos-delay="300">
                         <i class="fas fa-users mb-3 text-primary" style="font-size: 2.5rem;"></i>
-                        <div class="stats-number">1000+</div>
+                        <div class="stats-number">500+</div>
                         <p class="text-muted mb-0">Kapasitas Mahasiswa</p>
                     </div>
                 </div>
@@ -248,7 +248,7 @@
                                                     <i class="fas fa-door-open me-2"></i>5 Ruang Kelas
                                                 </span>
                                                 <span class="room-badge">
-                                                    <i class="fas fa-users me-2"></i>Kapasitas 40 Mahasiswa/Ruang
+                                                    <i class="fas fa-users me-2"></i>Kapasitas 25 Mahasiswa/Ruang
                                                 </span>
                                             </div>
                                             <div class="mt-3">
@@ -302,7 +302,7 @@
                                                     <i class="fas fa-door-open me-2"></i>10 Ruang Kelas
                                                 </span>
                                                 <span class="room-badge">
-                                                    <i class="fas fa-users me-2"></i>Kapasitas 30 Mahasiswa/Ruang
+                                                    <i class="fas fa-users me-2"></i>Kapasitas 25 Mahasiswa/Ruang
                                                 </span>
                                             </div>
                                             <div class="mt-3">
@@ -356,7 +356,7 @@
                                                     <i class="fas fa-door-open me-2"></i>20 Ruang Kelas
                                                 </span>
                                                 <span class="room-badge">
-                                                    <i class="fas fa-users me-2"></i>Kapasitas 35 Mahasiswa/Ruang
+                                                    <i class="fas fa-users me-2"></i>Kapasitas 25 Mahasiswa/Ruang
                                                 </span>
                                             </div>
                                             <div class="mt-3">

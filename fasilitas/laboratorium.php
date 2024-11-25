@@ -123,10 +123,10 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item" href="login-pegawai.php">Login Dosen/Admin</a>
+                                    <a class="dropdown-item" href="../login-pegawai.php">Login Dosen/Admin</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="login-mahasiswa.php">Login Mahasiswa</a>
+                                    <a class="dropdown-item" href="../login-mahasiswa.php">Login Mahasiswa</a>
                                 </li>
                             </ul>
                         </li>
