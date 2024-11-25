@@ -81,7 +81,7 @@ $dosen = retrieve("SELECT * FROM daftar_dosen");
 </header>
 
 <body>
-  <div class="container">
+  <div class="container mb-5">
     <div class="row justify-content-center mb-5">
       <?php foreach ($dosen as $row): ?>
         <div class="card m-2 p-3" style="width: 20rem">
@@ -102,16 +102,21 @@ $dosen = retrieve("SELECT * FROM daftar_dosen");
       <?php endforeach; ?>
     </div>
   </div>
+  <footer class="py-4">
+    <div class="container text-center">
+      <small>&copy; APD Learning Space - 2024</small>
+    </div>
+  </footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
-    <script>
-      function confirmLogout(){
-        if (confirm("Apakah anda yakin ingin keluar?")){
-          window.location.href = "../logout.php"
-        }
+  <script>
+    function confirmLogout() {
+      if (confirm("Apakah anda yakin ingin keluar?")) {
+        window.location.href = "../logout.php"
       }
-    </script>
+    }
+  </script>
 </body>
 
 </html>

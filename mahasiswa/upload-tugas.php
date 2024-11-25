@@ -102,7 +102,7 @@ $tugasDetail = getTugasDetail($tugas_id, $mahasiswa_id);
 </header>
 
 <body>
-    <div class="container mt-5">
+    <div class="container mt-5 mb-5">
         <?php if ($uploadMessage): ?>
             <div class="alert alert-info"><?= $uploadMessage; ?></div>
         <?php endif; ?>
@@ -146,6 +146,11 @@ $tugasDetail = getTugasDetail($tugas_id, $mahasiswa_id);
             </div>
         </div>
     </div>
+    <footer class="py-4">
+        <div class="container text-center">
+            <small>&copy; APD Learning Space - 2024</small>
+        </div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function confirmLogout() {

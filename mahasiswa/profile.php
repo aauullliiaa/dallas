@@ -47,57 +47,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <header>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg shadow-sm fixed-top bg-navbar">
-    <div class="container">
-      <a class="navbar-brand" href="../mahasiswa/index.php#home">
-        <img src="../src/images/logo kampus.png" alt="Logo" width="40px" />
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="index.php#home" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Home
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="index.php#about">About</a></li>
-              <li>
-                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="dosen.php">Dosen</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="profile.php">Profil</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" onclick="confirmLogout()">Logout</a>
-          </li>
-        </ul>
+      <div class="container">
+        <a class="navbar-brand" href="../mahasiswa/index.php#home">
+          <img src="../src/images/logo kampus.png" alt="Logo" width="40px" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="index.php#home" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Home
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="index.php#about">About</a></li>
+                <li>
+                  <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="index.php#alamat">Alamat dan Kontak</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="mata-kuliah.php">Mata Kuliah</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="dosen.php">Dosen</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="jadwal-kuliah.php">Jadwal Perkuliahan</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="profile.php">Profil</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" onclick="confirmLogout()">Logout</a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
     <!-- End of Navbar -->
     <section class="d-flex align-items-center justify-content-center">
       <h1>Edit Profil</h1>
     </section>
   </header>
 
-  <div class="container edit-profile">
+  <div class="container edit-profile mb-5">
     <div class="card p-3">
       <div class="card-body">
         <div class="row mb-3 ">
@@ -168,18 +168,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       </div>
     </div>
   </div>
-
+  <footer class="py-4">
+    <div class="container text-center">
+      <small>&copy; APD Learning Space - 2024</small>
+    </div>
+  </footer>
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
-    <script>
-      function confirmLogout(){
-        if (confirm("Apakah anda yakin ingin keluar?")){
-          window.location.href = "../logout.php"
-        }
+  <script>
+    function confirmLogout() {
+      if (confirm("Apakah anda yakin ingin keluar?")) {
+        window.location.href = "../logout.php"
       }
-    </script>
+    }
+  </script>
 </body>
 
 </html>

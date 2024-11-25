@@ -194,7 +194,7 @@ unset($_SESSION['alert_class']);
 </header>
 
 <body>
-  <div class="container">
+  <div class="container mb-5">
     <div class="card p-3">
       <div class="card-body">
         <?php if ($message): ?>
@@ -249,6 +249,11 @@ unset($_SESSION['alert_class']);
       </div>
     </div>
   </div>
+  <footer class="py-4">
+    <div class="container text-center">
+      <small>&copy; APD Learning Space - 2024</small>
+    </div>
+  </footer>
   <script>
     function downloadJadwal(kelas, semester, tahun, fileType, filePath) {
       const link = document.createElement('a');
