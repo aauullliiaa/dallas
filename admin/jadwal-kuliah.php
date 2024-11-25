@@ -186,6 +186,8 @@ unset($_SESSION['alert_class']);
               <li>
                 <a class="dropdown-item" href="data-semester.php">Data Semester</a>
               </li>
+              <li><a class="dropdown-item" href="data-kelas.php">Data Kelas</a>
+              </li>
             </ul>
           </li>
           <li class="nav-item dropdown">
@@ -273,6 +275,11 @@ unset($_SESSION['alert_class']);
       </div>
     </div>
   </div>
+  <footer class="py-4">
+    <div class="container text-center">
+      <small>&copy; APD Learning Space - 2024</small>
+    </div>
+  </footer>
   <script>
     function downloadJadwal(kelas, semester, tahun, fileType, filePath) {
       const link = document.createElement('a');

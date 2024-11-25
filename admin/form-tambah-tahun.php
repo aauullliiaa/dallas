@@ -126,6 +126,8 @@ $tahun_akademik = retrieve("SELECT * FROM tahun_akademik ORDER BY tahun_mulai DE
                             <li>
                                 <a class="dropdown-item" href="data-semester.php">Data Semester</a>
                             </li>
+                            <li><a class="dropdown-item" href="data-kelas.php">Data Kelas</a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -206,6 +208,11 @@ $tahun_akademik = retrieve("SELECT * FROM tahun_akademik ORDER BY tahun_mulai DE
             </div>
         </div>
     </div>
+    <footer class="py-4">
+        <div class="container text-center">
+            <small>&copy; APD Learning Space - 2024</small>
+        </div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
