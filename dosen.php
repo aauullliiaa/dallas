@@ -117,10 +117,10 @@ $dosen = retrieve("SELECT * FROM daftar_dosen");
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="index.php#about">Tentang Prodi</a>
+                                <a class="dropdown-item" href="#about">Tentang Prodi</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="index.php#vision-mission">Visi dan Misi Prodi</a>
+                                <a class="dropdown-item" href="#vision-mission">Visi dan Misi Prodi</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="dosen.php">Dosen Pengajar</a>
@@ -157,7 +157,7 @@ $dosen = retrieve("SELECT * FROM daftar_dosen");
                                 <a class="dropdown-item" href="unit-kegiatan.php">Unit Kegiatan</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="https://hmanpnup.or.id/">Himpunan Mahasiswa</a>
+                                <a class="dropdown-item" href="https://hmanpnup.or.id/">Himpunan Mahasiswa Jurusan</a>
                             </li>
                         </ul>
                     </li>
