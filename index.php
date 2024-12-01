@@ -84,7 +84,7 @@
                 Jadwal kegiatan akademik sepanjang tahun ajaran.
               </p>
               <div class="card-footer bg-transparent border-0 mt-auto">
-                <a href="menu/kalender-akademik.php"><button class="btn btn-primary">Lihat
+                <a href="kalender-akademik.php"><button class="btn btn-primary">Lihat
                     Kalender</button></a>
               </div>
             </div>
@@ -100,7 +100,7 @@
                 Daftar kegiatan dan acara program studi.
               </p>
               <div class="card-footer bg-transparent border-0 mt-auto">
-                <a href="menu/agenda-prodi.php"><button class="btn btn-info text-white">Lihat Agenda</button></a>
+                <a href="agenda-prodi.php"><button class="btn btn-info text-white">Lihat Agenda</button></a>
               </div>
             </div>
           </div>
@@ -115,7 +115,7 @@
                 Informasi terkini seputar program studi dan kampus.
               </p>
               <div class="card-footer bg-transparent border-0 mt-auto">
-                <a href="menu/berita.php"><button class="btn btn-primary">Baca Berita</button></a>
+                <a href="berita.php"><button class="btn btn-primary">Baca Berita</button></a>
               </div>
             </div>
           </div>
@@ -130,7 +130,7 @@
                 Ruang diskusi online untuk mahasiswa dan dosen.
               </p>
               <div class="card-footer bg-transparent border-0 mt-auto">
-                <a href="menu/forum-diskusi.php"><button class="btn btn-info text-white">Masuk Forum</button></a>
+                <a href="forum-diskusi.php"><button class="btn btn-info text-white">Masuk Forum</button></a>
               </div>
             </div>
           </div>
