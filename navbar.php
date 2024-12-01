@@ -62,7 +62,7 @@
                                 <a class="dropdown-item" href="laboratorium.php">Laboratorium</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="kelas.php">Gedung</a>
+                                <a class="dropdown-item" href="gedung.php">Gedung</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="pusat-studi.php">Pusat Studi</a>
